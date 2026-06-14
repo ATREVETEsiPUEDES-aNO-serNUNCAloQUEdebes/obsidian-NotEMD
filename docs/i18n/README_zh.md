@@ -1,21 +1,21 @@
-# Notemd 语言中心
+# Notemd Centro de Idiomas
 
-此页面统一说明当前文档语言与应用内 UI 语言支持的真实状态。
+Esta pagina explica de manera uniforme el idioma y la aplicacion del documento actual. UI El verdadero estado del soporte linguistico。
 
-## 维护源文档
+## Mantener la documentacion fuente.
 
 - English: [README.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README.md)
-- 简体中文: [README_zh.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_zh.md)
+- Chino simplificado: [README_zh.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_zh.md)
 
-## 已发布 README 译文
+## Publicado README Traduccion
 
-- 繁體中文: [README_zh_Hant.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_zh_Hant.md)
+- Chino tradicional: [README_zh_Hant.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_zh_Hant.md)
 - Español: [README_es.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_es.md)
 - Français: [README_fr.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_fr.md)
 - Deutsch: [README_de.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_de.md)
 - Italiano: [README_it.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_it.md)
 - Português: [README_pt.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_pt.md)
-- 日本語: [README_ja.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_ja.md)
+- japones: [README_ja.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_ja.md)
 - 한국어: [README_ko.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_ko.md)
 - Русский: [README_ru.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_ru.md)
 - العربية: [README_ar.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_ar.md)
@@ -39,14 +39,14 @@
 - Bahasa Indonesia: [README_id.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_id.md)
 - Bahasa Melayu: [README_ms.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_ms.md)
 
-## 应用内 UI Locale 覆盖范围
+## En la aplicacion UI Locale Cobertura
 
-- `auto` 模式会跟随 Obsidian 当前界面语言。
-- 应用内支持的 UI locale 由 [src/i18n/uiLocales.ts](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/src/i18n/uiLocales.ts) 显式定义：`en`、`ar`、`de`、`es`、`fa`、`fr`、`id`、`it`、`ja`、`ko`、`nl`、`pl`、`pt`、`pt-BR`、`ru`、`th`、`tr`、`uk`、`vi`、`zh-CN`、`zh-TW`。
-- English fallback 仍保留为实现层安全网，但已支持 locale 的可见界面已由回归测试覆盖，正常使用中不应再静默回落到英文。
-- 当前实现已对齐 Notebook Navigator 的核心 i18n 设计原则：显式 supported-language map、`auto` 模式对齐 Obsidian locale，以及以 English 作为最终 fallback merge 目标。
+- `auto` Los patrones seguiran Obsidian Idioma actual de la interfaz。
+- Soporte en la aplicacion UI locale Por [src/i18n/uiLocales.ts](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/src/i18n/uiLocales.ts) Definicion explicita：`en`、`ar`、`de`、`es`、`fa`、`fr`、`id`、`it`、`ja`、`ko`、`nl`、`pl`、`pt`、`pt-BR`、`ru`、`th`、`tr`、`uk`、`vi`、`zh-CN`、`zh-TW`。
+- English fallback Sigue siendo una red de seguridad para la capa de implementacion, pero cuenta con soporte. locale La interfaz visible ha sido cubierta por pruebas de regresion y ya no deberia volver al ingles silenciosamente durante el uso normal.。
+- La implementacion actual esta alineada Notebook Navigator El nucleo de i18n Principio de diseno: explicito supported-language map、`auto` Alineacion del patron Obsidian locale，y con English Como final fallback merge Metas。
 
-| 代码 | 显示名称 |
+| Codigo | Nombre para mostrar |
 |---|---|
 | `en` | English |
 | `ar` | العربية |
@@ -56,7 +56,7 @@
 | `fr` | Français |
 | `id` | Bahasa Indonesia |
 | `it` | Italiano |
-| `ja` | 日本語 |
+| `ja` | japones |
 | `ko` | 한국어 |
 | `nl` | Nederlands |
 | `pl` | Polski |
@@ -67,19 +67,19 @@
 | `tr` | Türkçe |
 | `uk` | Українська |
 | `vi` | Tiếng Việt |
-| `zh-CN` | 简体中文 |
-| `zh-TW` | 繁體中文 |
+| `zh-CN` | Chino simplificado |
+| `zh-TW` | Chino tradicional |
 
-## 翻译状态策略
+## Estrategia de estado de traduccion
 
-- 权威源文档：仓库中的 English + 简体中文维护文档。
-- 已发布 README 译文应尽量完整覆盖源文档，但如出现短暂漂移，仍以维护源文档为准。
-- 只有当某个 UI locale 已存在于代码中，且可见界面覆盖测试通过时，文档才应宣称其“已支持”。
-- fallback 机制用于韧性兜底，不应用来替代缺失的可见翻译。
+- Documento fuente autorizado: en el almacen. English + Documentacion de mantenimiento en chino simplificado。
+- Publicado README La traduccion debe cubrir el documento fuente lo mas completamente posible, pero si hay una desviacion a corto plazo, el documento fuente aun se mantendra.。
+- Solo si alguien UI locale Solo cuando ya existe en el codigo y pasa la prueba de cobertura de la interfaz visible, el documento debe declarar que es "compatible"”。
+- fallback El mecanismo se utiliza para brindar resiliencia y no debe usarse para reemplazar traducciones visibles faltantes.。
 
-## 贡献人工翻译
+## Contribuir con la traduccion humana.
 
-1. 在仓库根目录新增或更新语言文件，例如：`README_es.md`。
-2. 章节顺序尽量与 [README.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README.md) 保持一致。
-3. 新增 README 译文或 UI locale 时，请同步更新本语言中心。
-4. 提交 PR，条件允许时至少邀请一位母语贡献者复核。
+1. Agregue o actualice archivos de idioma en el directorio raiz del almacen, por ejemplo：`README_es.md`。
+2. El orden de los capitulos debe ser lo mas coherente posible. [README.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README.md) Sea consistente。
+3. nuevo README Traduccion o UI locale Actualice este centro de idiomas simultaneamente。
+4. Enviar PR，Invita al menos a un hablante nativo a revisar si las condiciones lo permiten.。

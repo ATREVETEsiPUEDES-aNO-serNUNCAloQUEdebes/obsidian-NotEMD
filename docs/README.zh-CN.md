@@ -1,17 +1,17 @@
-# Notemd 文档中心
+# Notemd Centro de documentos
 
-语言: [English](./README.md) | **简体中文**
+Idioma: [English](./README.md) | **Chino simplificado**
 
-此目录保存仓库级文档，面向维护者与贡献者。
+Este directorio almacena documentos a nivel de almacen para mantenedores y contribuyentes.。
 
-## 用户与维护者入口
+## Entrada de usuario y mantenedor
 
-- [语言中心](./i18n/README_zh.md)
-- [章节拆分 + TOC 提取](./chapter-split-toc.zh-CN.md)
-- [发布流程](./maintainer/release-workflow.zh-CN.md)
-- [1.8.2 发布说明](./releases/1.8.2.zh-CN.md)
+- [Centro de idiomas](./i18n/README_zh.md)
+- [Division de capitulos + TOC Extraccion](./chapter-split-toc.zh-CN.md)
+- [Proceso de publicacion](./maintainer/release-workflow.zh-CN.md)
+- [1.8.2 Notas de la version](./releases/1.8.2.zh-CN.md)
 
-## 工程规划文档
+## Documentos de planificacion del proyecto
 
 - [Diagram Platform Phase 2 Requirements](./brainstorms/2026-04-14-diagram-platform-phase-2-requirements.zh-CN.md)
 - [Diagram Rendering Platform Roadmap](./superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.zh-CN.md)
@@ -19,9 +19,9 @@
 - [AGENTS And Provider Expansion Plan](./superpowers/plans/2026-03-26-agents-and-provider-expansion.zh-CN.md)
 - [China Provider Expansion Round 2 Plan](./superpowers/plans/2026-03-26-china-provider-expansion-round2.zh-CN.md)
 
-## 文档语言约定
+## Convenciones del lenguaje del documento
 
-- `docs/superpowers/plans/` 下的计划文档统一使用显式语言后缀：`name.en.md` 与 `name.zh-CN.md`。
-- 计划目录之外的旧文档，在迁移完成前仍可能保留 `name.md` 加配对语种文件的形式。
-- 发布说明必须拆分为英文与简体中文两个完整文件；发布 GitHub Release 时再由辅助脚本组合成一个双语 release body。
-- 不要再向活跃文档里追加行内双语摘要块。每种语言都应维护独立完整文件。
+- `docs/superpowers/plans/` Los documentos del plan utilizan sufijos de lenguaje explicitos de manera uniforme.：`name.en.md` Con `name.zh-CN.md`。
+- Es posible que los documentos antiguos fuera del directorio planificado aun se conserven antes de que se complete la migracion. `name.md` Agregue un formato de archivo de idioma coincidente。
+- Las notas de la version deben dividirse en dos archivos completos en ingles y chino simplificado; liberar GitHub Release La escritura auxiliar luego se combina en una escritura bilingue. release body。
+- No agregue bloques de resumen bilingues en linea a documentos activos. Cada idioma debe mantener archivos completos separados.。

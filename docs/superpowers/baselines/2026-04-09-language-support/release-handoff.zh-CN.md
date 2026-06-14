@@ -1,49 +1,49 @@
-# 语言支持发布交接（2026-04-09）
+# Entrega de la version de soporte linguistico（2026-04-09）
 
-## 范围
+## Alcance
 
-本交接覆盖第一性原理语言支持改造：
+Este traspaso cubre la transformacion del soporte linguistico de los primeros principios.：
 
-- 语言域模型（`uiLocale` + 任务语言策略）。
-- 带 locale fallback 的 UI i18n 基础设施。
-- 设置页、侧边栏与错误提示等运行时字符串迁移。
-- prompt 与处理流程中的统一语言决策路径。
-- locale-aware 时间格式与 RTL-safe 样式保护。
-- 脚本化 baseline/compare 回归工作流。
+- Modelo de dominio del lenguaje（`uiLocale` + Estrategias de lenguaje de tareas.）。
+- traer locale fallback de UI i18n Infraestructura。
+- Migracion de cadenas en tiempo de ejecucion de la pagina de configuracion, barra lateral, mensaje de error, etc.。
+- prompt Ruta de decision del lenguaje unificado en el flujo de procesamiento。
+- locale-aware Formato de hora y RTL-safe Proteccion del estilo。
+- Guiones baseline/compare Flujo de trabajo de regresion。
 
-## 前后对比摘要
+## Resumen de antes y despues
 
-- 基线构建此前不稳定，原因是 `ref/**` 被纳入 TypeScript 编译范围，触发 `TS6059`。
-- 当前构建范围已排除 `ref/**`；最终 `npm run build` 为 PASS。
-- 定向行为矩阵在迁移前后均保持 PASS。
-- 集成后的完整 `npm test -- --runInBand` 为 PASS。
-- `git diff --check` 未发现格式问题。
+- La construccion de la linea de base anteriormente era inestable debido a `ref/**` Ser incluido TypeScript Alcance de la compilacion, disparador `TS6059`。
+- Se ha excluido el alcance de la compilacion actual. `ref/**`；Finalmente `npm run build` para PASS。
+- La matriz de comportamiento direccional se mantiene antes y despues de la migracion. PASS。
+- Completar despues de la integracion. `npm test -- --runInBand` para PASS。
+- `git diff --check` No se encontro ningun problema de formato。
 
-## 最终验证证据
+## Evidencia de verificacion final
 
 - Build：`task9-build-after-docs.txt`
-- 定向矩阵：`task9-targeted-matrix.txt`
-- 完整测试：`task9-full-runInBand.txt`
-- 回归脚本：`task9-regression-baseline.txt`、`task9-regression-compare.txt`
-- Patch 质量：`task9-git-diff-check.txt`
-- Obsidian 命令检查：`task9-obsidian-help.txt`、`task9-obsidian-cli-help.txt`
+- Matriz de orientacion：`task9-targeted-matrix.txt`
+- Prueba completa：`task9-full-runInBand.txt`
+- Guion de regresion：`task9-regression-baseline.txt`、`task9-regression-compare.txt`
+- Patch calidad：`task9-git-diff-check.txt`
+- Obsidian Verificacion de comando：`task9-obsidian-help.txt`、`task9-obsidian-cli-help.txt`
 
-上述文件均位于：
+Los archivos anteriores se encuentran en：
 
 - `docs/superpowers/baselines/2026-04-09-language-support/`
 
-## 剩余风险
+## Riesgo residual
 
-- 环境依赖：当前执行环境缺少 `obsidian-cli`（`command not found`），因此 CLI 验证仍是不完整的。
-- 宿主依赖：`obsidian help` 的行为可能在 headless 或桌面受限环境中发生变化。
+- Dependencias del entorno: falta el entorno de ejecucion actual `obsidian-cli`（`command not found`），Por lo tanto CLI La validacion aun esta incompleta.。
+- Dependencias del anfitrion：`obsidian help` El comportamiento puede estar en headless O cambios en el entorno restringido del escritorio.。
 
-## 发布就绪说明
+## Instrucciones de preparacion para la publicacion
 
-- 代码与文档已经针对语言架构和回归流程保持同步。
-- `README.md` 与 `README_zh.md` 已同时记录维护者发布约束：
-  - 独立可读的中英双语 release 文案；
-  - release 必需资产必须包含 `README.md`。
-- 推荐发布门禁保持为：
+- Se han sincronizado el codigo y la documentacion para la arquitectura del lenguaje y los procesos de regresion.。
+- `README.md` con `README_zh.md` Las restricciones de liberacion del mantenedor se han registrado al mismo tiempo.：
+  - Chino e ingles bilingues legibles de forma independiente release Redaccion publicitaria；
+  - release Los activos requeridos deben incluir `README.md`。
+- Se recomienda que el control de acceso a la liberacion se mantenga lo mas：
   - `npm run build`
   - `npm test -- --runInBand`
   - `npm run regression:language-compare`

@@ -5,17 +5,17 @@ This page centralizes the current language-support contract for both documentati
 ## Maintainer Source Docs
 
 - English: [README.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README.md)
-- 简体中文 (Simplified Chinese): [README_zh.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_zh.md)
+- Chino simplificado (Simplified Chinese): [README_zh.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_zh.md)
 
 ## Published README Translations
 
-- 繁體中文 (Traditional Chinese): [README_zh_Hant.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_zh_Hant.md)
+- Chino tradicional (Traditional Chinese): [README_zh_Hant.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_zh_Hant.md)
 - Español (Spanish): [README_es.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_es.md)
 - Français (French): [README_fr.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_fr.md)
 - Deutsch (German): [README_de.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_de.md)
 - Italiano (Italian): [README_it.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_it.md)
 - Português (Portuguese): [README_pt.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_pt.md)
-- 日本語 (Japanese): [README_ja.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_ja.md)
+- japones (Japanese): [README_ja.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_ja.md)
 - 한국어 (Korean): [README_ko.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_ko.md)
 - Русский (Russian): [README_ru.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_ru.md)
 - العربية (Arabic): [README_ar.md](https://github.com/Jacobinwwey/obsidian-NotEMD/blob/main/README_ar.md)
@@ -56,7 +56,7 @@ This page centralizes the current language-support contract for both documentati
 | `fr` | Français |
 | `id` | Bahasa Indonesia |
 | `it` | Italiano |
-| `ja` | 日本語 |
+| `ja` | japones |
 | `ko` | 한국어 |
 | `nl` | Nederlands |
 | `pl` | Polski |
@@ -67,8 +67,8 @@ This page centralizes the current language-support contract for both documentati
 | `tr` | Türkçe |
 | `uk` | Українська |
 | `vi` | Tiếng Việt |
-| `zh-CN` | 简体中文 |
-| `zh-TW` | 繁體中文 |
+| `zh-CN` | Chino simplificado |
+| `zh-TW` | Chino tradicional |
 
 ## Translation Status Policy
 

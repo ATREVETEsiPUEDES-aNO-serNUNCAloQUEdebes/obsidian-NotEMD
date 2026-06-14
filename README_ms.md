@@ -5,7 +5,7 @@
 
 # Plugin Notemd untuk Obsidian
 
-[English](./README.md) | [简体中文](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [繁體中文](./README_zh_Hant.md) | [日本語](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
+[English](./README.md) | [Chino simplificado](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [Chino tradicional](./README_zh_Hant.md) | [japones](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
 
 Baca dokumentasi dalam lebih banyak bahasa: [Pusat Bahasa](./docs/i18n/README.md)
 
@@ -377,7 +377,7 @@ Akses tetapan plugin melalui:
   - **Disabled**: Membiarkan output Mermaid yang dijana tanpa perubahan melainkan anda menjalankan `Batch Mermaid Fix` secara manual atau menambahkannya ke dalam workflow tersuai.
 - **Output Language**: Baharu. Pilih bahasa output yang dikehendaki untuk tugas "Generate from Title" dan "Batch Generate from Title".
   - **English (Default)**: Prompt diproses dan output dijana dalam bahasa Inggeris.
-  - **Other Languages**: LLM diarahkan untuk melakukan reasoning dalam bahasa Inggeris tetapi memberikan dokumentasi akhir dalam bahasa yang anda pilih, seperti Espanol, Francais, 简体中文, 繁體中文, العربية, हिन्दी, dan lain-lain.
+  - **Other Languages**: LLM diarahkan untuk melakukan reasoning dalam bahasa Inggeris tetapi memberikan dokumentasi akhir dalam bahasa yang anda pilih, seperti Espanol, Francais, Chino simplificado, Chino tradicional, العربية, हिन्दी, dan lain-lain.
 - **Change Prompt Word**: Baharu.
   - **Change Prompt Word**: Membolehkan anda menukar prompt word untuk tugas tertentu.
   - **Custom Prompt Word**: Masukkan prompt word tersuai anda bagi tugas tersebut.

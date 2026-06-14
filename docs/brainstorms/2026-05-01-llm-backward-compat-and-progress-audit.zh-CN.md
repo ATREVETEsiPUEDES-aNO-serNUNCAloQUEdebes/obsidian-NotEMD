@@ -3,246 +3,246 @@ date: 2026-05-01
 topic: llm-backward-compat-progress-audit
 ---
 
-# LLM 调用向后兼容性与进展审计 (v1.8.2)
+# LLM Invocar compatibilidad con versiones anteriores y auditoria de progreso. (v1.8.2)
 
-## 问题界定
+## Definicion del problema
 
-LLM 调用层已完成以下更新：
-1. Cline 对齐的 `KNOWN_MODEL_MAX_OUTPUT_TOKENS` 元数据表
-2. 基于模型感知的 `resolveProviderTokenLimit` 令牌上限计算
-3. 提供商专属 UI 控件（DeepSeek 思考开关、Azure API 版本等）
-4. 图表规格解析器中的边缘字段规范化
+LLM La capa de llamadas ha completado las siguientes actualizaciones.：
+1. Cline alineado `KNOWN_MODEL_MAX_OUTPUT_TOKENS` Tabla de metadatos
+2. Basado en el conocimiento del modelo. `resolveProviderTokenLimit` Calculo del limite superior del token
+3. Exclusivo del proveedor UI Controles（DeepSeek Piensa en cambiar、Azure API Version, etc.）
+4. Normalizacion del campo de borde en el analizador de especificaciones de graficos
 
-这些变更不得破坏现有用户配置：在 v1.8.1 下配置的提供商在 v1.8.2 下必须无需重新配置即可正常工作。
+Estos cambios no deben alterar las configuraciones de usuario existentes: en v1.8.1 El proveedor configurado en v1.8.2 Debe funcionar correctamente sin reconfiguracion.。
 
-## 向后兼容性审计
+## Auditoria de compatibilidad con versiones anteriores
 
-### `resolveProviderTokenLimit` 行为矩阵
+### `resolveProviderTokenLimit` Matriz de comportamiento
 
-| 场景 | v1.8.1 | v1.8.2 | 兼容？ |
+| Escena | v1.8.1 | v1.8.2 | Compatibilidad？ |
 |---|---|---|---|
-| 已知模型 + 默认 maxTokens | 8192（全局） | 已知模型上限（如 Claude 128K） | **增强** — 更好的上限，无破坏 |
-| 已知模型 + 自定义 maxTokens（低于上限） | 用户值 | 用户值（不变） | ✓ |
-| 已知模型 + 提供商 maxOutputTokens 覆盖 | 覆盖值（无上限约束） | min(覆盖值, 已知上限) | **增强** — 更安全的约束 |
-| 未知模型 + 默认 maxTokens | 8192 | undefined（API 自行决定，Cline 对齐） | **行为变更** — API 默认值可能与 8192 不同 |
-| 未知模型 + 自定义 maxTokens | 用户值 | 用户值（不变） | ✓ |
-| 连接测试 | 1 | 1（不变） | ✓ |
+| Modelos conocidos + Predeterminado maxTokens | 8192（Panorama general） | Limite superior del modelo conocido (como Claude 128K） | **Mejora** — Mejores tapas, sin roturas |
+| Modelos conocidos + Personalizacion maxTokens（Por debajo del limite superior） | Valor para el usuario | Valor del usuario (sin cambios） | ✓ |
+| Modelos conocidos + Proveedor maxOutputTokens Cobertura | Valor de cobertura (sin limite superior)） | min(Valores primordiales, Limite superior conocido) | **Mejora** — Restricciones mas seguras |
+| Modelo desconocido + Predeterminado maxTokens | 8192 | undefined（API A tu propia discrecion，Cline Alineacion） | **Cambios de comportamiento** — API El valor predeterminado puede ser el mismo que 8192 diferente |
+| Modelo desconocido + Personalizacion maxTokens | Valor para el usuario | Valor del usuario (sin cambios） | ✓ |
+| Prueba de conexion | 1 | 1（Sin cambios） | ✓ |
 
-**"行为变更"单元格的风险评估：**
-- 对未知/新模型依赖 `maxTokens: 8192` 默认值的用户，现在将获得 API 提供商自身的默认值。
-- 对 OpenAI-compatible 端点，这通常意味着模型自身的默认值（通常高于 8192）。
-- 这是软性改进：旧的 8192 上限是武断的，可能限制了能力。
-- 用户无需做任何配置更改。
+**"Cambios de comportamiento"Evaluacion de riesgos de las celulas.：**
+- A lo desconocido/Dependencias del nuevo modelo. `maxTokens: 8192` Los usuarios predeterminados ahora obtendran API Valores predeterminados del propio proveedor。
+- si OpenAI-compatible Punto final, esto generalmente significa el valor predeterminado del modelo en si (generalmente mas alto que 8192）。
+- Esta es una mejora suave: el viejo 8192 Los limites son arbitrarios y pueden limitar las capacidades.。
+- Los usuarios no necesitan realizar ningun cambio de configuracion.。
 
-### 传输层向后兼容性
+### Compatibilidad con versiones anteriores de la capa de transporte
 
-| 传输 | v1.8.1 | v1.8.2 | 变更？ |
+| Transmision | v1.8.1 | v1.8.2 | Cambios？ |
 |---|---|---|---|
-| OpenAI-compatible | 通过 `callOpenAICompatibleApi` 的共享运行时 | 相同，加 `resolveProviderTokenLimit` | 仅令牌解析 |
-| Anthropic | 原生 Messages API | 相同 | 仅令牌解析 |
-| Google | 原生 Gemini API | 相同 | 仅令牌解析 |
-| Azure OpenAI | 部署模式 | 相同 | 仅令牌解析 |
-| Ollama | 原生 Ollama API | 相同 | 仅令牌解析 |
+| OpenAI-compatible | pasar `callOpenAICompatibleApi` Tiempo de ejecucion compartido | Lo mismo, agrega `resolveProviderTokenLimit` | Solo analisis de tokens |
+| Anthropic | Nativo Messages API | Mismo | Solo analisis de tokens |
+| Google | Nativo Gemini API | Mismo | Solo analisis de tokens |
+| Azure OpenAI | Modo de implementacion | Mismo | Solo analisis de tokens |
+| Ollama | Nativo Ollama API | Mismo | Solo analisis de tokens |
 
-无传输路由变更。无协议变更。所有现有 API 密钥、基础 URL 和模型 ID 继续不变。
+No hay cambios de ruta de transporte. Sin cambios de protocolo. todos los existentes API Clave, base URL Y modelos ID Continuar sin cambios。
 
-### 提供商定义向后兼容性
+### Compatibilidad con versiones anteriores definida por el proveedor
 
-所有 25 个提供商定义保持不变。仅新增：
-- `KNOWN_MODEL_MAX_OUTPUT_TOKENS` 表（只读查找，不影响提供商配置）
-- `LLMProviderConfig` 上的 `maxOutputTokens` 字段（可选，默认 undefined — 对现有配置无影响）
+todos 25 Las definiciones de proveedores permanecen sin cambios. Solo nuevo：
+- `KNOWN_MODEL_MAX_OUTPUT_TOKENS` Tabla (busqueda de solo lectura, no afecta la configuracion del proveedor)）
+- `LLMProviderConfig` en `maxOutputTokens` Campo (opcional, predeterminado undefined — Sin impacto en las configuraciones existentes.）
 
-### 设置标签页向后兼容性
+### Establecer compatibilidad con versiones anteriores de pestanas
 
-- 提供商专属控件（DeepSeek 思考、Azure API 版本）按提供商名称管控
-- 非 OpenAI 传输显示 `maxOutputTokens` 字段（新增，可选）
-- 所有现有设置字段保持原位置
-- 无需设置迁移
+- Controles especificos del proveedor（DeepSeek Piensa、Azure API Version) controlada por el nombre del proveedor
+- No OpenAI Pantalla de transmision `maxOutputTokens` Campo (nuevo, opcional）
+- Todos los campos de configuracion existentes permanecen en sus posiciones originales.
+- No se requiere configuracion de migracion
 
-### 图表管道向后兼容性
+### Compatibilidad con versiones anteriores del canal de graficos
 
-- `diagramSpecResponseParser.ts` 中的 `normalizeSpec` 现处理 `source`/`target` → `from`/`to`
-- `buildDiagramSpecPrompt` 现已明确指示 LLM 使用边缘字段名
-- 现有 Mermaid 输出不变；仅 LLM 生成的规格受益于规范化
-- 旧版 Mermaid 修复路径未触碰
+- `diagramSpecResponseParser.ts` en `normalizeSpec` Ahora procesando `source`/`target` → `from`/`to`
+- `buildDiagramSpecPrompt` Ahora se dan instrucciones claras LLM Utilice nombres de campos de borde
+- Existente Mermaid El resultado se mantiene sin cambios; solo LLM Las especificaciones generadas se benefician de la normalizacion.
+- Version antigua Mermaid Arreglar el camino no tocado
 
-## 当前架构进展 vs 方案要求
+## Progreso de la arquitectura actual. vs Requisitos del programa
 
-参考文档：
+Documentacion de referencia：
 - `docs/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.zh-CN.md`
 - `docs/brainstorms/2026-04-14-diagram-platform-phase-2-requirements.zh-CN.md`
 
-### 任务 0：构建与打包底座 — 已交付（有限制）
+### Tarea 0：Construccion y embalaje de la base - entregada (aplican restricciones)）
 
-| 需求 | 状态 | 证据 |
+| Requisitos | Estado | Evidencia |
 |---|---|---|
-| 渲染宿主自包含于 main.js | ✓ | `scripts/audit-render-host-bundle.js` 通过 |
-| 烟雾门禁止外部宿主资源 | ✓ | 发布工作流包含审计 |
-| 多入口构建策略 | ✗ | `esbuild.config.mjs` 仍为单入口 |
+| El host de renderizado es autonomo en main.js | ✓ | `scripts/audit-render-host-bundle.js` pasar |
+| Smoke Gate prohibe los recursos externos del host | ✓ | El flujo de trabajo de lanzamiento incluye auditoria |
+| Estrategia de construccion de entradas multiples | ✗ | `esbuild.config.mjs` Todavia entrada unica |
 
-### 任务 1：图表领域模型与意图路由 — 已交付
+### Tarea 1：Modelo de dominio grafico y enrutamiento de intencion: entregado
 
-所有类型、验证器、规划器、意图路由已落地。测试通过。
+Se han implementado todos los tipos, validadores, planificadores y rutas de intencion. Prueba superada。
 
-### 任务 2：规格优先管道集成 — 部分完成
+### Tarea 2：Integracion de Spec-First Pipeline: parcialmente completa
 
-| 需求 | 状态 |
+| Requisitos | Estado |
 |---|---|
-| 共享 `generateDiagramCommand` 执行器 | ✓ |
-| 旧版/兼容双轨已收敛 | ✓（内部编排已统一） |
-| 公共命令表面已整合 | ✗（双命令 ID 仍共存） |
-| `promptUtils.ts` 旧版 Mermaid 提示已退役 | ✗ |
+| Compartir `generateDiagramCommand` Actuador | ✓ |
+| Version antigua/Se ha convergido la compatibilidad con doble carril | ✓（Se ha unificado la orquestacion interna.） |
+| Superficie de mando publico integrada | ✗（Comandos duales ID Aun coexistiendo） |
+| `promptUtils.ts` Version antigua Mermaid El aviso ha sido retirado. | ✗ |
 
-**硬性约束：** `promptUtils.ts` 中的旧版 Mermaid 提示词为原场景专门调优。任何扩展或退役必须完全保留原场景的可用性。跨版本稳定性和用户体验连续性优先于清理。命令 ID 整合仍是下一目标；提示退役需先经过真实 Obsidian 验证。不阻塞 v1.8.2。
+**Restricciones duras：** `promptUtils.ts` Version antigua en Mermaid Las palabras clave estan especialmente adaptadas a la escena original. Cualquier expansion o retiro debe preservar completamente la usabilidad de la escena original. La estabilidad entre versiones y la continuidad de la experiencia del usuario tienen prioridad sobre la limpieza. comando ID La integracion sigue siendo el proximo objetivo; Se sugiere que el desmantelamiento primero debe pasar por un proceso real. Obsidian Verificacion. No bloquear v1.8.2。
 
-### 任务 3：Mermaid 适配器 V2 — 部分完成（按用户指令暂缓）
+### Tarea 3：Mermaid Adaptador V2 — Parcialmente completado (suspendido segun instrucciones del usuario)）
 
-按用户指令，MermaidProcessor 分解为稳定性暂缓。
+Segun instrucciones del usuario，MermaidProcessor Descomponerse en suspensiones de estabilidad.。
 
-**硬性约束：** 每个子任务必须在真实 Obsidian 实例中独立验证后方可推进。图表输出图像必须保存、检查并确认完整正确。仅凭单元测试不足以跨越任何子任务边界。当前状态：
-- 子类型适配器覆盖 mindmap、flowchart、sequence、class、ER、state
-- 管道转义在适配器发射阶段处理
-- `legacyFixerUtils.ts` 已从 `mermaidProcessor.ts` 提取
-- 完全分解未完成 — 为 v1.8.2 稳定性有意为之
+**Restricciones duras：** Cada subtarea debe ser real Obsidian El avance solo se puede realizar despues de una verificacion independiente en la instancia. Las imagenes de salida del grafico deben guardarse, revisarse y verificarse para que esten completas y correctas. Las pruebas unitarias por si solas no son suficientes para abarcar los limites de ninguna subtarea. Estado actual：
+- Anulacion del adaptador de subtipo mindmap、flowchart、sequence、class、ER、state
+- Las fugas de tuberias se gestionan en la fase de lanzamiento del adaptador.
+- `legacyFixerUtils.ts` Ya desde `mermaidProcessor.ts` Extraccion
+- La descomposicion completa no es completa, por v1.8.2 La estabilidad es intencional
 
-### 任务 4-7：已交付
+### Tarea 4-7：Entregado
 
-渲染平台骨架、JSON Canvas 输出、Vega-Lite 输出（有限制）、主题/导出/发布强化均已落地。
+Esqueleto de plataforma de renderizado、JSON Canvas Salida、Vega-Lite Produccion (limitada), tema/Exportar/Se han implementado mejoras en la version.。
 
-### 任务 8：高级引擎 — 按设计推迟
+### Tarea 8：Motor avanzado: retrasado por diseno
 
-PlantUML、Graphviz、Draw.io 按阶段二需求 R10 保持推迟。
+PlantUML、Graphviz、Draw.io Segun los requisitos de la etapa dos. R10 Mantenlo pospuesto。
 
-## 后续方向
+## Direccion de seguimiento
 
-v1.8.2 后工作的优先级：
+v1.8.2 Prioriza el trabajo despues：
 
-1. **命令收敛** — 统一 `summarize-as-mermaid` 和 `generate-experimental-diagram` 命令表面
-2. **旧版提示退役** — 从 `promptUtils.ts` 移除 `mindmap` 绑定提示
-3. **运行时打包** — 为重型预览运行时（Vega-Lite、未来的 PlantUML）建立多入口构建
-4. **MermaidProcessor sunset** — 完成 `legacyFixerUtils.ts` 启动的分解
-5. **PlantUML 评估门** — 仅在前 4 项完成后，按 R10
+1. **Convergencia de comandos** — unificacion `summarize-as-mermaid` y `generate-experimental-diagram` Superficie de mando
+2. **Retiro de las indicaciones de la version anterior.** — de `promptUtils.ts` Quitar `mindmap` Avisos vinculantes
+3. **Empaquetado en tiempo de ejecucion** — Tiempo de ejecucion para vista previa completa（Vega-Lite、futuro PlantUML）Crea una compilacion de entradas multiples.
+4. **MermaidProcessor sunset** — Completar `legacyFixerUtils.ts` Desglose de la puesta en marcha
+5. **PlantUML Puerta de evaluacion** — Solo antes 4 Cuando el elemento este completo, presione R10
 
-v1.8.2 的范围边界：
-- 无命令整合（临近发布风险太高）
-- 无提示退役
-- 无新提供商添加
-- 无构建系统变更
-- 仅：LLM 令牌解析强化 + 图表边缘规范化
+v1.8.2 Limites de rango de：
+- Integracion sin comando (riesgo demasiado alto cerca del lanzamiento)）
+- Jubilacion silenciosa
+- No se agregaron nuevos proveedores
+- No hay cambios en el sistema de compilacion.
+- Solo：LLM Mejora del analisis de tokens + Normalizacion de los bordes del grafico
 
-## 验证门
+## Puerta de verificacion
 
-所有 CI 等效检查通过：
+todos CI Verificacion de equivalencia aprobada.：
 - `npm run build` ✓
-- `npm test -- --runInBand` ✓（111 套件，592 项测试）
+- `npm test -- --runInBand` ✓（111 equipo，592 Pruebas）
 - `npm run audit:i18n-ui` ✓
 - `npm run audit:render-host` ✓
 - `git diff --check` ✓
 
-## 决策
+## Toma de decisiones
 
-1. **Cline 对齐的未知模型行为**：当 `maxTokens` 为默认值（8192）且模型未知时，返回 `undefined` → API 提供商自行决定。用户自定义值保留。
-2. **边缘字段规范化**：始终在图表规格解析中将 `source`/`target` 规范化为 `from`/`to`，无论 LLM 偏好哪种约定。
-3. **MermaidProcessor 暂缓**：按用户明确指令，为 v1.8.2 稳定性跳过分解。
-4. **无传输变更**：全部 5 个传输运行时不变。仅令牌解析逻辑修改。
+1. **Cline Comportamiento de alineacion del modelo desconocido**：cuando `maxTokens` es el valor predeterminado（8192）Cuando se desconoce el modelo, regresar `undefined` → API A exclusivo criterio del proveedor. Los valores definidos por el usuario se conservan。
+2. **Normalizacion del campo de borde**：Incluir siempre en el analisis de especificaciones del grafico. `source`/`target` Normalizado a `from`/`to`，No importa LLM ¿Que convencion se prefiere?。
+3. **MermaidProcessor Suspension**：Segun las instrucciones explicitas del usuario, v1.8.2 Descomposicion por salto de estabilidad。
+4. **Sin cambios de transferencia**：Todos 5 La transferencia se realiza sin cambios. Solo se modifico la logica de analisis de tokens。
 
-## 下一步
+## Siguiente paso
 
-提交至 main。准备就绪后标记 v1.8.2。下一批次开始命令收敛。
+Enviar a main。Marca cuando este listo v1.8.2。Inicie la convergencia de comandos en el siguiente lote。
 
 
-## 交叉参考：notebook-navigator 设计模式
+## Referencia cruzada：notebook-navigator Patrones de diseno
 
-参考：`https://github.com/johansan/notebook-navigator` (v2.5.6)
+Referencia：`https://github.com/johansan/notebook-navigator` (v2.5.6)
 
-notebook-navigator 是一个笔记浏览器插件（React、IndexedDB、虚拟滚动、10 万+ 笔记规模）。无 LLM 集成。交叉参考价值在于其**工程模式**，而非功能表面。
+notebook-navigator Es un complemento del navegador de notas.（React、IndexedDB、Desplazamiento virtual、10 Diez mil+ tamano de la nota). Ninguno LLM Integracion. El valor de referencia cruzada reside en su**Modo de ingenieria**，Mas que una superficie funcional。
 
-### 模式 1：带依赖注入的服务层
+### patron 1：Capa de servicio con inyeccion de dependencia.
 
-**NN 方案：** 23 个服务类组织于 `src/services/` 的子目录中。`ServicesContext` 通过 React 上下文提供单例访问。每个服务有单一所有权、明确生命周期和显式依赖。
+**NN Planificar：** 23 organizaciones de servicios en `src/services/` En el subdirectorio de。`ServicesContext` pasar React El contexto proporciona acceso unico. Cada servicio tiene propiedad unica, ciclo de vida claro y dependencias explicitas.。
 
-**NotEMD 缺口：** `src/llmUtils.ts`（约 3000 行）和 `src/fileUtils.ts` 是单体工具文件，无服务边界。所有函数全局导出，无依赖注入。
+**NotEMD Brecha：** `src/llmUtils.ts`（aprox. 3000 fila) y `src/fileUtils.ts` Es un archivo de herramienta unica y no tiene limites de servicio. Todas las funciones se exportan globalmente, sin inyeccion de dependencia.。
 
-**改进角度：** 提取 `LlmService`（包装 `callLLM`、`testAPI`、`resolveProviderTokenLimit`）和 `FileProcessingService`（包装 `processFile`、批量操作、概念提取）。为向后兼容保留现有导出函数签名；内部委托给服务类包装。不阻塞 v1.8.2。可维护性改进。
+**Mejorar los angulos：** Extraccion `LlmService`（Embalaje `callLLM`、`testAPI`、`resolveProviderTokenLimit`）y `FileProcessingService`（Embalaje `processFile`、Operaciones por lotes, extraccion de conceptos). Preservar las firmas de funciones exportadas existentes para compatibilidad con versiones anteriores; delegar internamente a envoltorios de clases de servicio. No bloquear v1.8.2。Mejoras de mantenibilidad。
 
-### 模式 2：带缓存失效的分层存储
+### patron 2：Almacenamiento por niveles con invalidacion de cache
 
-**NN 方案：** IndexedDB（持久化）→ MemoryFileCache（同步镜像）→ LRU 缓存（预览文本、特征图像）。基于 mtime 的增量更新。vault 变更时缓存重建。
+**NN Planificar：** IndexedDB（Persistencia）→ MemoryFileCache（Duplicacion sincronizada）→ LRU Almacenamiento en cache (vista previa de texto, imagenes destacadas). Basado en mtime Actualizaciones incrementales。vault Reconstruccion de cache en caso de cambio。
 
-**NotEMD 缺口：** 无缓存层。每次调用重新获取 LLM 响应。图表输出从零重新生成。`RenderCache` 存在但仅限内存，会话作用域。
+**NotEMD Brecha：** Sin capa de almacenamiento en cache. Recuperar cada llamada LLM Respuesta. La salida del grafico se regenera desde cero。`RenderCache` Existe pero solo en la memoria, alcance de la sesion.。
 
-**改进角度：** 按 (provider, model, prompt hash, content hash) 为键缓存 LLM 响应，降低重复处理的 API 成本。按 (markdown hash, intent, target) 为键缓存图表规格。Obsidian 的 `localStorage` 或 vault 邻近 JSON 文件足够（IndexedDB 对 NotEMD 的单文件处理模型过度设计）。v1.8.2 后。
+**Mejorar los angulos：** Presione (provider, model, prompt hash, content hash) Claves de almacenamiento en cache LLM Capacidad de respuesta, reduciendo el procesamiento repetitivo API Costo. prensa (markdown hash, intent, target) Especificaciones del grafico de cache para claves。Obsidian de `localStorage` o vault Proximidad JSON La documentacion es suficiente（IndexedDB si NotEMD El modelo de procesamiento de archivos unicos esta sobredisenado）。v1.8.2 Despues。
 
-### 模式 3：逐项设置同步开关
+### patron 3：Configure el interruptor de sincronizacion elemento por elemento
 
-**NN 方案：** 每个设置均有同步开关（云图标）。启用 → `data.json`（跨设备同步）。禁用 → `localStorage`（设备本地）。非全局同步标记；逐项粒度。
+**NN Planificar：** Cada configuracion tiene un interruptor de sincronizacion (icono de nube). habilitar → `data.json`（Sincronizacion entre dispositivos). Desactivar → `localStorage`（Dispositivo local). Etiquetas de sincronizacion no globales; granularidad articulo por articulo。
 
-**NotEMD 缺口：** 所有设置存储于 `data.json`。提供商 API 密钥跨设备同步（若 vault 共享存在安全隐患）。工作流偏好也同步（可能不需要）。
+**NotEMD Brecha：** Todos los ajustes se almacenan en `data.json`。Proveedor API Sincronizacion de claves entre dispositivos (si vault Existen riesgos de seguridad al compartir). Las preferencias del flujo de trabajo tambien estan sincronizadas (puede que no sean necesarias)）。
 
-**改进角度：** 在 `LLMProviderConfig` 中添加 `localOnly` 标记。设置时，提供商配置（含 API 密钥）存入 Obsidian 的 `localStorage` 而非 `data.json`。API 密钥保持设备本地，工作流设置可同步。
+**Mejorar los angulos：** en `LLMProviderConfig` Agregar `localOnly` Marcado. Al realizar la instalacion, la configuracion del proveedor (incluido API Clave) deposito Obsidian de `localStorage` En lugar de `data.json`。API Las claves permanecen locales en el dispositivo y la configuracion del flujo de trabajo se puede sincronizar。
 
-### 模式 4：带完成信号的管道处理
+### patron 4：Procesamiento de canalizacion con senal de finalizacion.
 
-**NN 方案：** 元数据管道有 3 层（vault 同步 → 派生内容 → 树索引），带显式完成信号。后台处理带进度跟踪。
+**NN Planificar：** La canalizacion de metadatos tiene 3 Capas（vault Sincronizacion → Contenido derivado → indice de arbol), con senal de finalizacion explicita. Procesamiento en segundo plano con seguimiento del progreso。
 
-**NotEMD 缺口：** 批量处理（`processFolder`、`batchTranslate`、`batchGenerateContent`）顺序执行，基本进度报告。无管道阶段、无完成信号、无中断后恢复。
+**NotEMD Brecha：** Procesamiento por lotes（`processFolder`、`batchTranslate`、`batchGenerateContent`）Ejecucion secuencial, informe basico de avance. Sin etapas de proceso, sin senales de finalizacion, sin recuperacion post-interrupcion。
 
-**改进角度：** 批量处理结构化为管道阶段：(1) 文件发现 + mtime 检查，(2) LLM 处理含重试，(3) 文件写入 + 元数据更新。跟踪逐文件完成状态以便中断后可恢复。添加进度存储（vault 邻近 JSON）在 Obsidian 重启间持久化批量状态。
+**Mejorar los angulos：** El procesamiento por lotes se estructura en etapas de canalizacion.：(1) Descubrimiento de archivos + mtime comprobar，(2) LLM Procesamiento incluido el reintento，(3) Escritura de archivos + Actualizacion de metadatos. Realice un seguimiento del estado de finalizacion de archivo por archivo para su recuperacion despues de una interrupcion. Agregar almacenamiento de progreso（vault Proximidad JSON）en Obsidian Persistencia del estado del lote entre reinicios。
 
-### 模式 5：架构文档
+### patron 5：Documentacion de arquitectura.
 
-**NN 方案：** 8 份专用架构文档，覆盖启动过程、元数据管道、存储架构、渲染架构、滚动编排、服务架构。全部含 Mermaid 图表。附日期。
+**NN Planificar：** 8 Un documento de arquitectura dedicado que cubre el proceso de inicio, la canalizacion de metadatos, la arquitectura de almacenamiento, la arquitectura de representacion, la orquestacion continua y la arquitectura de servicios. Todo incluido Mermaid Graficos. con fecha。
 
-**NotEMD 现状：** 36 份文档页面。计划/头脑风暴/路线图强。架构 walkthrough 弱。无单页架构总览展示全系统。
+**NotEMD Situacion actual：** 36 paginas del documento. planear/Lluvia de ideas/Hoja de ruta solida. Arquitectura walkthrough Debil. No hay una descripcion general de la arquitectura de una sola pagina que muestre todo el sistema。
 
-**改进角度：** 添加 `docs/architecture.md`（双语），展示：提供商注册 → 令牌解析 → 传输分发 → LLM 调用 → 响应解析，以及图表管道：spec prompt → LLM 调用 → spec 解析 → 渲染器分发 → 预览/导出。含 Mermaid 图表。使系统无需阅读源码即可理解。
+**Mejorar los angulos：** Agregar `docs/architecture.md`（Bilingue), Presentacion: Registro de Proveedores → Analisis de tokens → Transmision y distribucion → LLM Llamar → Analisis de respuestas y canalizacion de graficos.：spec prompt → LLM Llamar → spec Analisis → Distribucion del renderizador → Vista previa/Exportar. Contiene Mermaid Graficos. Hacer que el sistema sea comprensible sin leer el codigo fuente.。
 
-### 改进优先级汇总
+### Mejorar el resumen de prioridades
 
-| # | 模式 | 优先级 | 工程量 | 阻塞 v1.8.2？ |
+| # | patron | Prioridad | Cantidad de trabajo | Bloqueo v1.8.2？ |
 |---|---|---|---|---|
-| 1 | 服务层 + DI | 低 | 高 | 否 |
-| 2 | LLM 响应缓存 | 中 | 中 | 否 |
-| 3 | 逐项设置同步开关 | 低-中 | 低 | 否 |
-| 4 | 批量管道含恢复 | 中 | 中 | 否 |
-| 5 | 架构总览文档 | 低 | 低 | 否 |
+| 1 | Capa de servicio + DI | bajo | alto | No |
+| 2 | LLM Almacenamiento en cache de respuestas | Medio | Medio | No |
+| 3 | Configure el interruptor de sincronizacion elemento por elemento | bajo-Medio | bajo | No |
+| 4 | Canalizacion por lotes con recuperacion | Medio | Medio | No |
+| 5 | Documento de descripcion general de la arquitectura | bajo | bajo | No |
 
-全部不阻塞 v1.8.2。均为发布后改进。
+Todo sin bloqueo v1.8.2。Todas las mejoras despues del lanzamiento.。
 
-## 最终进展
+## Progreso final
 
-| # | 模式 | 优先级 | 状态 |
+| # | patron | Prioridad | Estado |
 |---|---|---|---|
-| 2 | LLM 响应缓存 | 中 | ✓ |
-| 4 | 批量管道含恢复 | 中 | ✓ |
-| 3 | 逐项设置同步开关 | 低-中 | ✓ |
-| 1 | 服务层 + DI | 低 | 延期（架构项） |
-| 5 | 架构总览文档 | 低 | ✓ |
-| — | 首选图表意图选择器 | — | ✓ |
+| 2 | LLM Almacenamiento en cache de respuestas | Medio | ✓ |
+| 4 | Canalizacion por lotes con recuperacion | Medio | ✓ |
+| 3 | Configure el interruptor de sincronizacion elemento por elemento | bajo-Medio | ✓ |
+| 1 | Capa de servicio + DI | bajo | Ampliacion (elemento arquitectonico） |
+| 5 | Documento de descripcion general de la arquitectura | bajo | ✓ |
+| — | Selector de intencion de grafico preferido | — | ✓ |
 
-notebook-navigator 交叉参考的 5 个模式现已全部完成。
-服务层拆分（模式 #1）是唯一保留的后续项，作为 v1.8.x 之后的架构性重构延后处理，不应仓促推进。
+notebook-navigator Referencias cruzadas 5 patrones ahora completos。
+Division de la capa de servicio (modo #1）es el unico termino posterior retenido, ya que v1.8.x La refactorizacion arquitectonica posterior deberia posponerse y no apresurarse.。
 
-## 2026-05-02 —— 全量进展审计
+## 2026-05-02 —— Auditoria de progreso completo
 
-已完成一次端到端审计，对照当前代码、既有计划要求和硬性约束逐项核实。关键结论记录于 `docs/brainstorms/2026-05-02-progress-audit-and-next-direction.zh-CN.md`。
+Se ha completado una auditoria de extremo a extremo para verificar cada elemento con el codigo actual, los requisitos del plan existente y las restricciones estrictas. Las conclusiones clave se registran en `docs/brainstorms/2026-05-02-progress-audit-and-next-direction.zh-CN.md`。
 
-### 当前状态摘要
+### Resumen del estado actual
 
-- **路线图任务**：8 项中已有 7 项已交付或部分交付；任务 8（高级引擎）按设计推迟。
-- **notebook-navigator 模式**：5 项中已有 4 项实现；模式 #1（服务层）延期。
-- **硬性约束**：两项仍然生效 —— MermaidProcessor 分解与 legacy prompt 退役仍需真实 Obsidian 核验。
-- **测试覆盖**：110 个 suites，708 个测试（包含新的 README 对齐契约测试）。
-- **实时验证**：历史上的本地 DeepSeek 验证曾覆盖全部 8 种图表意图，但这些 live tests 已不再作为 `main` 上受控的仓库级门槛。
+- **Tareas de la hoja de ruta**：8 El articulo ya existe 7 El articulo ha sido entregado total o parcialmente; la tarea 8（Motor avanzado) retrasado por diseno。
+- **notebook-navigator patron**：5 El articulo ya existe 4 Implementacion del articulo; patron #1（Extension de la capa de servicio。
+- **Restricciones duras**：Ambos articulos siguen vigentes. —— MermaidProcessor Descomposicion y legacy prompt La jubilacion aun debe ser cierta Obsidian Verificacion。
+- **Cobertura de prueba**：110  suites，708 pruebas (incluidas nuevas README Prueba del contrato de alineacion）。
+- **Verificacion en tiempo real**：Localidad historica DeepSeek La verificacion alguna vez lo cubrio todo. 8 Tipos de intencion de graficos, pero estos live tests Ya no actua `main` Umbrales controlados a nivel de almacen。
 
-### 下一步即时方向
+### Direccion en tiempo real del siguiente paso
 
-1. 命令表面收口（统一 3 个图表命令）
-2. 运行时打包（为重型运行时建立多入口构建）
+1. Ordena a la superficie que se cierre (unifica 3 Comandos de graficos）
+2. Empaquetado en tiempo de ejecucion (creacion de compilaciones de entradas multiples para tiempos de ejecucion pesados).）
 
-这两项都可以在不依赖真实 Obsidian 测试的前提下推进。其余事项仍受硬性约束阻塞。
+Ambas cosas se pueden hacer sin depender de la verdad. Obsidian Avance basado en pruebas. Los asuntos restantes todavia estan bloqueados por duras limitaciones.。
 
-### CI 状态
+### CI Estado
 
-本地所有 CI 等效检查均已通过。远端 release workflow 也已在 `1.8.4` 路径（`25274341984`）上完成加固并保持绿色，而 `main` 仍然是刻意不具备普通 push/PR CI 的状态。
-当前剩余的 CI 相关工作，核心是澄清文档中的事实源，而不是处理一个尚未解决的分支失败流水线。
+Propiedad local CI Se han superado los controles de equivalencia. extremo lejano release workflow Ya en `1.8.4` Camino（`25274341984`）El refuerzo esta completo y permanece verde, mientras `main` Todavia deliberadamente no ordinario push/PR CI Estado de。
+Restante actual CI Trabajo relacionado, el nucleo es aclarar la fuente de los hechos en el documento, en lugar de lidiar con una falla de rama sin resolver.。

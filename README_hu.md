@@ -5,7 +5,7 @@
 
 # Notemd bővítmény az Obsidianhez
 
-[English](./README.md) | [简体中文](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [繁體中文](./README_zh_Hant.md) | [日本語](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
+[English](./README.md) | [Chino simplificado](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [Chino tradicional](./README_zh_Hant.md) | [japones](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
 
 Olvassa el a dokumentációt további nyelveken is: [Nyelvi központ](./docs/i18n/README.md)
 
@@ -374,7 +374,7 @@ A bővítmény beállításai itt érhetők el:
     *   **Kikapcsolva**: a generált Mermaid-kimenetet érintetlenül hagyja, hacsak nem futtatja kézzel a `Batch Mermaid Fix` műveletet, vagy nem adja hozzá egy egyéni munkafolyamathoz.
 -   **Output Language**: (új) válassza ki a kívánt kimeneti nyelvet a "Generate from Title" és a "Batch Generate from Title" feladatokhoz.
     *   **English (Default)**: a promptok feldolgozása és a kimenet angolul történik.
-    *   **Other Languages**: az LLM angolul végzi a gondolatmenetet, de a végső dokumentációt a kiválasztott nyelven adja vissza (például Español, Français, 简体中文, 繁體中文, العربية, हिन्दी stb.).
+    *   **Other Languages**: az LLM angolul végzi a gondolatmenetet, de a végső dokumentációt a kiválasztott nyelven adja vissza (például Español, Français, Chino simplificado, Chino tradicional, العربية, हिन्दी stb.).
 -   **Change Prompt Word**: (új)
     *   **Change Prompt Word**: lehetővé teszi a prompt szó cseréjét egy adott feladatnál.
     *   **Custom Prompt Word**: adja meg az egyéni promptszót az adott feladathoz.

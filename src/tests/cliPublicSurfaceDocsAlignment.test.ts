@@ -59,7 +59,7 @@ describe('CLI public surface docs alignment', () => {
         const matrixZh = fs.readFileSync(matrixZhPath, 'utf8');
 
         const matrixIds = extractBacktickedBulletValues(matrix, 'Current command IDs in this slice:').sort();
-        const matrixZhIds = extractBacktickedBulletValues(matrixZh, '当前这一 slice 中的命令 ID 明确只有：').sort();
+        const matrixZhIds = extractBacktickedBulletValues(matrixZh, 'El actual slice Comandos en ID Deja claro que solo：').sort();
 
         expect(matrixIds).toEqual(expectedPublicSurfaceCommandIds);
         expect(matrixZhIds).toEqual(expectedPublicSurfaceCommandIds);
@@ -92,7 +92,7 @@ describe('CLI public surface docs alignment', () => {
         const matrixZh = fs.readFileSync(matrixZhPath, 'utf8');
 
         const matrixOperationIds = extractBacktickedBulletValues(matrix, 'supported operation ids:').sort();
-        const matrixZhOperationIds = extractBacktickedBulletValues(matrixZh, '当前仅支持的 operation id：').sort();
+        const matrixZhOperationIds = extractBacktickedBulletValues(matrixZh, 'Actualmente solo se admite operation id：').sort();
 
         expect(matrixOperationIds).toEqual(expectedMaintainerBridgeOperationIds);
         expect(matrixZhOperationIds).toEqual(expectedMaintainerBridgeOperationIds);
@@ -100,20 +100,20 @@ describe('CLI public surface docs alignment', () => {
         expect(matrix).toContain('`scripts/lib/maintainer-cli-operation-help.js`');
         expect(matrixZh).toContain('`scripts/lib/maintainer-cli-operation-help.js`');
         expect(matrix).toContain('maintainer helper metadata');
-        expect(matrixZh).toContain('共享帮助元数据');
+        expect(matrixZh).toContain('Compartir metadatos de ayuda');
         expect(matrix).toContain('`local-knowledge.inspect`');
         expect(matrixZh).toContain('`local-knowledge.inspect`');
         expect(matrix).toContain('effective knowledge-base path resolution');
-        expect(matrixZh).toContain('实际生效的知识库路径解析结果');
+        expect(matrixZh).toContain('Resultados reales y efectivos del analisis de la ruta de la base de conocimientos');
         expect(matrix).toContain('query diagnostics');
         expect(matrixZh).toContain('query diagnostics');
         expect(matrix).toContain('temporary `knowledgePaths` override array');
-        expect(matrixZh).toContain('临时 `knowledgePaths` override 数组');
+        expect(matrixZh).toContain('Temporal `knowledgePaths` override matriz');
         expect(matrix).toContain('`createRenderHostBundleBuildOptions()` candidate-only');
         expect(matrix).toContain('outside `esbuild.config.mjs`');
         expect(matrix).toContain('build, release assets, audit, and docs moving together');
-        expect(matrixZh).toContain('`createRenderHostBundleBuildOptions()` 保持在 `esbuild.config.mjs` 之外的 candidate-only 状态');
-        expect(matrixZh).toContain('build、release assets、audit 与 docs');
+        expect(matrixZh).toContain('`createRenderHostBundleBuildOptions()` mantenerse en `esbuild.config.mjs` Aparte de candidate-only Estado');
+        expect(matrixZh).toContain('build、release assets、audit con docs');
         expect(matrix).toContain("npm run cli:invoke -- --vault docs --operation local-knowledge.inspect");
         expect(matrixZh).toContain("npm run cli:invoke -- --vault docs --operation local-knowledge.inspect");
         expect(matrix).toContain('"sourcePath":"index.zh-CN.md"');

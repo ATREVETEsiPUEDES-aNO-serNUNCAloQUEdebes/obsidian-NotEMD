@@ -5,7 +5,7 @@
 
 # Notemd-liitännäinen Obsidianille
 
-[English](./README.md) | [简体中文](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [繁體中文](./README_zh_Hant.md) | [日本語](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
+[English](./README.md) | [Chino simplificado](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [Chino tradicional](./README_zh_Hant.md) | [japones](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
 
 Lue dokumentaatio muilla kielillä: [Kielikeskus](./docs/i18n/README.md)
 
@@ -377,7 +377,7 @@ Pääset liitännäisen asetuksiin näin:
   - **Pois käytöstä**: Jättää generoidun Mermaid-ulostulon koskemattomaksi, ellei `Batch Mermaid Fix` -toimintoa ajeta manuaalisesti tai lisätä mukautettuun työnkulkuun.
 - **Output Language**: Valitse haluttu ulostulokieli "Generate from Title" ja "Batch Generate from Title" -tehtäville.
   - **English (oletus)**: Promptit käsitellään ja ulostulo tuotetaan englanniksi.
-  - **Muut kielet**: LLM:lle annetaan ohje tehdä päättely englanniksi, mutta tuottaa lopullinen dokumentaatio valitsemallasi kielellä, esimerkiksi Español, Français, 简体中文, 繁體中文, العربية tai हिन्दी.
+  - **Muut kielet**: LLM:lle annetaan ohje tehdä päättely englanniksi, mutta tuottaa lopullinen dokumentaatio valitsemallasi kielellä, esimerkiksi Español, Français, Chino simplificado, Chino tradicional, العربية tai हिन्दी.
 - **Change Prompt Word**:
   - **Change Prompt Word**: Mahdollistaa prompt-sanan muuttamisen tietylle tehtävälle.
   - **Custom Prompt Word**: Syötä tehtävälle oma prompt-sanasi.

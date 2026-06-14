@@ -1,38 +1,38 @@
-# NotEMD 本地文档
+# NotEMD Documentacion local
 
-`obsidian-NotEMD` 仓库文档预览入口。
+`obsidian-NotEMD` Entrada de vista previa de documentos del almacen。
 
-## 入口
+## Entrada
 
-- [文档中心（英文）](./README.md)
-- [文档中心（中文）](./README.zh-CN.md)
-- [章节拆分 + TOC（英文）](./chapter-split-toc.md)
-- [章节拆分 + TOC（中文）](./chapter-split-toc.zh-CN.md)
-- [1.8.2 发布说明（英文）](./releases/1.8.2.md)
-- [1.8.2 发布说明（中文）](./releases/1.8.2.zh-CN.md)
+- [Centro de Documentacion (ingles）](./README.md)
+- [Centro de documentos (chino）](./README.zh-CN.md)
+- [Division del capitulo + TOC（ingles）](./chapter-split-toc.md)
+- [Division del capitulo + TOC（chino）](./chapter-split-toc.zh-CN.md)
+- [1.8.2 Notas de la version (ingles）](./releases/1.8.2.md)
+- [1.8.2 Notas de la version (chino）](./releases/1.8.2.zh-CN.md)
 
-## 规划文档
+## Documentos de planificacion
 
-- [AGENTS 与 Provider 扩展（英文）](./superpowers/plans/2026-03-26-agents-and-provider-expansion.en.md)
-- [AGENTS 与 Provider 扩展（中文）](./superpowers/plans/2026-03-26-agents-and-provider-expansion.zh-CN.md)
-- [中国区 Provider 第二轮扩展（英文）](./superpowers/plans/2026-03-26-china-provider-expansion-round2.en.md)
-- [中国区 Provider 第二轮扩展（中文）](./superpowers/plans/2026-03-26-china-provider-expansion-round2.zh-CN.md)
-- [语言支持多阶段计划（英文）](./superpowers/plans/2026-04-09-language-support-first-principles-multiphase.en.md)
-- [语言支持多阶段计划（中文）](./superpowers/plans/2026-04-09-language-support-first-principles-multiphase.zh-CN.md)
-- [图表渲染平台路线图（英文）](./superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.en.md)
-- [图表渲染平台路线图（中文）](./superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.zh-CN.md)
+- [AGENTS con Provider Extension (ingles）](./superpowers/plans/2026-03-26-agents-and-provider-expansion.en.md)
+- [AGENTS con Provider Extension (chino）](./superpowers/plans/2026-03-26-agents-and-provider-expansion.zh-CN.md)
+- [Region de China Provider Segunda ronda de expansion (ingles）](./superpowers/plans/2026-03-26-china-provider-expansion-round2.en.md)
+- [Region de China Provider Segunda ronda de expansion (China）](./superpowers/plans/2026-03-26-china-provider-expansion-round2.zh-CN.md)
+- [Plan multifase de soporte linguistico (ingles）](./superpowers/plans/2026-04-09-language-support-first-principles-multiphase.en.md)
+- [Plan de varias fases para el apoyo linguistico (chino）](./superpowers/plans/2026-04-09-language-support-first-principles-multiphase.zh-CN.md)
+- [Hoja de ruta de la plataforma de representacion de graficos (ingles)）](./superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.en.md)
+- [Hoja de ruta de la plataforma de representacion de graficos (chino）](./superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.zh-CN.md)
 
-## 支撑文档
+## Documentacion de respaldo
 
-- [图表平台 Phase 2 需求（英文）](./brainstorms/2026-04-14-diagram-platform-phase-2-requirements.md)
-- [图表平台 Phase 2 需求（中文）](./brainstorms/2026-04-14-diagram-platform-phase-2-requirements.zh-CN.md)
-- [发布流程（英文）](./maintainer/release-workflow.md)
-- [发布流程（中文）](./maintainer/release-workflow.zh-CN.md)
-- [语言中心（英文）](./i18n/README.md)
-- [语言中心（中文）](./i18n/README_zh.md)
+- [Plataforma de graficos Phase 2 Demanda (ingles）](./brainstorms/2026-04-14-diagram-platform-phase-2-requirements.md)
+- [Plataforma de graficos Phase 2 Demanda (china）](./brainstorms/2026-04-14-diagram-platform-phase-2-requirements.zh-CN.md)
+- [Proceso de publicacion (ingles）](./maintainer/release-workflow.md)
+- [Proceso de publicacion (chino）](./maintainer/release-workflow.zh-CN.md)
+- [Centro de Idiomas (ingles）](./i18n/README.md)
+- [Centro de idiomas (chino）](./i18n/README_zh.md)
 
-## 路由策略
+## Estrategia de enrutamiento
 
-- 英文计划正文文件保持显式 `*.en.md` 命名。
-- 中文计划正文文件保持显式 `*.zh-CN.md` 命名。
-- VitePress 重写规则继续保留旧版英文计划裸路由，因此 `/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap` 这类旧链接不会失效。
+- El archivo de texto del plan en ingles permanece explicito. `*.en.md` Nombrar。
+- El archivo de texto del plan chino sigue siendo explicito. `*.zh-CN.md` Nombrar。
+- VitePress Las reglas de reescritura continuan conservando la version anterior del enrutamiento basico del plan en ingles, por lo que `/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap` Estos enlaces antiguos no caducan。

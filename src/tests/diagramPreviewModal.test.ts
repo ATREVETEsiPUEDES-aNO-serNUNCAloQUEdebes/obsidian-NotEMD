@@ -349,9 +349,9 @@ describe('diagram preview modal', () => {
         await flushPromises();
 
         const buttons = collectButtons(modal.contentEl);
-        expect(buttons.some(button => button.text === '导出 SVG')).toBe(true);
-        expect(buttons.some(button => button.text === '导出 PNG')).toBe(true);
-        expect(buttons.some(button => button.text === '保存源码文件')).toBe(true);
+        expect(buttons.some(button => button.text === 'Exportar SVG')).toBe(true);
+        expect(buttons.some(button => button.text === 'Exportar PNG')).toBe(true);
+        expect(buttons.some(button => button.text === 'Guarde el archivo de codigo fuente.')).toBe(true);
     });
 
     test('renders localized preview title when session provides one', async () => {
@@ -359,14 +359,14 @@ describe('diagram preview modal', () => {
             ...createSession(),
             payload: {
                 ...createSession().payload,
-                previewTitle: 'Mermaid 预览'
+                previewTitle: 'Mermaid Vista previa'
             }
         }, 'zh-CN') as any);
 
         modal.onOpen();
         await flushPromises();
 
-        expect(modal.contentEl.children.some((child: MockElement) => child.tag === 'h3' && child.text === 'Mermaid 预览')).toBe(true);
+        expect(modal.contentEl.children.some((child: MockElement) => child.tag === 'h3' && child.text === 'Mermaid Vista previa')).toBe(true);
     });
 
     test('shows preview history entries and disables the active one', async () => {

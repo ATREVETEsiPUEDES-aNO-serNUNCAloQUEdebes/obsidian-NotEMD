@@ -4,129 +4,129 @@ last_updated: 2026-05-13
 topic: release-chronicle-ci-hardening-progress-and-architecture-alignment
 ---
 
-# Release Chronicle CI 加固：深度对比、当前进展与后续方向
+# Release Chronicle CI Refuerzo: comparacion en profundidad, progreso actual y direcciones de seguimiento
 
-## 1. 范围与需求基线
+## 1. Linea base de alcance y requisitos
 
-本文档用于落盘 `1.8.7` 发布后 `Release` workflow 加固切片的具体方案与当前状态评估。
+Este documento se utiliza para la colocacion. `1.8.7` Despues de la publicacion `Release` workflow Plan especifico de refuerzo de tramos y evaluacion del estado actual。
 
-本次对齐的主要需求来源：
+Las principales fuentes de demanda de esta alineacion：
 
 1. `docs/brainstorms/2026-05-03-mainline-stabilization-and-ci-hardening-requirements.md`
 2. `docs/superpowers/plans/2026-05-03-mainline-stabilization-next-batch.en.md`
 3. `docs/brainstorms/2026-05-08-packaging-semantic-convergence-progress-and-next-steps.md`
-4. `1.8.7` 对应的失败 `Release` workflow run `25675613652` 以及修复验证成功的回放 `25718241272`
+4. `1.8.7` Fallo correspondiente `Release` workflow run `25675613652` Y arregla la reproduccion de la verificacion exitosa. `25718241272`
 
-本切片的交付目标：
+Objetivos de entrega de esta porcion：
 
-1. 去掉 release chronicle follow-up push 路径中的单次尝试脆弱性；
-2. 将 release workflow 真值收口到仓库代码，而不是留在 YAML 内联 shell；
-3. 保持 CI-safe 纪律：代码、测试、维护者文档和真实 workflow 回放必须一致；
-4. 让修复路径落地后 `main` 保持干净且与远端同步。
+1. Quitar release chronicle follow-up push Vulnerabilidad de un solo intento en el camino；
+2. voluntad release workflow Los valores de verdad se exportan al codigo del repositorio en lugar de dejarlos en YAML En linea shell；
+3. mantener CI-safe Disciplina: Codigo, Pruebas, Documentacion del Mantenedor y Realidad workflow La reproduccion debe ser consistente；
+4. Despues de implementar la ruta de reparacion. `main` Mantenlo limpio y sincronizado con el extremo remoto。
 
-## 2. 故障现实与根因
+## 2. Realidad de los fallos y causas fundamentales
 
-最新一次远端失败并不在插件 build/test 主路径上。
+La ultima falla remota no fue causada por el complemento build/test En el camino principal。
 
-- `publish` job 成功。
-- `refresh_chronicle` 失败在 `Commit chronicle refresh` 步骤。
-- 真正失败的操作是 `git push origin HEAD:main`，GitHub 远端返回了 `500 Internal Server Error`。
+- `publish` job Exito。
+- `refresh_chronicle` Fracaso en `Commit chronicle refresh` Pasos。
+- La verdadera operacion fallida es `git push origin HEAD:main`，GitHub El extremo remoto regreso `500 Internal Server Error`。
 
-根因总结：
+Resumen de las causas fundamentales：
 
-1. **workflow 采用了一次性 push 假设**
-   在生成 chronicle 工件后只 commit 一次、push 一次，对瞬时远端失败没有恢复路径。
-2. **chronicle commit 逻辑只存在于内联 shell**
-   这使 release 路径中最脆弱的部分难以测试，也容易与文档发生漂移。
-3. **变更检测面窄于真实工件面**
-   旧路径依赖 `git diff --quiet` 之类的 tracked-file 视角，而 chronicle 刷新完全可能涉及 tracked 和 untracked 候选工件。
+1. **workflow Desechables usados push Suposiciones**
+   Generando chronicle Solo despues de la pieza de trabajo commit Una vez、push Una vez, no hay ruta de recuperacion para falla remota transitoria。
+2. **chronicle commit La logica solo existe en linea shell**
+   Esto hace release La parte mas fragil del camino es dificil de probar y es propensa a desviarse del documento.。
+3. **La superficie de deteccion de cambios es mas estrecha que la superficie real de la pieza de trabajo.**
+   Dependencias de rutas antiguas `git diff --quiet` y similares tracked-file Perspectiva, mientras chronicle Refrescarse puede implicar tracked y untracked Artefactos candidatos。
 
-## 3. 实现映射（需求 / 代码证据）
+## 3. Implementar mapeo (requisitos / Evidencia del codigo）
 
-| 需求 / 问题 | 代码证据 | 状态 |
+| Requisitos / Pregunta | Evidencia del codigo | Estado |
 |---|---|---|
-| 用检入 helper 替代脆弱的内联 chronicle push 逻辑 | `scripts/release/commit-chronicle-refresh.js` | 已落地 |
-| 用 tracked + untracked 状态检测 chronicle 变化 | `hasChronicleChanges()` 使用 `git status --porcelain --untracked-files=all` | 已落地 |
-| 只 stage 预期的 chronicle 工件 | `CHRONICLE_PATHS` + `stageChronicleFiles()` | 已落地 |
-| 无需提交时干净退出 | `commitChronicleRefresh()` 的 no-op / staged-noop 分支 | 已落地 |
-| 对瞬时 push 失败做重试 | `pushChronicleCommitWithRetries()` | 已落地 |
-| 远端已包含 commit 时视为恢复成功 | `remoteContainsCommit()` + already-present success path | 已落地 |
-| 远端 `main` 前进后可 fetch/rebase/retry | `fetchRemoteBranch()` + `rebaseOntoRemote()` + retry loop | 已落地 |
-| workflow 真值与仓库 helper 保持一致 | `.github/workflows/release.yml` 直接调用 helper | 已落地 |
-| 用回归测试锁定行为 | `src/tests/commitChronicleRefreshScript.test.ts` | 已落地 |
-| 锁定 workflow 契约、防止回退到内联 shell | `src/tests/githubReleaseWorkflow.test.ts` | 已落地 |
-| 维护者文档与真实恢复路径保持一致 | `docs/maintainer/release-workflow*.md` | 已落地 |
+| Utilice el check-in helper Reemplazar lineas fragiles chronicle push Logica | `scripts/release/commit-chronicle-refresh.js` | Ya implementado |
+| uso tracked + untracked Deteccion de estado chronicle Cambios | `hasChronicleChanges()` uso `git status --porcelain --untracked-files=all` | Ya implementado |
+| solo stage esperado chronicle artefacto | `CHRONICLE_PATHS` + `stageChronicleFiles()` | Ya implementado |
+| Salida limpia sin compromiso | `commitChronicleRefresh()` de no-op / staged-noop Sucursal | Ya implementado |
+| Para instantaneo push Vuelva a intentarlo si falla | `pushChronicleCommitWithRetries()` | Ya implementado |
+| El extremo remoto esta incluido. commit La recuperacion se considera exitosa cuando | `remoteContainsCommit()` + already-present success path | Ya implementado |
+| Remoto `main` Despues de seguir adelante, podras fetch/rebase/retry | `fetchRemoteBranch()` + `rebaseOntoRemote()` + retry loop | Ya implementado |
+| workflow Verdad y almacen helper Sea consistente | `.github/workflows/release.yml` Llamada directa helper | Ya implementado |
+| Pruebe el comportamiento de bloqueo con regresion | `src/tests/commitChronicleRefreshScript.test.ts` | Ya implementado |
+| Bloquear workflow Contraer, evitar el retroceso a linea shell | `src/tests/githubReleaseWorkflow.test.ts` | Ya implementado |
+| Documentacion del mantenedor consistente con la ruta de recuperacion real. | `docs/maintainer/release-workflow*.md` | Ya implementado |
 
-## 4. 架构推进评估
+## 4. Evaluacion de la promocion de la arquitectura.
 
-这一切片相较修复前的 release 路径，在三个维度上明显前进：
+En comparacion con la anterior a la restauracion, esta seccion release Camino, progresion evidente en tres dimensiones：
 
-1. **从 workflow shell 提升到仓库内 helper**
-   release follow-up commit/push 语义现在是仓库一级代码，而不是 YAML 中的临时 shell。
-2. **从 best-effort push 升级为状态化恢复路径**
-   chronicle 发布路径现在能区分：
+1. **De workflow shell Actualizar al almacen helper**
+   release follow-up commit/push La semantica ahora es codigo a nivel de repositorio en lugar de YAML Temporal en shell。
+2. **De best-effort push Actualice a la ruta de recuperacion con estado**
+   chronicle Ahora se pueden distinguir las rutas de lanzamiento：
    - no-op
-   - 本地 commit + 直接 push 成功
-   - 远端已包含该 commit
-   - 远端前进后 rebase 再重试
-3. **从“本地绿”升级为“真实远端回放验证”**
-   修复没有停留在本地测试，而是直接对已有 `1.8.7` tag 进行了 `Release` workflow 回放并成功完成。
+   - locales commit + directo push Exito
+   - El extremo remoto ya contiene el commit
+   - Despues de que avanza el otro extremo. rebase Intentalo de nuevo
+3. **Actualice de “verde local” a “verificacion de reproduccion remota real””**
+   La reparacion no se limita a las pruebas locales, sino que se aplica directamente a las existentes. `1.8.7` tag llevado a cabo `Release` workflow Reproduce y completa con exito.。
 
-## 5. 相对先前方案轨道的深度对比
+## 5. Comparacion en profundidad con las orbitas del esquema anterior.
 
-### 5.1 对 `mainline-stabilization-and-ci-hardening` requirements 的对比
+### 5.1 si `mainline-stabilization-and-ci-hardening` requirements Comparacion de
 
-对齐点：
+Puntos de alineacion：
 
-1. **R1 真值源控制** 更强了，因为真实 release follow-up 行为现已显式检入仓库代码和维护者文档。
-2. **R2 维护者侧 CI 真值区分** 仍然保持；这次变更没有额外引入常规 `main` push/PR CI，而是继续收敛在 release workflow 真值模型里。
-3. **R3 支持的 release path 稳定性** 已从 action pinning 等表层，进一步延伸到发布后 follow-up transport recovery。
-4. **R9 仓库卫生** 依然保持，因为只有预期的 chronicle 工件会被 stage / push。
+1. **R1 Control de la fuente de la verdad** Mas fuerte porque es verdad release follow-up El comportamiento ahora se registra explicitamente en el codigo del repositorio y en la documentacion del mantenedor.。
+2. **R2 Lado del mantenedor CI Distincion del valor de verdad** Aun mantenido; este cambio no introduce convenciones adicionales `main` push/PR CI，En lugar de ello, seguir convergiendo en release workflow En el modelo de verdad。
+3. **R3 apoyado release path Estabilidad** Ya desde action pinning Espere a que el nivel de la superficie este nivelado y extiendalo mas hasta despues del lanzamiento. follow-up transport recovery。
+4. **R9 Higiene del almacen** Aun se mantiene, porque solo lo esperado chronicle La pieza de trabajo sera stage / push。
 
-净效果：
+Efecto neto：
 
-- 原始 requirements 此前更多是在“workflow 形态”层面满足；
-- 现在进一步提升到“真实远端失败场景下的恢复行为”层面满足。
+- originales requirements Anteriormente mas sobre“workflow Satisfacer el nivel de “morfologia”；
+- Ahora se actualizo aun mas al nivel de "comportamiento de recuperacion en escenarios reales de falla remota".。
 
-### 5.2 对 `mainline-stabilization-next-batch` 意图的对比
+### 5.2 si `mainline-stabilization-next-batch` Comparacion de intenciones
 
-对齐点：
+Puntos de alineacion：
 
-1. 这依然是边界加固，不是产品表面扩展；
-2. 它延续了相同的 CI-safe 规则：检入真值 + 回归锁定 + 完整门禁后再落地；
-3. 它减少 release path 漂移，但没有重开无关的 renderer/runtime packaging 拓扑议题。
+1. Esto sigue siendo un refuerzo de limites, no una expansion de la superficie del producto.；
+2. Sigue igual CI-safe Regla: comprobar el valor real + Regreso al bloqueo + Control de acceso completo antes de aterrizar；
+3. Disminuye release path Deriva, pero ninguna reapertura irrelevante renderer/runtime packaging Problemas de topologia。
 
-差异点：
+Diferencias：
 
-- 本切片推进的是 release automation 边界，而不是终端用户 command/workflow 行为。
+- Lo que promueve esta seccion es release automation Limites, no usuarios finales command/workflow Comportamiento。
 
-### 5.3 对 packaging / semantic convergence 轨道的对比
+### 5.3 si packaging / semantic convergence Comparacion de orbitas
 
-对齐点：
+Puntos de alineacion：
 
-1. 延续了相同的 anti-drift 模式：把真值收口到 helper 代码，再用测试与文档锁定；
-2. 修复范围严格停留在 release/verification 边界，没有提前进入 Stage-C runtime packaging 工作。
+1. Continuacion del mismo anti-drift Modo: Recibir el valor de verdad en helper Codigo, pruebas de reutilizacion y bloqueo de documentos.；
+2. El alcance de la reparacion se limita estrictamente a release/verification Fronteras, sin entrada anticipada Stage-C runtime packaging Trabajo。
 
-差异点：
+Diferencias：
 
-- 本切片不实现 packaging-boundary 拓扑变化；它加固的是承载这些后续阶段的 release-ops 外围路径。
+- Este segmento no esta implementado packaging-boundary Cambios topologicos; refuerza la infraestructura que soporta estas fases posteriores release-ops Camino periferico。
 
-## 6. 风险清单与控制措施
+## 6. Lista de riesgos y medidas de control.
 
-1. **风险：** 后续 chronicle refresh 再次产生合法 commit，但远端 push 又遇到间歇性 transport/server 失败。
-   **控制：** 有界重试 + fetch/rebase/backoff + remote-contains-commit 恢复路径。
-2. **风险：** 后续 workflow 修改绕开 helper，重新引入内联 shell 漂移。
-   **控制：** workflow 契约回归现在会断言 helper 调用，并拒绝旧的直接 `git push origin HEAD:main` 模式。
-3. **风险：** chronicle 变更检测漏掉 untracked 工件。
-   **控制：** 状态检测现在显式包含 `--untracked-files=all`。
-4. **风险：** chronicle follow-up 文档再次落后于真实恢复行为。
-   **控制：** 维护者 release 文档已在同一批次内同步更新。
+1. **Riesgos：** Seguimiento chronicle refresh Legal otra vez commit，Pero el control remoto push Encontrarme nuevamente con la intermitencia transport/server Fracaso。
+   **controlar：** Reintento limitado + fetch/rebase/backoff + remote-contains-commit Camino de recuperacion。
+2. **Riesgos：** Seguimiento workflow Modificar para omitir helper，Reintroducir el inlining shell Deriva。
+   **controlar：** workflow La devolucion del contrato ahora hara valer helper Llama y rechaza el antiguo directo `git push origin HEAD:main` Patron。
+3. **Riesgos：** chronicle Deteccion de cambios perdidos untracked artefacto。
+   **controlar：** La deteccion de estado ahora incluye explicitamente `--untracked-files=all`。
+4. **Riesgos：** chronicle follow-up La documentacion vuelve a quedar por detras del verdadero comportamiento de recuperacion。
+   **controlar：** mantenedor release Los documentos se han actualizado sincronicamente dentro del mismo lote.。
 
-## 7. 验证证据
+## 7. Verificacion de pruebas
 
-### 7.1 本地门禁
+### 7.1 Control de acceso local
 
-执行并通过：
+Ejecutar y pasar：
 
 1. `npm run build`
 2. `npm test -- --runInBand`
@@ -136,76 +136,76 @@ topic: release-chronicle-ci-hardening-progress-and-architecture-alignment
 6. `obsidian help`
 7. `obsidian-cli help`
 
-### 7.2 真实远端验证
+### 7.2 Verificacion remota real
 
-1. 失败历史证据：
-   `Release` run `25675613652` 失败在 `refresh_chronicle`，原因是 chronicle commit push 命中远端 `500`。
-2. 修复验证：
-   `Release` workflow 回放 `25718241272` 已端到端成功。
-3. 回放后结果：
-   workflow follow-up chronicle commit 已落到 `main`，本地 `main` 也已 fast-forward 到同一 tip。
+1. Evidencia historica del fracaso：
+   `Release` run `25675613652` Fracaso en `refresh_chronicle`，La razon es chronicle commit push Llega al otro extremo `500`。
+2. Arreglar la verificacion：
+   `Release` workflow Reproduccion `25718241272` Exito de principio a fin。
+3. Resultados despues de la reproduccion：
+   workflow follow-up chronicle commit ha caido `main`，locales `main` Ya fast-forward Al mismo tip。
 
-## 8. 当前进展与主线状态
+## 8. Progreso actual y estado principal
 
-当前主线证据：
+Principal linea de evidencia actual：
 
-1. 修复提交：`2da94e0`（`fix(ci): harden chronicle release push recovery`）
-2. workflow 自动 follow-up chronicle 提交：`c28bcee`
-3. `main` 与 `origin/main` 在 fast-forward 拉取后保持同一 SHA
+1. Arreglar el compromiso：`2da94e0`（`fix(ci): harden chronicle release push recovery`）
+2. workflow Automatico follow-up chronicle Enviar：`c28bcee`
+3. `main` con `origin/main` en fast-forward Sigue igual despues de tirar SHA
 
-这说明仓库并没有停留在“半修复状态”：
+Esto demuestra que el almacen no permanece en un "estado semireparado"”：
 
-- helper 已落地；
-- 测试已落地；
-- 文档已落地；
-- 真实 workflow 回放已成功；
-- follow-up chronicle 工件已并入主线；
-- 工作区最终保持 clean。
+- helper Ya implementado；
+- La prueba ha sido implementada.；
+- El documento ha sido implementado.；
+- real workflow Reproduccion exitosa；
+- follow-up chronicle El artefacto se ha fusionado con la linea principal.；
+- El espacio de trabajo finalmente permanece clean。
 
-## 9. 后续方向
+## 9. Direccion de seguimiento
 
-1. 后续凡是 release 后还会写回 `main` 的步骤，都应优先采用“helper-first”而不是 YAML shell-first。
-2. 任何新的 repo-mutating follow-up step 都应满足本切片已经建立的同一标准：
-   helper 优先、回归锁定、真实 workflow 回放后再关闭。
-3. 继续沿既有 Stage-B2 packaging / semantic-verification convergence 方向推进，不要把 heavy runtime-topology 变更混入 release-ops 加固切片。
+1. ¿Que pasa despues? release Te respondere mas tarde `main` Primero se deben tomar todos los pasos“helper-first”en lugar de YAML shell-first。
+2. Cualquier cosa nueva repo-mutating follow-up step Todos deben cumplir con los mismos estandares establecidos por esta rebanada.：
+   helper Prioridad, bloqueo de retorno, verdad. workflow Reproducir y luego cerrar.。
+3. Continuar por el camino existente. Stage-B2 packaging / semantic-verification convergence Empuja la direccion, no empujes la heavy runtime-topology Cambiar combinaciones release-ops Reforzar las rodajas。
 
-## 10. 2026-05-13 串行执行安全补充
+## 10. 2026-05-13 Suplemento de seguridad de ejecucion en serie
 
-原始 `2026-05-12` chronicle 加固解决的是远端 push 恢复缺口。当前 `main` 在此基础上又新增了一层不同类型的保护，必须显式记录：
+originales `2026-05-12` chronicle El refuerzo resuelve el problema del extremo remoto. push Brecha de Restauracion. actual `main` Sobre esta base, se agrega una nueva capa de diferentes tipos de proteccion, que deben registrarse explicitamente.：
 
-### 10.1 第一轮修复后仍然薄弱的地方
+### 10.1 Areas que aun estan debiles despues de la primera ronda de reparaciones.
 
-即便 `commit-chronicle-refresh.js` 已具备恢复能力，repo-saga chronicle 路径仍然对一条重要假设过度依赖操作习惯：
+Incluso si `commit-chronicle-refresh.js` Tener capacidad de recuperacion，repo-saga chronicle El camino todavia depende demasiado de los habitos operativos segun un supuesto importante：
 
 1. `npm run chronicle:sync-repo-saga`
 2. `npm run chronicle:update`
 
-这两个命令共享 `.cache/repo-saga-sources/` 与 `.cache/repo-saga-upstream/`。如果并行执行，仍然可能破坏 clone 状态或留下陈旧 git lock 文件。
+Estos dos comandos comparten `.cache/repo-saga-sources/` con `.cache/repo-saga-upstream/`。Aun puede romperse si se ejecuta en paralelo clone Estado o dejado obsoleto git lock Documentacion。
 
-### 10.2 当前代码新增了什么
+### 10.2 Novedades del codigo actual
 
-1. `scripts/lib/repo-saga-execution-lock.js` 现在提供检入式串行执行锁，具备：
-   - 活跃进程拒绝
-   - stale lock 清理
-   - 面向操作者的明确报错文本
-2. `scripts/repo-saga/update-quarterly-saga.mjs` 现在会在修改共享 cache 根目录前先获取该锁。
-3. `src/tests/repoSagaExecutionLock.test.ts` 直接锁定这套串行安全行为。
-4. `AGENTS.md` 与 `docs/maintainer/release-workflow*.md` 现在也在 workflow 层编码了同一条串行规则。
+1. `scripts/lib/repo-saga-execution-lock.js` Ahora se proporciona el bloqueo de ejecucion en serie de registro, con：
+   - Rechazo activo del proceso
+   - stale lock Limpiar
+   - Borrar texto de error para operadores.
+2. `scripts/repo-saga/update-quarterly-saga.mjs` Ahora se modificara el uso compartido. cache Obtenga el candado antes de ingresar al directorio raiz.。
+3. `src/tests/repoSagaExecutionLock.test.ts` Bloquee directamente este conjunto de comportamientos de seguridad en serie.。
+4. `AGENTS.md` con `docs/maintainer/release-workflow*.md` Tambien ahora workflow Las capas codifican la misma regla serial.。
 
-### 10.3 架构解释
+### 10.3 Explicacion de la arquitectura
 
-这并不是“repo-saga 已支持并行”。它代表的是一条更严格、也更诚实的边界：
+Esto no es“repo-saga Se apoya el paralelismo”. Representa una frontera mas estricta y honesta.：
 
-1. 共享 cache 的 chronicle 路径依旧按设计保持串行；
-2. 这条串行规则现在已经从纯 prose 提升为运行时可执行约束；
-3. 因而 release-chronicle 加固现在同时覆盖了：
-   - 远端 follow-up push 恢复
-   - 共享 cache 变更安全
+1. Compartir cache de chronicle Los caminos siguen siendo seriales tal como fueron disenados.；
+2. Esta regla serial ahora ha sido cambiada de pura prose Promocionar a restricciones ejecutables en tiempo de ejecucion；
+3. Por lo tanto release-chronicle Ahora se cubre el refuerzo al mismo tiempo.：
+   - Remoto follow-up push Recuperacion
+   - Compartir cache Cambiar la seguridad
 
-### 10.4 后续规则
+### 10.4 Normas de seguimiento
 
-如果未来真的需要并发 repo-saga 作业，正确方向不是削弱这把锁，而是先隔离 cache roots、先重定义并发契约，再讨论放宽锁粒度。
+Si realmente se necesita concurrencia en el futuro repo-saga La direccion correcta de trabajo no es debilitar la cerradura, sino aislarla primero. cache roots、Primero redefina el contrato de concurrencia y luego analice la relajacion de la granularidad del bloqueo.。
 
-当前更广义的主线状态审计可交叉参考：
+Se puede hacer referencia cruzada a la actual auditoria mas amplia del estado de la linea principal：
 
 - `docs/brainstorms/2026-05-13-mainline-progress-audit-1-8-9-and-next-direction.zh-CN.md`

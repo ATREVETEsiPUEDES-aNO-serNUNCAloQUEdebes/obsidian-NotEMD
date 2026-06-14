@@ -1,26 +1,26 @@
-# Notemd 发布流程（维护者）
+# Notemd Proceso de liberacion (mantenedor）
 
-语言: [English](./release-workflow.md) | **简体中文**
+Idioma: [English](./release-workflow.md) | **Chino simplificado**
 
-此文档面向维护者与贡献者，不面向普通最终用户。
+Este documento es para mantenedores y contribuyentes, no para usuarios finales comunes.。
 
-## 1. 回归基线
+## 1. Regreso a la linea de base
 
-先采集变更前基线：
+Recopile primero la linea de base antes del cambio.：
 
 ```bash
 npm run regression:language-baseline
 ```
 
-完成改动后，与最新基线进行对比：
+Despues de completar los cambios, comparelo con la ultima linea de base.：
 
 ```bash
 npm run regression:language-compare
 ```
 
-## 2. 发布前验证门禁
+## 2. Verificar el acceso antes de publicar
 
-执行：
+Ejecucion：
 
 ```bash
 npm run chronicle:sync-repo-saga
@@ -34,23 +34,23 @@ obsidian-cli help
 git diff --check
 ```
 
-`npm run chronicle:sync-repo-saga` 与 `npm run chronicle:update` 必须串行执行。它们共享 `.cache/repo-saga-*` 状态，并且现在会强制使用 `.cache/.repo-saga-execution.lock`；如果残留锁文件，先确认没有任何 repo-saga sync/update 进程仍在运行，再手动移除。
+`npm run chronicle:sync-repo-saga` Con `npm run chronicle:update` Debe ejecutarse en serie. ellos comparten `.cache/repo-saga-*` estado, y ahora se aplicara `.cache/.repo-saga-execution.lock`；Si quedan archivos de bloqueo restantes, primero confirme que no hay repo-saga sync/update Si el proceso aun se esta ejecutando, eliminelo manualmente.。
 
-如果本地环境缺少 `obsidian-cli`，请在发布说明或交接证据中明确记录。
-如果改动触及图表语义，还必须执行 `docs/maintainer/diagram-semantic-verification.zh-CN.md` 中定义的维护者本地语义核验层。
-推荐辅助命令：
+Si falta el entorno local `obsidian-cli`，Documente esto claramente en las notas de la version o en la evidencia de entrega.。
+Si el cambio toca la semantica del diagrama, tambien se debe ejecutar. `docs/maintainer/diagram-semantic-verification.zh-CN.md` Capa de verificacion semantica local del mantenedor definida en。
+Comandos auxiliares recomendados：
 ```bash
 npm run verify:diagram-semantics -- --vault "<vault-name>" --commit "<sha>" --version "<plugin-version>" --output ~/tmp/notemd-diagram-check.md
 ```
-该 helper 会从 `esbuild.config.mjs` 提取当前打包入口/输出事实；如果顶层配置只是把构建入口/输出委托给共享 helper，则还会回退到 `scripts/lib/esbuild-bundle-config.js` 继续解析；同时它还会从 `src/rendering/preview/renderHostRuntimeClient.ts` 提取 latent runtime-module specifier 真值，从 `scripts/audit-render-host-bundle.js` 提取 render-host audit 真值，而 audit 的 marker / output / reference 规则由 `scripts/lib/packaging-contract.js` 统一提供；它还会从 `src/main.ts`、`src/ui/DiagramPreviewModal.ts`、`src/rendering/webview/page.ts` 与 `src/rendering/webview/renderFrame.ts` 提取 runtime-consumption 真值，从 `scripts/release/publish-github-release.js` 提取 release 打包契约事实，从 `.github/workflows/release.yml` 提取 release 触发、tag 防护、workflow-source 分支与 chronicle-target 分支契约事实，并从 `src/operations/registry.ts` 提取操作契约提升边界事实；评估 renderer 边界声明时，应以这些文件作为打包/契约真值源。
-对于 renderer 相关改动，还应把 helper 生成出的 packaging-boundary、render-host audit、render-host runtime-consumption、implementation-readiness、packaging-contract、contract-promotion-boundary 与 Stage-C gate 区块都视为必填真值维护项：`npm run audit:render-host` 并不等于真正的重型运行时隔离已经完成，它当前只证明内联 `srcdoc` host 仍按既有契约自包含于 `main.js`，并会通过共享 packaging contract 拒绝当前主线上残留的 `render-host.mjs` 资产或引用。
-在当前单入口主线上，这份 packaging-boundary 真值还要求 latent runtime helper 保持 fail-closed：除非 dedicated runtime asset 被显式配置并在同批真实发货，否则不得默认合成 standalone `render-host.mjs` module specifier。
-它还要求当前 `main` 上的 `createRenderHostBundleBuildOptions()` 保持 candidate-only：除非 standalone render-host release assets、audit logic、maintainer/release docs 同批前进，否则 production `esbuild.config.mjs` 路径不得消费它。
-packaging-contract 区块现在还会记录数字 tag 规则、workflow tag-trigger glob 规则、create/upload 发布模式行为、tag-only 触发防护、workflow-source 分支与 chronicle-target 分支；这些也应视为同一套 release 真值契约的一部分，而不是仅靠口头流程记忆。
+El helper Seguira `esbuild.config.mjs` Extraiga la entrada del paquete actual./Salida del hecho; si la configuracion de nivel superior solo pone la entrada de compilacion/Delegar la produccion a acciones helper，volvera a caer a `scripts/lib/esbuild-bundle-config.js` Continue analizando; tambien comenzara desde `src/rendering/preview/renderHostRuntimeClient.ts` Extraccion latent runtime-module specifier Valor de verdad, de `scripts/audit-render-host-bundle.js` Extraccion render-host audit valor de verdad, mientras audit de marker / output / reference Las reglas se rigen por `scripts/lib/packaging-contract.js` Proporcionado uniformemente; tambien sera proporcionado desde `src/main.ts`、`src/ui/DiagramPreviewModal.ts`、`src/rendering/webview/page.ts` Con `src/rendering/webview/renderFrame.ts` Extraccion runtime-consumption Valor de verdad, de `scripts/release/publish-github-release.js` Extraccion release Hechos del contrato de paquete, de `.github/workflows/release.yml` Extraccion release Gatillo、tag Proteccion、workflow-source Sucursal con chronicle-target Hechos del contrato de sucursal y de `src/operations/registry.ts` Extraer los hechos de los limites de promocion del contrato de operacion; evaluacion renderer Al declarar limites, estos archivos deben usarse como paquetes./Fuente de la verdad del contrato。
+Para renderer Tambien deberian realizarse cambios pertinentes helper Generado packaging-boundary、render-host audit、render-host runtime-consumption、implementation-readiness、packaging-contract、contract-promotion-boundary Con Stage-C gate Todos los bloques se consideran elementos de mantenimiento del valor de verdad requeridos.：`npm run audit:render-host` Esto no significa que se haya completado el verdadero aislamiento del tiempo de ejecucion de servicio pesado; actualmente solo se demuestra en linea. `srcdoc` host Sigue siendo autonomo segun el contrato existente. `main.js`，Y sera compartido por packaging contract Rechace el contenido restante en la linea principal actual. `render-host.mjs` Bienes o Referencias。
+En la linea principal actual de entrada unica, esto packaging-boundary La verdad tambien requiere latent runtime helper mantener fail-closed：A menos que dedicated runtime asset Estar configurado y enviado explicitamente en el mismo lote; de ​​lo contrario, no se sintetizara de forma predeterminada. standalone `render-host.mjs` module specifier。
+Tambien exige que la actual `main` en `createRenderHostBundleBuildOptions()` mantener candidate-only：A menos que standalone render-host release assets、audit logic、maintainer/release docs Avanza con el mismo lote, de lo contrario production `esbuild.config.mjs` El camino no debe consumirlo。
+packaging-contract Los bloques ahora tambien registran cifras tag Reglas、workflow tag-trigger glob Reglas、create/upload Comportamiento del modo de liberacion、tag-only Proteccion del gatillo、workflow-source Sucursal con chronicle-target Sucursales; Estos tambien deben considerarse el mismo conjunto. release Parte del contrato de valor de verdad, en lugar de depender unicamente de la memoria del proceso verbal.。
 
-## 3. 版本同步
+## 3. Sincronizacion de versiones
 
-发布前请确保以下文件版本一致：
+Asegurese de que las versiones de los siguientes archivos sean consistentes antes de publicarlos.：
 
 - `package.json`
 - `manifest.json`
@@ -59,69 +59,69 @@ packaging-contract 区块现在还会记录数字 tag 规则、workflow tag-trig
 - `README_zh.md`
 - `change.md`
 
-Release tag 必须使用纯数字 `x.x.x` 格式，不能加 `v` 前缀；Obsidian 社区插件发布仅接受数字版本 tag。
+Release tag Se deben utilizar numeros puros `x.x.x` Formato, no se puede agregar. `v` Prefijo；Obsidian Los lanzamientos de complementos comunitarios solo aceptan versiones digitales. tag。
 
-## 4. Release Notes 契约
+## 4. Release Notes Contrato
 
-发布说明现已拆分为两个完整文件：
+Las notas de la version ahora estan divididas en dos archivos completos.：
 
-- 英文：`docs/releases/<tag>.md`
-- 简体中文：`docs/releases/<tag>.zh-CN.md`
+- ingles：`docs/releases/<tag>.md`
+- Chino simplificado：`docs/releases/<tag>.zh-CN.md`
 
-两个文件都必须独立可读。发布 GitHub Release 时，由仓库内辅助脚本组合为一个双语 release body。
+Ambos archivos deben poder leerse de forma independiente. publicar GitHub Release Cuando, los guiones auxiliares en el almacen se combinan en un bilingue release body。
 
-## 5. GitHub Release 资产要求
+## 5. GitHub Release Requisitos de activos
 
-Release 必需资产：
+Release Activos necesarios：
 
 - `main.js`
 - `manifest.json`
 - `styles.css`
 - `README.md`
 
-## 6. 发布命令
+## 6. Emitir ordenes
 
 ```bash
 npm run release:github -- <tag>
 ```
 
-该辅助命令会在调用 GitHub 前强制校验必须打包的资产，以及两份已提交的 release notes：
+Este comando auxiliar se llamara despues de llamar GitHub Activos que deben empaquetarse antes de la verificacion obligatoria, asi como dos presentados release notes：
 
-- 如果 release 尚不存在，则会先组合 `docs/releases/<tag>.md` 与 `docs/releases/<tag>.zh-CN.md`，再执行 `gh release create ... --verify-tag`。
-- 如果 release 已存在，则会先用这两份双语 notes 回写现有 release 的 body/title，然后再执行 `gh release upload ... --clobber`。
-- 如果 tag 不是纯数字 `x.x.x`，则立即失败。
+- Si release Si aun no existe, se combinara primero. `docs/releases/<tag>.md` Con `docs/releases/<tag>.zh-CN.md`，Ejecutar de nuevo `gh release create ... --verify-tag`。
+- Si release ya existe, estos dos documentos bilingues se utilizaran primero. notes Escribe de nuevo lo existente release de body/title，Luego ejecuta `gh release upload ... --clobber`。
+- Si tag No es un numero puro `x.x.x`，fallara inmediatamente.。
 
-第二条路径就是这类问题的修复路径：当 release 文案与仓库 notes 漂移，或 release 文案已发布但插件安装资产未上传时，可直接修正并补传。
+El segundo camino es el camino de reparacion para este tipo de problema: cuando release Redaccion publicitaria y almacen. notes Deriva, o release Cuando se haya publicado la copia pero no se hayan cargado los recursos de instalacion del complemento, podra corregirla y cargarla directamente.。
 
-## 7. CI 自动化
+## 7. CI Automatizacion
 
-仓库现已内置 `.github/workflows/release.yml`：
+El almacen ya esta construido. `.github/workflows/release.yml`：
 
-- 推送 git tag 时自动发布 release。
-- 通过 `workflow_dispatch` 并传入纯数字 `x.x.x` 的 `tag` 参数，可在 CI 中修复已有 release。
-- 同一个工作流现在会在发布后重新生成季度版发展编年史，刷新所有根目录 `README*.md` 中的编年史区块，重写每个语言对应的 `docs/repo-saga/notemd-development-history.<locale>.svg`，同步刷新英文别名 `docs/repo-saga/notemd-development-history.svg`，并将这次纯文档更新推回 `main`。
-- `npm run chronicle:sync-repo-saga` 会把当前依赖的两条上游 `repo-saga` 分支组装成 `.cache/repo-saga-upstream`：`feat/timeline-granularity` 提供季度切片能力，`feat-locale-i18n` 提供语言扩展能力。
-- 该工作流**不会**在 `main` 的普通 push 或 PR 上自动运行；合并前验证仍需在本地执行。
-- `main` 当前没有 branch protection，也没有普通 push/PR workflow。如果 commit-status API 在 `main` 上显示 `pending` 且 `statuses=[]`，应以 GitHub Actions runs 与 `check-suites` / `check-runs` 结果作为真实状态来源；release tag 触发的运行仍可能把成功 checks 挂到同一个 commit 上。
-- 工作流现已固定使用 `actions/checkout@v6` 与 `actions/setup-node@v6`，避免继续保留旧版 Node 20 JavaScript-action 运行时弃用告警。
-- 发布 job 会执行 `npm ci`、`npm run build`、`npm test -- --runInBand`、`npm run audit:i18n-ui`、`npm run audit:render-host`、`git diff --check`，最后执行 `npm run release:github -- "$TAG_NAME"`。
-- 随后的编年史 job 会在 `main` 上执行 `node scripts/repo-saga/update-quarterly-saga.mjs --tag "$TAG_NAME"`，如果 `README*.md` 编年史区块或多语言季度 SVG 有变化，就自动提交并推送。
-- workflow-source checkout 分支与 chronicle push 目标现在会在 workflow 中分别显式命名为 `NOTEMD_RELEASE_WORKFLOW_SOURCE_BRANCH` 与 `NOTEMD_RELEASE_CHRONICLE_TARGET_BRANCH`，而仓库侧默认契约归 `scripts/lib/packaging-contract.js` 管。GitHub Actions 在首次 checkout 前仍需要 bootstrap env 值，但脚本、helper 输出与测试现在都把这些分支名作为 release-contract 真值处理，而不是各自维护 release 脚本默认值。
-- release workflow 的 tag trigger 会继续保留 GitHub Actions bootstrap 字面量 `*.*.*`，但这条字面量的所有者现在是 `scripts/lib/packaging-contract.js` 中的 `RELEASE_WORKFLOW_TAG_TRIGGER_GLOB`；`RELEASE_WORKFLOW_DISALLOWED_TAG_TRIGGER_GLOBS` 会把 `v*.*.*` / `V*.*.*` 排除在触发列表之外。这个 wildcard 只决定 workflow 是否启动，真正的纯数字 `x.x.x` 准入仍由已检入的 tag validator 执行。
-- 编年史刷新脚本本身现在也会先重建本地 `repo-saga` 集成缓存：以时间粒度分支为基底，再覆盖 locale/i18n 分支对应文件，然后才调用 `repo-saga` CLI。
-- 编年史刷新脚本现在还会强制使用 `.cache/.repo-saga-execution.lock` 单实例执行锁，避免本地或 CI 并发刷新把共享缓存状态踩坏。
-- 这套脚本现在还补上了包管理器 fallback 的稳健性：如果环境里只有 `corepack` 或 `bun x pnpm`，脚本会额外创建一个可被子进程继承的本地 `pnpm` shim，确保上游 `repo-saga` workspace build 中嵌套调用的 `pnpm` 脚本在 CI 里仍然能执行。
-- 工作流现在会在 checkout release ref 之前通过已检入的 `scripts/release/validate-release-tag.js` helper 做 tag 校验，因此 CI 与仓库内 release helper 复用同一套纯数字 tag 契约，并继续拒绝 `v1.8.2` 这类 tag。
+- Empujar git tag Publicar automaticamente cuando release。
+- Pase `workflow_dispatch` Y pasar numeros puros `x.x.x` de `tag` Parametros, disponibles en CI Fijo en el medio release。
+- El mismo flujo de trabajo ahora regenera cronicas de desarrollo trimestrales despues del lanzamiento, actualizando todas las raices. `README*.md` Bloquea la cronica en , reescribe la correspondiente. `docs/repo-saga/notemd-development-history.<locale>.svg`，Actualizar sincronicamente los alias en ingles `docs/repo-saga/notemd-development-history.svg`，Y retrasar esta actualizacion de solo documentacion `main`。
+- `npm run chronicle:sync-repo-saga` Las dos aguas arriba que actualmente dependen seran `repo-saga` Montaje de sucursales en `.cache/repo-saga-upstream`：`feat/timeline-granularity` Proporcionar capacidades de corte trimestrales，`feat-locale-i18n` Proporcionar capacidades de expansion del idioma.。
+- El flujo de trabajo**No**en `main` ordinario push o PR Ejecutar automaticamente; La verificacion previa a la fusion aun debe realizarse localmente.。
+- `main` Ninguno por el momento branch protection，No existe lo ordinario push/PR workflow。Si commit-status API en `main` Mostrar en `pending` y `statuses=[]`，deberia GitHub Actions runs Con `check-suites` / `check-runs` Los resultados como fuente del estado verdadero；release tag Las ejecuciones activadas aun pueden tener exito checks Cuelgue lo mismo commit en。
+- El flujo de trabajo ahora esta arreglado `actions/checkout@v6` Con `actions/setup-node@v6`，Evite conservar versiones antiguas Node 20 JavaScript-action Advertencia de obsolescencia del tiempo de ejecucion。
+- Liberacion job Ejecutara `npm ci`、`npm run build`、`npm test -- --runInBand`、`npm run audit:i18n-ui`、`npm run audit:render-host`、`git diff --check`，Ejecucion final `npm run release:github -- "$TAG_NAME"`。
+- Cronicas posteriores job Estara alli `main` Ejecutar en `node scripts/repo-saga/update-quarterly-saga.mjs --tag "$TAG_NAME"`，Si `README*.md` Bloque de cronica o trimestre multilingue SVG Si hay cambios, se enviaran y enviaran automaticamente.。
+- workflow-source checkout Sucursal con chronicle push El objetivo ahora estara en workflow se nombran explicitamente como `NOTEMD_RELEASE_WORKFLOW_SOURCE_BRANCH` Con `NOTEMD_RELEASE_CHRONICLE_TARGET_BRANCH`，El contrato predeterminado en el lado del almacen es `scripts/lib/packaging-contract.js` tubo。GitHub Actions Por primera vez checkout Todavia es necesario antes bootstrap env Valor, pero guion、helper Los resultados y las pruebas ahora usan estos nombres de rama como release-contract Procesar el valor de verdad en lugar de mantener cada uno release Valores predeterminados del script。
+- release workflow de tag trigger Seguira conservando GitHub Actions bootstrap Literales `*.*.*`，Pero el dueno de este literal es ahora `scripts/lib/packaging-contract.js` en `RELEASE_WORKFLOW_TAG_TRIGGER_GLOB`；`RELEASE_WORKFLOW_DISALLOWED_TAG_TRIGGER_GLOBS` voluntad `v*.*.*` / `V*.*.*` Exclusion de la lista de activacion. esto wildcard Solo decide workflow Ya sea para empezar o no, realmente digital puro `x.x.x` La admision sigue siendo determinada por la persona que se ha registrado. tag validator Ejecucion。
+- El script de actualizacion de la cronica ahora tambien reconstruira el local primero. `repo-saga` Cache integrado: basado en ramas de granularidad de tiempo y luego superpuestas locale/i18n Bifurca el archivo correspondiente y luego llamalo. `repo-saga` CLI。
+- El script de actualizacion de Chronicle ahora tambien es obligatorio `.cache/.repo-saga-execution.lock` Bloqueo de ejecucion de instancia unica para evitar local o CI La actualizacion simultanea destruye el estado de la cache compartida。
+- Este conjunto de scripts ahora tambien agrega un administrador de paquetes. fallback Robustez: Si solo existen `corepack` o `bun x pnpm`，El script creara un archivo local adicional que el proceso secundario puede heredar. `pnpm` shim，Asegurar aguas arriba `repo-saga` workspace build Llamadas anidadas en `pnpm` Guion en CI Todavia se puede ejecutar。
+- El flujo de trabajo ahora estara en checkout release ref Previamente registrado `scripts/release/validate-release-tag.js` helper hacer tag Verificacion, por tanto CI Con el almacen release helper Reutiliza el mismo conjunto de numeros puros. tag Pacto y seguir negandose. `v1.8.2` Este tipo tag。
 
-工作流刻意复用仓库内的 release 辅助脚本，而不是在 YAML-local 脚本片段中重复维护资产清单、release notes 逻辑、tag 校验或 chronicle 目标分支默认值，避免多套规则漂移。
+El flujo de trabajo reutiliza deliberadamente la informacion del almacen. release Scripts de ayuda en lugar de en YAML-local Mantenimiento de inventario de activos duplicados en fragmentos de guion、release notes Logica、tag Cheque o chronicle Valor predeterminado de la rama de destino para evitar la deriva de multiples conjuntos de reglas。
 
-## 8. 图表语义层
+## 8. Capa semantica del grafico
 
-凡是会影响 renderer 行为的改动，都还需要仓库 CI 之外的一层验证：
+Cualquier cosa que afecte renderer Los cambios de comportamiento requieren un almacen CI Una capa adicional de verificacion：
 
-- 使用 `docs/maintainer/diagram-semantic-verification.zh-CN.md`
-- 如需可复用的交接模板，可先执行 `npm run verify:diagram-semantics -- --vault "<vault-name>" --commit "<sha>" --version "<plugin-version>" --output ~/tmp/notemd-diagram-check.md`
-- 在真实本地 vault 中验证受影响的 Mermaid / JSON Canvas / Vega-Lite 路径
-- 在 release handoff 或 PR 说明中记录证据
+- uso `docs/maintainer/diagram-semantic-verification.zh-CN.md`
+- Si necesita una plantilla de entrega reutilizable, primero puede ejecutar `npm run verify:diagram-semantics -- --vault "<vault-name>" --commit "<sha>" --version "<plugin-version>" --output ~/tmp/notemd-diagram-check.md`
+- En local real vault Afectados por la verificacion Mermaid / JSON Canvas / Vega-Lite Camino
+- en release handoff o PR Registre la evidencia en la descripcion.
 
-当改动触及图表生成或预览行为时，仅靠自动化检查并不足够。
+Cuando los cambios implican la generacion de graficos o el comportamiento de vista previa, las comprobaciones automaticas por si solas no son suficientes.。

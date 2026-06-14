@@ -248,31 +248,31 @@ This document summarizes the major functional and architectural changes implemen
 
 ## 1.8.3
 
-### 亮点
+### Lo mas destacado
 
-- 首次安装欢迎弹窗，覆盖全部 22 种语言
-- 赞助支持：给 GitHub 加星 + 请喝杯咖啡（ko-fi）
-- Cline 对齐的未知模型输出令牌处理
-- 图表边缘字段规范化，兼容 LLM JSON 输出
-- MermaidProcessor 分解和旧版提示退役的硬性约束已文档化
-- notebook-navigator 交叉参考分析，识别 5 项改进方向
+- Ventana emergente de bienvenida para la primera instalacion, que cubre todos 22 idiomas
+- Apoyo de patrocinio: Dar GitHub Agrega estrellas + Una taza de cafe por favor（ko-fi）
+- Cline Procesamiento de tokens de salida de modelo desconocido alineado
+- Los campos del borde del grafico estan estandarizados y son compatibles. LLM JSON Salida
+- MermaidProcessor Se han documentado fuertes restricciones a la descomposicion y al pronto retiro del legado.
+- notebook-navigator Analisis de referencias cruzadas, identificacion. 5 Direcciones de mejora
 
-### 新功能
+### Nuevas funciones
 
-- **欢迎弹窗**：首次安装时展示，包含插件能力概述、LLM 配置提示、结语诗句和赞助按钮。22 种语言完整 i18n。
-- **赞助支持**：设置页赞助板块，含 GitHub 加星 + ko-fi 咖啡按钮。manifest.json fundingUrl 支持 Obsidian 社区插件浏览器原生展示。
+- **Ventana emergente de bienvenida**：Se muestra durante la primera instalacion, incluida una descripcion general de las capacidades del complemento.、LLM Configure indicaciones, versos finales y botones de patrocinio.。22 Idiomas completos i18n。
+- **Apoyo de patrocinio**：Configurar la seccion de patrocinio de la pagina, incluyendo GitHub Agrega estrellas + ko-fi Boton de cafe。manifest.json fundingUrl Apoyo Obsidian Visualizacion nativa del navegador del complemento comunitario。
 
-### 修复
+### Reparacion
 
-- **Cline 对齐令牌解析**：未知模型使用默认 maxTokens 时现在由 API 提供商自行决定，不再被限制在 8192。
-- **图表边缘规范化**：LLM 输出使用 `source`/`target` 边缘字段现被规范化为 `from`/`to`，修复真实 API 响应的验证失败。
+- **Cline Analisis de tokens de alineacion**：Los modelos desconocidos usan el valor predeterminado maxTokens El tiempo ahora se compone de API A exclusivo criterio del Proveedor, que ya no se limita a 8192。
+- **Normalizacion de los bordes del grafico**：LLM Uso de salida `source`/`target` Los campos de borde ahora estan normalizados a `from`/`to`，Reparar la verdad API La validacion de la respuesta fallo.。
 
-### 杂项
+### Varios
 
-- MermaidProcessor 分解硬性约束：每个子任务需真实 Obsidian 验证及图像保存核验。
-- 旧版提示退役门槛：必须完全保留原场景可用性。
-- notebook-navigator 设计参考分析已添加至审计文档和路线图。
-- ko-fi 链接：https://ko-fi.com/jacobinwwey
+- MermaidProcessor Descomponer restricciones estrictas: cada subtarea debe ser verdadera Obsidian Verificacion y verificacion de preservacion de imagenes.。
+- Umbral de retirada para versiones antiguas: la usabilidad de la escena original debe conservarse por completo。
+- notebook-navigator Analisis de referencia de diseno agregado a la documentacion de auditoria y a la hoja de ruta.。
+- ko-fi Enlaces：https://ko-fi.com/jacobinwwey
 
 ## [Unreleased]
 
@@ -293,22 +293,22 @@ This document summarizes the major functional and architectural changes implemen
 *   **Diagnostic Runtime Helper + Tests**: Added `src/providerDiagnostics.ts` and trigger-chain coverage in `src/tests/providerDiagnostics.test.ts` to lock report generation behavior for both success and provider-failure debug paths.
 *   **Docs and Agent Guide Alignment**: Updated both READMEs and `AGENTS.md` so in-plugin diagnostics and CLI diagnostics are documented and required to stay semantically aligned.
 
-### Chinese (中文)
-*   **主线 Force Rewrite 审计**: 新增一份针对当前主线的重新审计文档与统一推进矩阵，明确区分被重写后的 `origin/main` 发货真值与仅存在于备份分支中的证据，避免进度文档继续高估 live mainline 已具备的能力。
-*   **本机验证的 Clean-State 守护**: `.gitignore` 现在会忽略根目录 `render-host.mjs` 以及 `docs/` 下本地 vault 生成的错误日志、provider 诊断文件、预览导出产物和已保存图表工件，避免每次本机 Obsidian 验证后都把仓库弄脏。
-*   **Repo-Saga 串行执行守护**: `npm run chronicle:sync-repo-saga` 与 `npm run chronicle:update` 现在会共享 `.cache/.repo-saga-execution.lock` 执行锁，避免本地或 CI 并发刷新同一套 repo-saga 缓存目录时互相踩状态。
-*   **模型感知的输出 Token 上限**: 新增与 Cline 对齐的已知模型最大输出 Token 元数据，并且运行时现在会根据用户实际选择的模型来解析有效输出上限，而不是依赖硬编码的 provider 默认值。当全局最大 Token 仍保持插件默认值时，已支持模型会自动使用其真实已知上限；当用户手动设置全局或 provider 级上限时，请求会被钳制到该模型的已知最大值。此行为现已覆盖 OpenAI-compatible 路径以及 Anthropic、Google、Azure OpenAI、Ollama 运行时。
-*   **开发者模式诊断面板**: 设置页新增由“Developer mode”开关控制的独立开发者面板，默认对普通用户隐藏开发者专用控件。
-*   **可选诊断调用方式与稳定性多轮测试**: 开发者诊断现在可选择调用方式（含 OpenAI-compatible 的强制传输模式），并支持按指定轮次执行稳定性测试并输出聚合报告。
-*   **OpenAI-compatible 稳定模式新增非流式阶段**: 当主直连流式传输失败后，稳定模式下的 OpenAI-compatible 调用现在会先尝试直连非流式传输，再回退到 `requestUrl`。这能覆盖“流式链路不稳定但非流式可正常返回”的 Provider 场景。
-*   **全 LLM 路径的协议感知流式回退**: 长请求回退解析能力已从 OpenAI-compatible 扩展到 Anthropic Messages、Google Gemini、Azure OpenAI 和 Ollama，使这些 transport 在桌面 `http/https` 与非桌面 `fetch` 下都能走协议感知的流式回退链路。遗留的 OpenAI 风格导出 Provider 包装函数也已收敛到同一套共享流式回退路径，不再保留 buffered-only 旧逻辑。
-*   **跨 Transport 的部分流式调试**: 共享调试输出现在不仅覆盖 OpenAI-compatible，也会为 Anthropic、Google/Azure 风格 SSE，以及 Ollama NDJSON 回退保留“已解析的部分流式文本”。
-*   **稳定模式下的主传输优先策略（OpenAI-Compatible）**: 在稳定 API 调用模式下，OpenAI-compatible 运行时链路会优先使用桌面/网页流式传输作为主长请求路径，再回退到 `requestUrl`。这可以减少“`requestUrl` 先断连，但上游最终成功返回”导致的误失败链路。
-*   **回归测试覆盖**: 新增 Anthropic、Google、Azure OpenAI、Ollama，以及剩余直连 OpenAI 风格 Provider 包装函数在流式回退成功与中途中断场景下的定向运行时测试。
-*   **真实 Endpoint 诊断 CLI**: 新增 `scripts/diagnose-llm-provider.js`（以及 `npm run diagnose:llm`），可直接对真实 Provider 执行 buffered/streaming 长请求对照诊断，并输出脱敏后的每次尝试耗时、响应头、部分响应体与已解析流式片段。
-*   **设置页开发者诊断按钮**: 在设置页新增 `Developer provider diagnostic (long request)` 按钮，可直接对当前活动 Provider 发起插件内运行时探针，并在仓库根目录保存完整报告（`Notemd_Provider_Diagnostic_*.txt`）。
-*   **诊断运行时模块与测试**: 新增 `src/providerDiagnostics.ts`，并在 `src/tests/providerDiagnostics.test.ts` 中补齐按钮触发链路对应的成功/失败路径测试，确保报告输出与调试信息稳定可回归。
-*   **文档与代理指南对齐**: 已同步更新中英文 README 与 `AGENTS.md`，明确插件内诊断与 CLI 诊断需要保持协议语义一致。
+### Chinese (chino)
+*   **Linea principal Force Rewrite Auditoria**: Se agrego un nuevo documento de nueva auditoria y una matriz de promocion unificada para la linea principal actual, distinguiendo claramente lo reescrito. `origin/main` Envie el verdadero valor con evidencia que solo existe en la rama de respaldo para evitar la sobreestimacion continua de los documentos de progreso. live mainline Habilidades ya poseidas.。
+*   **Verificado de forma nativa Clean-State guardia**: `.gitignore` El directorio raiz ahora se ignora `render-host.mjs` y `docs/` Descargar local vault Registro de errores generado、provider Diagnosticar archivos, obtener una vista previa de los productos exportados y los artefactos de graficos guardados para evitar ejecutar la maquina cada vez Obsidian El almacen esta sucio despues de la verificacion.。
+*   **Repo-Saga Demonio de ejecucion en serie**: `npm run chronicle:sync-repo-saga` Con `npm run chronicle:update` Compartire ahora `.cache/.repo-saga-execution.lock` Ejecutar bloqueos para evitar local o CI Actualizar simultaneamente el mismo conjunto repo-saga Estado mutuo al almacenar en cache directorios。
+*   **Salida basada en modelos Token Limite superior**: Recien agregado Cline Salida maxima de modelos conocidos alineados Token metadatos, y el tiempo de ejecucion ahora analiza el limite de salida efectivo en funcion del modelo realmente seleccionado por el usuario, en lugar de depender de uno codificado provider Valor predeterminado. Cuando el maximo global Token Los modelos compatibles utilizan automaticamente sus verdaderos limites superiores conocidos cuando mantienen los valores predeterminados del complemento; cuando el usuario configura manualmente global o provider Cuando se nivelan, las solicitudes se limitan al maximo conocido del modelo. Este comportamiento ahora se anula OpenAI-compatible Caminos y Anthropic、Google、Azure OpenAI、Ollama Tiempo de ejecucion。
+*   **Panel de diagnostico del modo desarrollador**: Se agrego una nueva pagina de configuracion.“Developer mode”Un panel de desarrollador independiente controlado por el conmutador, que oculta los controles especificos del desarrollador a los usuarios normales de forma predeterminada.。
+*   **Metodo de llamada de diagnostico opcional y multiples rondas de pruebas de estabilidad**: Los diagnosticos del desarrollador ahora pueden elegir el metodo de llamada (incluido OpenAI-compatible Modo de transmision forzada) y admite la ejecucion de pruebas de estabilidad en rondas especificas y la generacion de informes agregados.。
+*   **OpenAI-compatible Se agrego una nueva etapa sin transmision al modo estable.**: Cuando falla la transmision directa primaria, en modo estable OpenAI-compatible Las llamadas ahora intentaran ser directas sin transmision antes de volver a `requestUrl`。Esto puede cubrir el problema de "el enlace de transmision es inestable pero el que no es de transmision puede regresar normalmente" Provider Escena。
+*   **Todos LLM Alternativa de ruta de transmision basada en protocolos**: La capacidad de resolucion alternativa de solicitudes largas ha cambiado de OpenAI-compatible Ampliar a Anthropic Messages、Google Gemini、Azure OpenAI y Ollama，Haz Estos transport En el escritorio `http/https` versus no escritorio `fetch` El enlace alternativo de transmision con reconocimiento de protocolo se puede utilizar en todas las circunstancias. legado OpenAI Exportacion de estilo Provider La funcion de empaquetado tambien ha convergido al mismo conjunto de rutas alternativas de transmision compartida y ya no se conserva. buffered-only Vieja logica。
+*   **a traves Transport Depuracion de transmision parcial**: La salida de depuracion compartida ahora no solo cubre OpenAI-compatible，Tambien para Anthropic、Google/Azure Estilo SSE，y Ollama NDJSON Reserva alternativa que conserva el "texto analizado parcialmente transmitido"”。
+*   **Estrategia de prioridad de transmision principal en modo estable（OpenAI-Compatible）**: En estabilidad API En modo llamada，OpenAI-compatible El enlace del tiempo de ejecucion dara prioridad al escritorio./La transmision de paginas web sirve como ruta principal de solicitud larga y luego vuelve a `requestUrl`。Esto puede reducir“`requestUrl` El enlace se desconecto primero, pero el flujo ascendente finalmente regreso exitosamente, lo que provoco una falla de enlace falsa.。
+*   **Cobertura de la prueba de regresion**: nuevo Anthropic、Google、Azure OpenAI、Ollama，Y el resto de conexiones directas OpenAI Estilo Provider Pruebas de tiempo de ejecucion dirigidas de funciones contenedoras en escenarios de exito de reversion de transmision e interrupcion a mitad de camino。
+*   **reales Endpoint Diagnostico CLI**: nuevo `scripts/diagnose-llm-provider.js`（y `npm run diagnose:llm`），Puede afrontar directamente la verdad. Provider Ejecucion buffered/streaming Diagnostico de comparacion de solicitudes largas y salida del tiempo empleado en cada intento despues de la desensibilizacion, encabezados de respuesta, cuerpos de respuesta parciales y fragmentos de transmision analizados.。
+*   **Boton de diagnostico del desarrollador de la pagina de configuracion**: Agregar nuevo en la pagina de configuracion `Developer provider diagnostic (long request)` El boton puede controlar directamente la actividad actual. Provider Inicie la prueba de tiempo de ejecucion en el complemento y guarde el informe completo en el directorio raiz del almacen.（`Notemd_Provider_Diagnostic_*.txt`）。
+*   **Pruebas y modulos de tiempo de ejecucion de diagnostico**: nuevo `src/providerDiagnostics.ts`，y en `src/tests/providerDiagnostics.test.ts` El boton de finalizacion activa el correspondiente exito del enlace./Pruebas de ruta fallidas para garantizar que la salida del informe y la informacion de depuracion sean estables y regresivos。
+*   **Alineacion de la documentacion con las pautas para agentes**: El chino y el ingles se han actualizado simultaneamente. README Con `AGENTS.md`，Aclarar los diagnosticos integrados y CLI El diagnostico debe mantener una semantica de protocolo coherente。
 
 ---
 
@@ -320,11 +320,11 @@ This document summarizes the major functional and architectural changes implemen
 *   **Documentation Reality Check**: Updated the root READMEs and Language Hub to distinguish maintainer source docs, published README translations, and the exact in-app UI locale catalog.
 *   **Version Alignment**: Synchronized release metadata and packaged documentation for `1.8.1`.
 
-### Chinese (中文)
-*   **补齐受支持 UI Locale 的可见覆盖面**: 完成了所有已宣称支持 locale 在剩余设置项、工作流构建器、侧边栏提示、原文提取设置、高级设置以及输出路径配置等可见界面上的本地化补齐。
-*   **强化回归测试覆盖**: 新增定向测试，确保这些已支持 locale 不再在上述可见 UI 上静默回落到英文。
-*   **文档现实校准**: 更新仓库根 README 与语言中心，明确区分维护源文档、已发布 README 译文以及应用内 UI locale 的精确目录。
-*   **版本元数据对齐**: 已将 `1.8.1` 的版本信息与随包文档同步完成。
+### Chinese (chino)
+*   **Soporte completo UI Locale Alcance visible**: Completo todo el apoyo declarado. locale Finalizacion de la localizacion en interfaces visibles, como configuraciones restantes, generador de flujo de trabajo, mensajes de la barra lateral, configuraciones de extraccion de texto original, configuraciones avanzadas y configuracion de ruta de salida.。
+*   **Mejorar la cobertura de las pruebas de regresion**: Se agregaron nuevas pruebas especificas para garantizar que sean compatibles. locale Ya no es visible arriba UI El silencio vuelve al ingles.。
+*   **Calibracion de la realidad del documento**: Actualiza la raiz del repositorio. README Con el centro de idiomas, distinga claramente entre mantener documentos fuente y documentos publicados. README Traduccion y en la aplicacion UI locale Indice exacto。
+*   **Alineacion de metadatos de version**: Ya `1.8.1` La informacion de la version y los documentos del paquete estan sincronizados.。
 
 ---
 
@@ -339,14 +339,14 @@ This document summarizes the major functional and architectural changes implemen
 *   **Regression Harness**: Added reproducible baseline/compare scripts and preserved phase evidence for before/after robustness checks.
 *   **Build Stability with Reference Repo**: Excluded `ref/**` from TypeScript/Jest/ESLint scopes so reference projects can coexist without breaking plugin build/test gates.
 
-### Chinese (中文)
-*   **第一性原理语言支持架构**: 新增统一语言域模型，明确分离 UI 语言与任务输出语言策略。
-*   **UI i18n 基础设施**: 为全部受支持的 UI locale（`en`、`ar`、`de`、`es`、`fa`、`fr`、`id`、`it`、`ja`、`ko`、`nl`、`pl`、`pt`、`pt-BR`、`ru`、`th`、`tr`、`uk`、`vi`、`zh-CN`、`zh-TW`）引入集中式语言目录，并支持回退链与变量插值。
-*   **运行时文案迁移**: 将设置页、侧边栏、错误弹窗和主流程关键提示迁移到共享 i18n 字符串体系。
-*   **任务语言策略收口**: 将任务语言决策统一收敛到策略层，并接入 prompt、处理、研究与翻译路径。
-*   **Locale/RTL 鲁棒性增强**: 新增本地化时间格式化与 RTL 布局安全样式保护。
-*   **回归脚本化能力**: 增加可复现 baseline/compare 脚本，并保留阶段性前后对比证据以保障改造过程鲁棒性。
-*   **参考仓共存构建稳定性**: 将 `ref/**` 排除出 TypeScript/Jest/ESLint 编译与测试范围，使参考仓引入不再破坏插件主工程门禁。
+### Chinese (chino)
+*   **Primeros principios de la arquitectura de soporte del lenguaje.**: Se agrego un nuevo modelo de dominio de lenguaje unificado para separar claramente UI Estrategias de lenguaje y lenguaje de salida de tareas.。
+*   **UI i18n Infraestructura**: Para todos los apoyados UI locale（`en`、`ar`、`de`、`es`、`fa`、`fr`、`id`、`it`、`ja`、`ko`、`nl`、`pl`、`pt`、`pt-BR`、`ru`、`th`、`tr`、`uk`、`vi`、`zh-CN`、`zh-TW`）Introducir un directorio de idiomas centralizado y admitir la cadena de respaldo y la interpolacion de variables.。
+*   **Migracion de redaccion publicitaria en tiempo de ejecucion**: Migre la pagina de configuracion, la barra lateral, la ventana emergente de error y las sugerencias clave del proceso principal para compartir i18n Sistema de cuerdas。
+*   **Cerrar la estrategia del lenguaje de la tarea.**: Unifique la toma de decisiones del lenguaje de tareas con la capa de estrategia y conectela prompt、Rutas de procesamiento, investigacion y traduccion.。
+*   **Locale/RTL Mejora de la robustez**: Se agrego formato de hora localizado y RTL Proteccion de estilo seguro de diseno。
+*   **Volver a las capacidades de secuencias de comandos**: Aumentar la reproducibilidad baseline/compare Elaborar un guion y conservar pruebas comparativas graduales antes y despues para garantizar la solidez del proceso de transformacion.。
+*   **Coexistencia de almacenes de referencia para generar estabilidad**: voluntad `ref/**` Exclusion TypeScript/Jest/ESLint Compile y pruebe el alcance para que la introduccion del almacen de referencia ya no destruya el control de acceso del proyecto principal del complemento.。
 
 ---
 
@@ -357,10 +357,10 @@ This document summarizes the major functional and architectural changes implemen
 *   **Workflow CTA Rule Alignment**: Custom workflow buttons now inherit CTA styling only when every step is single-file. Mixed workflows that include batch steps are rendered as non-CTA to keep visual semantics consistent.
 *   **Regression Coverage**: Added a sidebar DOM test to lock CTA mapping behavior for single-file actions vs batch/folder actions and default mixed workflow buttons.
 
-### Chinese (中文)
-*   **单文件 CTA 视觉映射**: 侧边栏彩色 CTA 样式现在严格对应“单文件处理”动作；批量/文件夹级动作不再使用 CTA 色彩，以减少范围误判和误触发批处理的风险。
-*   **工作流 CTA 规则对齐**: 自定义工作流按钮仅在“所有步骤均为单文件动作”时才应用 CTA 样式；只要包含批量步骤即回落为非 CTA 样式，保持视觉语义一致。
-*   **回归测试覆盖**: 新增侧边栏 DOM 测试，锁定单文件动作、批量/文件夹动作以及默认混合工作流按钮的 CTA 映射行为。
+### Chinese (chino)
+*   **Fila unica CTA Mapeo visual**: Color de la barra lateral CTA Los estilos ahora corresponden estrictamente a la accion de "procesamiento de un solo archivo"; lote/Las acciones a nivel de carpeta ya no se utilizan. CTA Color para reducir el riesgo de errores de calculo sobre el rango y activacion falsa de lotes。
+*   **flujo de trabajo CTA Alineacion de reglas**: Los botones de flujo de trabajo personalizados solo se aplican si "Todos los pasos son acciones de un solo archivo" CTA Estilo; siempre que contenga pasos por lotes, volvera a no ser CTA Estilo para mantener coherente la semantica visual。
+*   **Cobertura de la prueba de regresion**: Barra lateral agregada DOM Probar, bloquear acciones de un solo archivo, por lotes/Acciones de carpeta y botones de flujo de trabajo hibrido predeterminados CTA Comportamiento de mapeo。
 
 ---
 
@@ -371,10 +371,10 @@ This document summarizes the major functional and architectural changes implemen
 *   **CTA Readability Fix**: Improved text contrast on colorful CTA buttons (including `One-Click Extract` and `Batch generate from titles`) to avoid low-contrast white-on-light combinations across different Obsidian themes.
 *   **Docked Footer Visibility Tuning**: Increased persistent footer sizing constraints and log minimum height so progress + log telemetry stays visible when multiple panels are expanded.
 
-### Chinese (中文)
-*   **侧边栏交互打磨**: 细化了侧边栏按钮的悬停、按下与键盘焦点态，让高频工作流中的操作反馈更明确。
-*   **CTA 可读性修复**: 提升了彩色 CTA 按钮（包括 `One-Click Extract`、`Batch generate from titles`）的文字对比度，避免不同主题下出现浅底白字可见性不足的问题。
-*   **底部停靠区可见性优化**: 调整了固定底部区域尺寸约束与日志最小高度，在展开多个分组时仍能稳定看到进度与日志信息。
+### Chinese (chino)
+*   **Pulido interactivo de la barra lateral**: Los estados de desplazamiento, pulsacion y enfoque del teclado de los botones de la barra lateral se han refinado para que la informacion de operacion en flujos de trabajo de alta frecuencia sea mas clara.。
+*   **CTA Correcciones de legibilidad**: Color mejorado CTA Botones (incluidos `One-Click Extract`、`Batch generate from titles`）Contraste de texto para evitar el problema de la visibilidad insuficiente del texto blanco sobre un fondo poco profundo bajo diferentes temas.。
+*   **Optimice la visibilidad del area del muelle inferior.**: Se ajusto la restriccion de tamano del area inferior fija y la altura minima del tronco. Al expandir varios grupos, aun puede ver el progreso y registrar la informacion de manera estable.。
 
 ---
 
@@ -385,10 +385,10 @@ This document summarizes the major functional and architectural changes implemen
 *   **Parsed Partial Stream Debugging**: Shared deep-debug output now records both raw partial bodies and parsed partial stream text when a streamed fallback attempt is interrupted. This gives developers enough evidence to distinguish between transport resets and upstream provider-side error payloads.
 *   **Regression Coverage**: Added focused tests for desktop and web streaming fallback assembly, plus interrupted streaming fallback diagnostics.
 
-### Chinese (中文)
-*   **OpenAI-compatible 流式回退**: 长耗时的 OpenAI-compatible 任务调用在首次 `requestUrl` 瞬时断连后，现在会把桌面端 `http/https` 与非桌面环境 `fetch` 的回退尝试升级为流式响应解析。这样慢速网关和反向代理可以更早返回 body 分片，而不是一直等待整块缓冲响应后直接判定整次请求失败。
-*   **已解析流式片段调试**: 共享深度调试输出现在会在流式回退被中途打断时，同时记录原始部分响应体和“已解析的部分流式文本”。开发者可以更清楚地区分到底是传输层重置，还是上游 Provider 已经返回了可用于定位问题的错误/内容片段。
-*   **回归测试覆盖**: 新增桌面端与 Web 流式回退拼装测试，以及流式回退中断时的诊断信息测试。
+### Chinese (chino)
+*   **OpenAI-compatible Reversion de transmision**: Consume mucho tiempo OpenAI-compatible La tarea se llama por primera vez. `requestUrl` Despues de una desconexion momentanea, el escritorio ahora `http/https` Frente a entornos que no son de escritorio `fetch` El respaldo intenta actualizar al analisis de respuesta de transmision. De esta manera, las puertas de enlace lentas y los servidores proxy inversos pueden regresar antes body Fragmentacion, en lugar de esperar la respuesta completa del bufer del bloque para determinar directamente que toda la solicitud fallo。
+*   **Depuracion de fragmentos de transmision analizados**: La salida de depuracion de profundidad compartida ahora registra tanto el cuerpo de la respuesta parcial original como el "texto transmitido parcialmente analizado" cuando la transmision alternativa se interrumpe a mitad de camino. Los desarrolladores pueden distinguir mas claramente si se trata de un restablecimiento de la capa de transporte o un restablecimiento ascendente. Provider Se han devuelto errores que se pueden utilizar para localizar el problema./Fragmentos de contenido。
+*   **Cobertura de la prueba de regresion**: Version de escritorio agregada y Web Prueba de ensamblaje de reversion de transmision y prueba de informacion de diagnostico cuando se interrumpe la reversion de transmision。
 
 ---
 
@@ -401,12 +401,12 @@ This document summarizes the major functional and architectural changes implemen
 *   **Chinese Preset Refresh**: Synced selected China-focused preset defaults with current `cline` model baselines, including `Qwen` -> `qwen3-235b-a22b`, `Moonshot` -> `kimi-k2-0905-preview`, and `MiniMax` -> `MiniMax-M2.7`.
 *   **Regression Coverage**: Added focused tests for shared debug metadata rendering and interrupted desktop fallback responses with partial-body capture.
 
-### Chinese (中文)
-*   **跨 Provider 深度调试**: 共享的 LLM 传输/错误处理链路现在会为所有 Provider 记录按尝试维度展开的调试元数据，包括 transport 名称、脱敏后的请求 URL/请求头、耗时、响应头、部分响应体与堆栈信息。这样即使没有 Provider 特定日志，也能直接看见慢速上游网关重置或代理断连发生在哪一段链路上。
-*   **连接测试调试一致性**: Provider 的连接探测现在复用与运行时调用相同的带仪表化请求路径，因此“测试连接”失败时，调试模式也会输出同等级别的 transport 证据。
-*   **非桌面运行时回退**: 当桌面 Node 传输不可用时，`requestUrl` 的瞬时断连现在会在同一次调用内切换到浏览器 `fetch` 重试，从而将运行时鲁棒性和 Provider 连接测试能力扩展到移动端/非桌面环境。
-*   **中国区预设刷新**: 已将部分中国区 Provider 预设默认模型同步到当前 `cline` 基线，包括 `Qwen` -> `qwen3-235b-a22b`、`Moonshot` -> `kimi-k2-0905-preview`、`MiniMax` -> `MiniMax-M2.7`。
-*   **回归测试覆盖**: 新增共享调试元数据渲染测试，以及桌面端 fallback 在响应中途断开时对部分响应体的捕获测试。
+### Chinese (chino)
+*   **a traves Provider Depuracion en profundidad**: Compartido LLM Transmision/El enlace de manejo de errores ahora estara disponible para todos Provider Registro de metadatos de depuracion ampliados por dimensiones de prueba, incluidos transport Nombre, solicitud tras la desensibilizacion URL/Encabezados de solicitud, consumo de tiempo, encabezados de respuesta, cuerpo de respuesta parcial e informacion de pila. Asi que incluso si no hay Provider Los registros especificos tambien pueden ver directamente en que enlace se produjo el restablecimiento lento de la puerta de enlace ascendente o la desconexion del proxy.。
+*   **Prueba de conexion y consistencia de depuracion.**: Provider La sonda de conexion ahora reutiliza la misma ruta de solicitud instrumentada que la llamada en tiempo de ejecucion, por lo que el modo de depuracion tambien genera el mismo nivel cuando falla la "Conexion de prueba". transport Evidencia。
+*   **Respaldo cuando se ejecuta en dispositivos que no son de escritorio**: Cuando el escritorio Node Cuando la transmision no esta disponible，`requestUrl` La desconexion transitoria ahora cambiara al navegador dentro de la misma llamada. `fetch` Reintentar, combinando asi robustez en tiempo de ejecucion y Provider Las capacidades de prueba de conexion se amplian a los terminales moviles./Entornos que no son de escritorio。
+*   **Actualizacion predeterminada en China**: Parte del area de China ha sido Provider El modelo predeterminado preestablecido se sincroniza con el actual. `cline` Linea de base, incluyendo `Qwen` -> `qwen3-235b-a22b`、`Moonshot` -> `kimi-k2-0905-preview`、`MiniMax` -> `MiniMax-M2.7`。
+*   **Cobertura de la prueba de regresion**: Se agrego prueba de representacion de metadatos de depuracion compartida y version de escritorio. fallback Prueba de captura de parte del cuerpo de respuesta cuando la respuesta se desconecta a mitad de camino。
 
 ---
 
@@ -418,11 +418,11 @@ This document summarizes the major functional and architectural changes implemen
 *   **Sidebar Footer Stability**: Refined the sidebar footer into a docked status/log area with a clearer standby progress state so the log panel remains visible and the ready-state progress area is readable even when every section is expanded.
 *   **Regression Coverage**: Added focused runtime fallback tests for every active transport path plus sidebar DOM tests for the docked footer and standby progress state.
 
-### Chinese (中文)
-*   **运行时传输鲁棒性增强**: 长耗时 LLM 任务在遇到 `ERR_CONNECTION_CLOSED` 等瞬时断连时，现在会先从 Obsidian 的 `requestUrl` 切换到桌面端 `http/https` 传输；只有该回退也失败时，才进入原有稳定重试序列。慢速翻译和生成任务对代理/网关断连的容忍度明显提升。
-*   **中国区 Provider 第二轮扩展**: 新增 `Qwen Code`、`Z AI`、`Huawei Cloud MaaS` 三个一等预设，并补齐运行时路由测试、连接测试覆盖以及中英文 Provider 文档说明。
-*   **侧边栏底部区域稳定性提升**: 将侧边栏底部进一步整理为停靠式状态/日志区域，并增强 Ready 状态下的待机进度显示；即使所有分组全部展开，日志面板也不会继续被挤压到不可见。
-*   **回归测试覆盖**: 新增覆盖全部活跃 transport 路径的运行时回退测试，以及锁定 docked footer 与 standby 进度态的 sidebar DOM 测试。
+### Chinese (chino)
+*   **Robustez de transmision en tiempo de ejecucion mejorada**: Lleva mucho tiempo LLM Tareas encontradas `ERR_CONNECTION_CLOSED` Cuando la conexion se desconecta instantaneamente, ahora comenzara desde Obsidian de `requestUrl` Cambiar al escritorio `http/https` Transmision; Solo cuando la reversion tambien falle, se ingresara la secuencia de reintento estable original. Tareas lentas de traduccion y generacion para agentes./La tolerancia a la desconexion de la puerta de enlace se ha mejorado significativamente.。
+*   **Region de China Provider Segunda ronda de expansion**: nuevo `Qwen Code`、`Z AI`、`Huawei Cloud MaaS` Tres ajustes preestablecidos de primera clase y prueba de enrutamiento en tiempo de ejecucion completa, cobertura de prueba de conexion, chino e ingles Provider Documentacion。
+*   **Estabilidad mejorada del area inferior de la barra lateral.**: Organice aun mas la parte inferior de la barra lateral en un estado acoplado./Area de registro y mejora. Ready El progreso del modo de espera se muestra en el estado; Incluso si se expanden todos los grupos, el panel de registro no seguira comprimiendose hasta que se vuelva invisible.。
+*   **Cobertura de la prueba de regresion**: Cobertura recien agregada de todos los activos. transport Pruebas de respaldo en tiempo de ejecucion de rutas y bloqueo docked footer Con standby Progresivo sidebar DOM Prueba。
 
 ---
 
@@ -434,11 +434,11 @@ This document summarizes the major functional and architectural changes implemen
 *   **Regression Coverage**: Added focused provider-support tests for both runtime API calls and connection-test probes so transient disconnect handling stays locked in across transports.
 *   **Documentation**: Updated the English and Chinese READMEs plus version metadata to document the new provider-connection retry behavior for `1.7.5`.
 
-### Chinese (中文)
-*   **Provider 连接测试鲁棒性增强**: 连接测试在首次遇到瞬时网络断连后，不会再立刻失败，而是会回退到稳定重试序列，使“测试连接”按钮与实际任务执行路径的鲁棒性保持一致。
-*   **全 Transport 覆盖**: 这套瞬时失败回退机制现已覆盖所有内置 Provider 预设所使用的传输链路，包括 OpenAI-compatible、Anthropic、Google、Azure OpenAI 与 Ollama。
-*   **回归测试覆盖**: 新增针对运行时 API 调用与连接测试探测链路的 Provider 支持测试，确保跨 transport 的瞬时断连处理不会回退。
-*   **文档更新**: 已同步更新中英文 README 与版本元数据，记录 `1.7.5` 的 Provider 连接测试重试行为。
+### Chinese (chino)
+*   **Provider Robustez mejorada de la prueba de conexion.**: La prueba de conexion ya no fallara inmediatamente despues de encontrar una desconexion transitoria de la red por primera vez. En cambio, volvera a una secuencia de reintento estable, lo que hara que el boton "Probar conexion" sea consistente con la solidez de la ruta de ejecucion de la tarea real.。
+*   **Todos Transport Cobertura**: Este mecanismo de reserva de falla instantanea ahora cubre todos los dispositivos integrados. Provider Enlaces de transmision predeterminados utilizados, incluidos OpenAI-compatible、Anthropic、Google、Azure OpenAI Con Ollama。
+*   **Cobertura de la prueba de regresion**: Se agregaron nuevas funciones para el tiempo de ejecucion. API Llame y conectese para probar el enlace de deteccion. Provider Apoyar las pruebas para garantizar la transport El procesamiento de desconexion instantanea no retrocedera.。
+*   **Actualizacion de documentos**: El chino y el ingles se han actualizado simultaneamente. README Registros con metadatos de version. `1.7.5` de Provider Comportamiento de reintento de prueba de conexion。
 
 ---
 
@@ -450,11 +450,11 @@ This document summarizes the major functional and architectural changes implemen
 *   **Regression Coverage**: Added focused sidebar DOM tests to lock in the persistent footer layout and the new progress summary behavior.
 *   **Documentation**: Updated the English and Chinese READMEs to reflect the pinned sidebar telemetry layout.
 
-### Chinese (中文)
-*   **侧边栏布局稳定性**: 将侧边栏重构为可滚动的工作区加固定底部区域，即使所有动作分组全部展开，进度卡片和日志输出也不会被挤出视野。
-*   **更清晰的进度反馈**: 将百分比文本移到独立状态标签中，保留 Ready 状态下可见的进度条，并增强侧边栏进度区域的视觉对比度。
-*   **回归测试覆盖**: 新增聚焦侧边栏 DOM 的测试，锁定固定底部布局与新的进度摘要展示行为。
-*   **文档更新**: 同步更新中英文 README，补充固定底部进度/日志布局说明。
+### Chinese (chino)
+*   **Estabilidad del diseno de la barra lateral**: Reconstruya la barra lateral en un espacio de trabajo desplazable con un area inferior fija. Incluso si se expanden todos los grupos de acciones, la tarjeta de progreso y la salida del registro no desapareceran de la vista.。
+*   **Comentarios de progreso mas claros**: Mueva el texto del porcentaje a una etiqueta de estado separada y mantengalo Ready La barra de progreso es visible en el estado y mejora el contraste visual del area de progreso de la barra lateral.。
+*   **Cobertura de la prueba de regresion**: Barra lateral de enfoque agregada DOM Prueba y bloqueo del diseno inferior fijo con un nuevo comportamiento de visualizacion del resumen de progreso。
+*   **Actualizacion de documentos**: Actualizar chino e ingles sincronicamente README，Suplemento de progreso de fondo fijo/Descripcion del diseno del registro。
 
 ---
 
@@ -465,8 +465,8 @@ This document summarizes the major functional and architectural changes implemen
 ### English
 *   **Fix installation Error**: Delete the unused js files, Fix the Severe installation difficulties
 
-### Chinese (中文)
-*   **解决安装问题**: 删除无用js文件，解决了严重的安装问题。
+### Chinese (chino)
+*   **Resolver problemas de instalacion.**: Eliminar inutilesjsDocumentacion que soluciona problemas graves de instalacion。
 
 
 ---
@@ -478,18 +478,18 @@ This document summarizes the major functional and architectural changes implemen
 *   **Modular Architecture**: Refactored the search logic into a modular `SearchProvider` system, making it easier to add new search engines and maintain existing ones.
 *   **Code Quality**: Integrated comprehensive unit tests for search providers to prevent regression.
 
-### Chinese (中文)
-*   **搜索引擎支持**: 通过实施稳健的模块化架构解决了DuckDuckGo搜索的问题。新的 `DuckDuckGoProvider` 现在使用 DOMParser 进行可靠的 HTML 解析，并带有正则表达式回退机制，即使布局发生变化也能确保一致的搜索结果。
-*   **模块化架构**: 将搜索逻辑重构为模块化的 `SearchProvider` 系统，从而更易于添加新的搜索引擎和维护现有引擎。
-*   **代码质量**: 集成了针对搜索提供商的全面单元测试，以防止回归。
+### Chinese (chino)
+*   **Soporte para motores de busqueda**: Resuelto implementando una arquitectura modular robustaDuckDuckGoPreguntas de busqueda. nuevo `DuckDuckGoProvider` Usar ahora DOMParser Haz confiable HTML Analisis, con un mecanismo alternativo de expresion regular para garantizar resultados de busqueda consistentes incluso cuando cambia el diseno.。
+*   **Arquitectura modular**: Refactorizar la logica de busqueda para que sea modular `SearchProvider` Sistema que facilita la adicion de nuevos motores de busqueda y el mantenimiento de los existentes.。
+*   **Calidad del codigo**: Pruebas unitarias integrales integradas para proveedores de busqueda para evitar regresiones.。
 
 ## [1.6.3] - 2026-01-27
 
 ### English
 *   **API Error Debugging**: Fixed an issue where the "API Error Debugging Mode" would not show the full error response body for certain providers (like LMStudio 429 errors). Now, detailed JSON responses and status codes are correctly captured and logged when this mode is enabled, aiding significantly in troubleshooting connectivity and rate-limit issues.
 
-### Chinese (中文)
-*   **API 错误调试**: 修复了“API 错误调试模式”无法显示某些提供商（如 LMStudio 429 错误）的完整错误响应正文的问题。现在，启用此模式后，可以正确捕获并记录详细的 JSON 响应和状态代码，极大地帮助排查连接和速率限制问题。
+### Chinese (chino)
+*   **API Depuracion de errores**: Fijo“API El error "Modo de depuracion" no se puede mostrar para algunos proveedores (como LMStudio 429 error) con el texto completo de respuesta de error. Ahora, con este modo habilitado, detallado JSON Los codigos de respuesta y de estado ayudan enormemente a solucionar problemas de conexion y limitacion de velocidad。
 
 ## v1.6.2
 
@@ -497,9 +497,9 @@ This document summarizes the major functional and architectural changes implemen
 *   **Modularized API Error Handling**: Refactored error handling logic to ensure consistency across all tasks.
 *   **Enhanced Debugging**: The "API Error Debugging Mode" now fully supports "Translate", "Search", and "Connection Test" tasks, providing detailed logs (HTTP status codes, raw responses) for deeper troubleshooting.
 
-### Chinese (中文)
-*   **模块化API错误处理**: 重构了错误处理逻辑，确保所有任务的一致性。
-*   **增强调试**: “API错误调试模式”现在完全支持“翻译”、“搜索”和“连接测试”任务，提供详细的日志（HTTP状态代码、原始响应）以便进行更深入的故障排除。
+### Chinese (chino)
+*   **ModularidadAPIManejo de errores**: Logica de manejo de errores reconstruida para garantizar la coherencia de todas las tareas.。
+*   **Mejorar la depuracion**: “APIEl modo de depuracion de errores ahora es totalmente compatible con las tareas de traduccion, busqueda y prueba de conexion, proporcionando registros detallados.（HTTPcodigo de estado, respuesta sin procesar) para una solucion de problemas mas profunda。
 
 ---
 
@@ -509,9 +509,9 @@ This document summarizes the major functional and architectural changes implemen
 *   **Fix Mermaid Table Corruption**: Resolved a critical issue where the "Batch Mermaid Fix" and "Deep Debug" features would incorrectly apply syntax fixes to Markdown tables (e.g., changing `| : --- |` to `| : -- "- |`), ensuring that modifications are strictly limited to code blocks within ```mermaid``` tags.
 *   **Enhanced Table Protection**: Implemented robust safeguards in the deep debug processor to specifically ignore lines matching Markdown table separators (e.g., `| :--- |`) and lines containing `:-- :`, preserving table integrity even in aggressive fix modes.
 
-### Chinese (中文)
-*   **修复Mermaid表格损坏**: 解决了“批量Mermaid修复”和“深度调试”功能错误地将语法修复应用于Markdown表格（例如，将 `| : --- |` 更改为 `| : -- "- |`）的关键问题，确保修改严格限制在 ```mermaid``` 标签内的代码块中。
-*   **增强的表格保护**: 在深度调试处理器中实现了稳健的保护措施，专门忽略匹配Markdown表格分隔符（例如 `| :--- |`）和包含 `:-- :` 的行，即使在激进的修复模式下也能保持表格完整性。
+### Chinese (chino)
+*   **ReparacionMermaidLa mesa esta danada.**: Resolvio el problema de "LoteMermaidLas funciones "Reparacion" y "Depuracion profunda" aplican incorrectamente correcciones de sintaxis aMarkdownMesas (por ejemplo, colocar `| : --- |` Cambiar a `| : -- "- |`）La cuestion clave es garantizar que las modificaciones se limiten estrictamente a ```mermaid``` En bloques de codigo dentro de etiquetas.。
+*   **Proteccion de mesa mejorada**: Se implemento una proteccion solida en el procesador de depuracion profunda para ignorar especificamente las coincidencias.MarkdownSeparadores de mesa (p. ej. `| :--- |`）y contiene `:-- :` Filas que mantienen la integridad de la tabla incluso en modo de reparacion agresivo。
 
 ---
 
@@ -521,9 +521,9 @@ This document summarizes the major functional and architectural changes implemen
 *   **Modularized API Error Handling**: Refactored `llmUtils.ts` to introduce a centralized `handleProviderError` function. This function supports both concise error reporting (default) and verbose, "DeepSeek-style" debugging logs (status codes, raw responses), ensuring consistent error handling across all 10+ supported LLM providers.
 *   **Automatic Error Logging**: Implemented a `saveErrorLog` utility in `fileUtils.ts`. This function captures the error message, stack trace, and the full session log from the reporter, saving it to a timestamped file (e.g., `Notemd_Error_Log_2023-10-27_10-00-00.txt`) in the vault root whenever a process fails. It also intelligently prompts users to enable debug mode if it's currently disabled.
 
-### Chinese (中文)
-*   **模块化API错误处理**: 重构了 `llmUtils.ts`，引入了集中的 `handleProviderError` 函数。该函数支持简洁的错误报告（默认）和详细的“DeepSeek风格”调试日志（状态代码、原始响应），确保所有10多个受支持的LLM提供商具有一致的错误处理。
-*   **自动错误日志记录**: 在 `fileUtils.ts` 中实现了 `saveErrorLog` 工具。该函数捕获错误消息、堆栈跟踪和来自报告器的完整会话日志，并在进程失败时将其保存到保管库根目录下的带时间戳的文件（例如 `Notemd_Error_Log_2023-10-27_10-00-00.txt`）。如果当前禁用了调试模式，它还会智能地提示用户启用调试模式。
+### Chinese (chino)
+*   **ModularidadAPIManejo de errores**: Refactorizado `llmUtils.ts`，Introducido centralizado `handleProviderError` Funcion. Esta funcion admite informes de errores concisos (predeterminado) y detallados.“DeepSeekRegistro de depuracion de estilo (codigo de estado, respuesta sin procesar) para garantizar que todos10Multiples compatiblesLLMEl proveedor tiene un manejo de errores consistente。
+*   **Registro automatico de errores**: en `fileUtils.ts` Implementado en `saveErrorLog` herramienta. Esta funcion captura mensajes de error, seguimientos de pila y registros de sesion completos del reportero y los guarda en un archivo con marca de tiempo en la raiz de la boveda cuando el proceso falla (p. ej. `Notemd_Error_Log_2023-10-27_10-00-00.txt`）。Tambien solicitara inteligentemente al usuario que habilite el modo de depuracion si actualmente esta deshabilitado.。
 
 ---
 
@@ -537,13 +537,13 @@ This document summarizes the major functional and architectural changes implemen
     *   When an error occurs during any major operation (processing files, generating content, research, etc.), a detailed log file is now automatically created in the vault root.
     *   This file includes the error context and session history, making it easier for users to report bugs and for developers to diagnose issues.
 
-### Chinese (中文)
-*   **API错误调试模式**: 在“稳定API调用”部分添加了一个新设置。
-    *   **启用**: 激活所有API调用的详细日志记录，包括HTTP状态代码和原始响应文本，有助于排查连接问题。
-    *   **禁用**: 保持标准的、干净的用户体验，提供简洁的错误消息。
-*   **自动日志文件生成**:
-    *   当任何主要操作（处理文件、生成内容、研究等）期间发生错误时，现在会自动在保管库根目录中创建一个详细的日志文件。
-    *   该文件包含错误上下文和会话历史记录，使用户更容易报告错误，也便于开发人员诊断问题。
+### Chinese (chino)
+*   **APIModo de depuracion de errores**: En “estable”APISe ha agregado una nueva configuracion a la seccion "Llamadas"。
+    *   **Habilitar**: Activar todoAPIRegistro detallado de llamadas, incluidoHTTPCodigo de estado y texto de respuesta sin formato para ayudar a solucionar problemas de conexion。
+    *   **Discapacitado**: Mantenga una experiencia de usuario limpia y estandar y proporcione mensajes de error concisos.。
+*   **Generacion automatica de archivos de registro**:
+    *   Cuando se produce un error durante cualquier operacion importante (procesar archivos, generar contenido, investigar, etc.), ahora se crea automaticamente un archivo de registro detallado en el directorio raiz de la boveda.。
+    *   Este archivo contiene contexto de error e historial de sesion, lo que facilita a los usuarios informar errores y a los desarrolladores diagnosticar problemas.。
 
 ---
 
@@ -564,19 +564,19 @@ This document summarizes the major functional and architectural changes implemen
     *   **Error Reporting**: Automatically generates a `mermaid_error_{foldername}.md` report listing files with remaining errors.
     *   **Move Error Files**: Added an option to automatically move files with persistent errors to a specific folder for manual review.
 
-### Chinese (中文)
-*   **提取特定原始内容**:
-    *   引入了一项新功能，可根据用户定义的问题从笔记中逐字提取文本段落。
-    *   **合并查询模式**: 在单个API调用中高效处理所有问题。
-    *   **翻译支持**: 可选包含提取文本的翻译。
-    *   **自定义输出**: 可配置输出路径和文件名。
-*   **批量Mermaid修复增强**:
-    *   **高级修复模式**: 增加了对包含嵌套括号（例如 `Node[标签 [文本]]`）和特殊字符的未加引号Mermaid节点标签的稳健处理。
-    *   **注释转换**: 增加了自动将 Mermaid 图表中的 `note right/left of` 注释转换为连接线标签的功能，确保更好的渲染效果并符合标准图表语法。
-    *   **畸形箭头修复**: 实现了深度调试逻辑，用于纠正箭头语法被错误嵌入引号内的畸形箭头标签（例如 `-->"` 变为 `" -->`），确保 Mermaid 语法的有效性。
-    *   **标准化管道标签**: 添加了稳健处理和引用包含管道符的连接线标签的逻辑（例如 `|文本|` -> `|"文本"|`），解决了涉及数学符号或松散管道符用法的复杂图表中的语法错误。
-    *   **合并双重标签**: 引入了对冲突双重边缘标签（例如 `-- "A" -->|"B"|`）的修复，将其合并为单个描述性标签（`-- "A<br>(B)" -->`），以解决渲染歧义。
-    *   **错误报告**: 自动生成 `mermaid_error_{foldername}.md` 报告，列出仍有错误的文件。    *   **移动错误文件**: 添加了一个选项，可自动将存在持久错误的文件移动到特定文件夹以供手动审查。
+### Chinese (chino)
+*   **Extraer contenido original especifico**:
+    *   Se introdujo una nueva funcion para extraer pasajes de texto palabra por palabra de notas basadas en preguntas definidas por el usuario.。
+    *   **Modo de consulta combinado**: En un soloAPIManejar eficientemente todos los problemas durante la llamada.。
+    *   **Soporte de traduccion**: Opcionalmente incluya traduccion del texto extraido.。
+    *   **Salida personalizada**: Ruta de salida configurable y nombre de archivo。
+*   **loteMermaidReparacion y mejora**:
+    *   **Modo de reparacion avanzada**: Se agrego soporte para contener corchetes anidados (p. ej. `Node[Etiquetas [texto]]`）Caracteres especiales y sin comillasMermaidManejo solido de etiquetas de nodos。
+    *   **Conversion de anotaciones**: Anadido automatico Mermaid En el grafico `note right/left of` La capacidad de convertir anotaciones en etiquetas de lineas de conexion garantiza una mejor representacion y se ajusta a la sintaxis de graficos estandar.。
+    *   **Reparacion de flechas deformadas.**: Se implemento una logica de depuracion profunda para corregir etiquetas de flechas con formato incorrecto donde la sintaxis de las flechas esta incrustada incorrectamente entre comillas (p. ej. `-->"` convertirse `" -->`），Asegurar Mermaid Validez gramatical。
+    *   **Estandarizar las etiquetas de las tuberias**: Se agrego logica para un manejo solido y referencias de etiquetas de lineas de conectores que contienen caracteres de tuberia (p. ej. `|texto|` -> `|"texto"|`），Errores de sintaxis resueltos en diagramas complejos que implicaban el uso de simbolos matematicos o caracteres sueltos.。
+    *   **Fusionar etiquetas duales**: Se introdujo soporte para etiquetas de doble borde en conflicto (p. ej. `-- "A" -->|"B"|`）Corrija para combinarlo en una sola etiqueta descriptiva.（`-- "A<br>(B)" -->`），Para resolver ambiguedades en la representacion.。
+    *   **Informe de errores**: Generado automaticamente `mermaid_error_{foldername}.md` Informe, enumerando archivos que aun tienen errores.。    *   **Mover archivos incorrectos**: Se agrego una opcion para mover automaticamente archivos con errores persistentes a una carpeta especifica para su revision manual.。
 
 ---
 
@@ -586,9 +586,9 @@ This document summarizes the major functional and architectural changes implemen
 *   **Robust Regex for Mermaid**: Implemented a sophisticated regex pattern in `mermaidProcessor.ts` to correctly identify and quote complex node labels without breaking existing valid syntax.
 *   **Documentation Synchronization**: Fully synchronized `README.md` and `README_zh.md` to ensure all new features (Extract Text, Mermaid Fixes) are documented in both languages.
 
-### Chinese (中文)
-*   **Mermaid的稳健正则表达式**: 在 `mermaidProcessor.ts` 中实现了复杂的正则表达式模式，以正确识别并引用复杂的节点标签，而不会破坏现有的有效语法。
-*   **文档同步**: 完全同步了 `README.md` 和 `README_zh.md`，确保所有新功能（提取文本，Mermaid修复）都以两种语言记录。
+### Chinese (chino)
+*   **MermaidExpresiones regulares robustas para**: en `mermaidProcessor.ts` Se implementan patrones complejos de expresiones regulares para identificar y hacer referencia correctamente a etiquetas de nodos complejos sin romper la sintaxis valida existente.。
+*   **Sincronizacion de documentos**: Completamente sincronizado `README.md` y `README_zh.md`，Asegurate de que todas las funciones nuevas (extraer texto，MermaidFix) estan documentados en ambos idiomas.。
 
 ---
 ## Code/Architecture Update
@@ -596,8 +596,8 @@ This document summarizes the major functional and architectural changes implemen
 ### English
 *   **Improved Progress Bar Logic**: Enhanced the logic for progress bar updates to ensure it accurately reflects the completion status of operations, preventing it from getting stuck at intermediate percentages.
 
-### Chinese (中文)
-*   **改进的进度条逻辑**: 增强了进度条更新逻辑，确保其准确反映操作的完成状态，防止其卡在中间百分比。
+### Chinese (chino)
+*   **Logica de la barra de progreso mejorada**: Logica de actualizacion de la barra de progreso mejorada para garantizar que refleje con precision el estado de finalizacion de la operacion y evite que se quede atascada en el porcentaje medio.。
 
 ---
 ## Implementation of Functionality
@@ -605,8 +605,8 @@ This document summarizes the major functional and architectural changes implemen
 ### English
 *   **Accurate UI Feedback for Wiki-Link Command**: The "Create Wiki-Link & Generate Note from Selection" command now provides accurate progress updates, reaching 100% completion and automatically closing the progress modal upon successful execution.
 
-### Chinese (中文)
-*   **Wiki-Link命令的准确UI反馈**: “从选中文本创建维基链接并生成笔记”命令现在提供准确的进度更新，在成功执行后达到100%完成并自动关闭进度模态框。
+### Chinese (chino)
+*   **Wiki-LinkPrecision de los pedidosUIComentarios**: “El comando Crear enlaces Wiki a partir de texto seleccionado y Generar notas ahora proporciona actualizaciones precisas del progreso tras una ejecucion exitosa.100%Completa y cierra automaticamente el cuadro modal de progreso.。
 
 ---
 ## Code/Architecture Update
@@ -615,9 +615,9 @@ This document summarizes the major functional and architectural changes implemen
 *   **Refined Concurrent Processing**: Implemented a staggered launch mechanism in the `createConcurrentProcessor` utility. This ensures that API calls within a parallel batch are spaced out by the configured `apiCallIntervalMs`, preventing request bursts and resolving potential 429 rate-limit errors from LLM providers.
 *   **Modularized Syntax Fixing**: Refactored the `batchFixMermaidSyntaxInFolder` function by extracting the core logic into a new, reusable `fixMermaidSyntaxInFile` function. This improves code modularity and maintainability.
 
-### Chinese (中文)
-*   **优化并发处理**: 在 `createConcurrentProcessor` 工具函数中实现了交错启动机制。这确保了并行批处理中的API调用能根据配置的 `apiCallIntervalMs` 间隔执行，防止了请求爆发并解决了来自LLM提供商的潜在429速率限制错误。
-*   **模块化语法修复**: 重构了 `batchFixMermaidSyntaxInFolder` 函数，将核心逻辑提取到一个新的、可复用的 `fixMermaidSyntaxInFile` 函数中。这提高了代码的模块化和可维护性。
+### Chinese (chino)
+*   **Optimice el procesamiento concurrente**: en `createConcurrentProcessor` El mecanismo de inicio escalonado se implementa en la funcion de herramienta. Esto asegura que en el procesamiento por lotes paraleloAPILas llamadas se pueden configurar segun `apiCallIntervalMs` La ejecucion a intervalos evita rafagas de solicitudes y resuelve problemas causados porLLMEl potencial del proveedor429Error de limitacion de velocidad。
+*   **Correccion de sintaxis modular**: Refactorizado `batchFixMermaidSyntaxInFolder` Funcion, extrae la logica central en una nueva y reutilizable `fixMermaidSyntaxInFile` En funcion. Esto mejora la modularidad y la mantenibilidad del codigo.。
 
 ---
 ## Implementation of Functionality
@@ -626,9 +626,9 @@ This document summarizes the major functional and architectural changes implemen
 *   **Enabled "Auto Mermaid Fix" Feature**: Implemented the core logic for the "Auto Mermaid Fix" feature by adding the `fixMermaidSyntaxInFile` function. This feature, when enabled in settings, automatically corrects Mermaid and LaTeX syntax in notes generated by various commands, ensuring diagram validity.
 *   **Updated Documentation**: Updated `README.md` and `README_zh.md` to reflect the improved reliability of batch processing.
 
-### Chinese (中文)
-*   **启用“自动Mermaid修复”功能**: 通过添加 `fixMermaidSyntaxInFile` 函数，实现了“自动Mermaid修复”功能的核心逻辑。该功能在设置中启用后，会自动校正由各种命令生成的笔记中的Mermaid和LaTeX语法，确保图表的有效性。
-*   **更新文档**: 更新了 `README.md` 和 `README_zh.md`，以反映批处理可靠性的提升。
+### Chinese (chino)
+*   **Habilite “AutomaticoMermaidFuncion “reparar”**: Al agregar `fixMermaidSyntaxInFile` Funcion, realizando “automaticoMermaidLa logica central de la funcion "Reparacion". Una vez habilitada esta funcion en la configuracion, corregira automaticamente los errores en las notas generadas por varios comandos.MermaidyLaTeXGramatica para garantizar la validez de los graficos.。
+*   **Actualizar documentacion**: Actualizado `README.md` y `README_zh.md`，Para reflejar la mejora de la confiabilidad del procesamiento por lotes.。
 
 ---
 
@@ -643,14 +643,14 @@ This document summarizes the major functional and architectural changes implemen
     *   Resolved various TypeScript build errors, including incorrect import paths for `normalizeNameForFilePath` and type mismatches for `view.file?.basename`.
     *   Added safeguards to prevent runtime errors, such as ensuring a note is successfully created before attempting to generate content for it.
 
-### Chinese (中文)
+### Chinese (chino)
 
-*   **并行处理框架**: 为批量操作引入了并行处理框架。通过在 `utils.ts` 中实现自定义的 `Semaphore` (信号量) 和 `createConcurrentProcessor` 工厂函数来完成此项工作。
-*   **重构批量处理命令**: 重构了 `main.ts` 和 `fileUtils.ts` 中的所有主要批量处理命令 (`processFolderWithNotemdCommand`, `batchGenerateContentForTitles`, `batchExtractConceptsForFolderCommand`)。这些命令现在利用新的并发处理器，允许在并行执行 LLM API 调用的同时进行串行 I/O 操作，从而显著提高了处理大文件夹时的性能。
-*   **增强的进度报告**: 更新了 `ProgressReporter` 接口及其 UI 实现 (`ProgressModal`, `NotemdSidebarView`)，以显示活动并行任务的数量，在批量操作期间为用户提供更详细的反馈。
-*   **健壮性与错误处理**:
-    *   解决了多个 TypeScript 构建错误，包括 `normalizeNameForFilePath` 的不正确导入路径以及 `view.file?.basename` 的类型不匹配问题。
-    *   增加了安全措施以防止运行时错误，例如在尝试为笔记生成内容之前，确保笔记已成功创建。
+*   **Marco de procesamiento paralelo**: Introdujo un marco de procesamiento paralelo para operaciones por lotes. por en `utils.ts` Implementar la personalizacion en `Semaphore` (Semaforo) y `createConcurrentProcessor` Funcion de fabrica para completar este trabajo.。
+*   **Refactorizar comandos de procesamiento por lotes**: Refactorizado `main.ts` y `fileUtils.ts` Todos los comandos principales de procesamiento por lotes en (`processFolderWithNotemdCommand`, `batchGenerateContentForTitles`, `batchExtractConceptsForFolderCommand`)。Estos comandos ahora aprovechan el nuevo procesador concurrente, lo que permite la ejecucion en paralelo. LLM API Serializar mientras llamas I/O operacion, mejorando asi significativamente el rendimiento cuando se trabaja con carpetas grandes。
+*   **Informes de progreso mejorados**: Actualizado `ProgressReporter` Interfaces y sus UI Implementacion (`ProgressModal`, `NotemdSidebarView`)，para mostrar el numero de tareas paralelas activas para proporcionar a los usuarios comentarios mas detallados durante las operaciones por lotes。
+*   **Robustez y manejo de errores**:
+    *   Resuelto multiple TypeScript Errores de compilacion que incluyen `normalizeNameForFilePath` Rutas de importacion incorrectas y `view.file?.basename` Problema de discrepancia de tipos。
+    *   Se agregaron medidas de seguridad para evitar errores de tiempo de ejecucion, como garantizar que las notas se hayan creado correctamente antes de intentar generar contenido para ellas.。
 
 ---
 
@@ -672,21 +672,21 @@ This document summarizes the major functional and architectural changes implemen
 *   **New Setting: "Auto-run Mermaid Syntax Fix"**: Added a setting to automatically run a syntax-fixing pass on notes after content generation tasks to ensure generated Mermaid diagrams are valid.
 *   **Updated Documentation**: Updated `README.md` and `README_zh.md` to comprehensively document all new settings and the new "Create Wiki-Link & Generate Note" command.
 
-### Chinese (中文)
+### Chinese (chino)
 
-*   **新增批量处理设置**: 在UI中添加了新的用户设置以控制并行处理行为：
-    *   `启用批处理并行化`
-    *   `批处理并发数`
-    *   `批处理大小`
-    *   `批处理间隔延迟 (毫秒)`
-    *   `API 调用间隔 (毫秒)`
-*   **新命令：“从选中文本创建维基链接并生成笔记”**:
-    *   这个新命令简化了知识创建的工作流程。
-    *   它允许用户选择文本，然后自动将其转换为 `[[维基链接]]`。
-    *   在指定的“概念笔记文件夹”中创建一个相应的概念笔记。如果笔记已存在，则会添加反向链接。
-    *   最后，使用“根据标题生成内容”功能，由 LLM 自动为该笔记生成内容。
-*   **新设置：“生成后自动修复Mermaid语法”**: 添加了一个设置，用于在内容生成任务后自动对笔记运行语法修复，以确保生成的Mermaid图表有效。
-*   **更新文档**: 更新了 `README.md` 和 `README_zh.md`，以全面记录所有新设置和“从选中文本创建维基链接并生成笔记”的新命令。
+*   **Configuracion de procesamiento por lotes agregada**: enUISe agregaron nuevas configuraciones de usuario para controlar el comportamiento del procesamiento paralelo：
+    *   `Habilitar la paralelizacion por lotes`
+    *   `Numero de concurrencia de procesamiento por lotes`
+    *   `Tamano del lote`
+    *   `Retraso del intervalo de lote (milisegundo)`
+    *   `API Intervalo de llamada (milisegundo)`
+*   **Nuevo comando: “Crear enlace wiki a partir del texto seleccionado y generar notas”**:
+    *   Este nuevo comando simplifica el flujo de trabajo de creacion de conocimiento.。
+    *   Permite a los usuarios seleccionar texto y luego lo convierte automaticamente a `[[Enlace wiki]]`。
+    *   Cree una nota conceptual correspondiente en la "carpeta de notas conceptuales" especificada. Si la nota ya existe, se agregara un vinculo de retroceso.。
+    *   Finalmente, utilice la funcion "Generar contenido a partir del titulo" LLM Generar contenido automaticamente para la nota.。
+*   **Nueva configuracion: “Reparacion automatica despues de la compilacionMermaidGramatica”**: Se agrego una configuracion para ejecutar automaticamente correcciones de sintaxis en las notas despues de una tarea de generacion de contenido para garantizar su generacion.MermaidLos graficos funcionan。
+*   **Actualizar documentacion**: Actualizado `README.md` y `README_zh.md`，Para documentar completamente todas las nuevas configuraciones y nuevos comandos para crear enlaces wiki y generar notas a partir del texto seleccionado.。
 
 ## 2026-05-01 — Cline-Aligned Output Token Handling and Diagram Pipeline Hardening
 

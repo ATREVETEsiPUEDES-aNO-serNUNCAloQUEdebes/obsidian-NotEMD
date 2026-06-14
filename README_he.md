@@ -5,7 +5,7 @@
 
 # תוסף Notemd עבור Obsidian
 
-[English](./README.md) | [简体中文](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [繁體中文](./README_zh_Hant.md) | [日本語](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
+[English](./README.md) | [Chino simplificado](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [Chino tradicional](./README_zh_Hant.md) | [japones](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
 
 קראו את התיעוד בשפות נוספות: [מרכז השפות](./docs/i18n/README.md)
 
@@ -374,7 +374,7 @@ Notemd משפר את תהליך העבודה שלכם ב-Obsidian באמצעות
     *   **מושבת**: משאיר את פלט ה-Mermaid שנוצר ללא שינוי, אלא אם כן מריצים ידנית `Batch Mermaid Fix` או מוסיפים אותו לזרימת עבודה מותאמת.
 -   **Output Language**: (חדש) בחרו את שפת הפלט הרצויה עבור משימות "Generate from Title" ו-"Batch Generate from Title".
     *   **English (Default)**: ה-prompts מעובדים והפלט נוצר באנגלית.
-    *   **Other Languages**: ה-LLM מונחה לבצע את ה-reasoning באנגלית אך להחזיר את התיעוד הסופי בשפה שבחרתם (למשל Español, Français, 简体中文, 繁體中文, العربية, हिन्दी וכו').
+    *   **Other Languages**: ה-LLM מונחה לבצע את ה-reasoning באנגלית אך להחזיר את התיעוד הסופי בשפה שבחרתם (למשל Español, Français, Chino simplificado, Chino tradicional, العربية, हिन्दी וכו').
 -   **Change Prompt Word**: (חדש)
     *   **Change Prompt Word**: מאפשר לשנות את מילת ה-prompt עבור משימה מסוימת.
     *   **Custom Prompt Word**: הזינו את מילת ה-prompt המותאמת שלכם למשימה.

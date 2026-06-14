@@ -4,247 +4,247 @@ last_updated: 2026-05-20
 topic: folder-task-file-filtering-progress-and-architecture-alignment
 ---
 
-# 文件夹任务文件筛选交付：深度对比、进展评估与后续方向
+# Seleccion y entrega de archivos de tareas de carpetas: comparacion en profundidad, evaluacion del progreso y direccion de seguimiento
 
-## 1. 范围与需求基线
+## 1. Linea base de alcance y requisitos
 
-本文用于把“文件夹任务文件筛选”能力的方案与实现状态完整落盘，依据最新需求收敛如下：
+Este articulo se utiliza para presentar completamente en el mercado la solucion y el estado de implementacion de la capacidad de "filtrado de archivos de tareas de carpeta". Segun los ultimos requisitos, se resume de la siguiente manera:：
 
-1. 文件夹任务需要支持可配置文件筛选（`regex/glob/contains/no-filter`）。
-2. `includeSubfolders` 必须是可选项，因为翻译任务当前行为与其他任务不同。
-3. 筛选目标必须允许用户在 `relativePath` 与 `basename` 之间切换。
-4. 默认情况下必须保证现有功能稳定、不回归。
-5. 交付方式必须符合主线稳定化纪律（CI-safe、契约先行、已发布路径不回退）。
+1. Las tareas de carpetas deben admitir el filtrado de archivos configurable（`regex/glob/contains/no-filter`）。
+2. `includeSubfolders` Debe ser opcional porque la tarea de traduccion actualmente se comporta de manera diferente a otras tareas.。
+3. El objetivo del filtro debe permitir a los usuarios `relativePath` con `basename` Cambiar entre。
+4. Las funciones existentes deben ser estables y no regresivas por defecto.。
+5. El metodo de entrega debe cumplir con la disciplina de estabilizacion de la linea principal.（CI-safe、El contrato va primero y el camino publicado no retrocede）。
 
-## 2. 改动前现状与根因分析
+## 2. Estado actual y analisis de la causa raiz antes de los cambios.
 
-改动前，文件夹级文件收集逻辑分散在多个模块，任务间行为不一致：
+Antes del cambio, la logica de recopilacion de archivos a nivel de carpeta estaba dispersa en varios modulos y el comportamiento entre tareas era inconsistente.：
 
-- 大多数文件夹任务采用“路径前缀递归”。
-- `batchTranslateFolder` 采用“仅当前目录子项”（`folder.children`）。
+- La mayoria de las tareas de carpetas utilizan "recursion de prefijo de ruta"”。
+- `batchTranslateFolder` Utilice "Solo subclaves del directorio actual”（`folder.children`）。
 
-根因总结：
+Resumen de las causas fundamentales：
 
-1. **缺少统一文件选择契约**，导致每个命令各自实现，长期易漂移。
-2. **“特殊字符不能输入”并非本需求主阻塞点**；核心问题是插件侧缺少统一选择/筛选架构，而不是 Obsidian 文本输入本身。
-3. **缺少兼容模式**，无法在保留翻译 legacy 范围语义的同时开放可选递归行为。
+1. **Falta de contrato unificado de seleccion de expedientes**，Como resultado, cada comando se implementa de forma independiente, lo que es propenso a desviarse a largo plazo.。
+2. **“"No se pueden introducir caracteres especiales" no es el principal obstaculo de este requisito.**；El problema central es la falta de seleccion unificada en el lado del complemento./Filtrar el esquema en su lugar Obsidian Entrada de texto en si。
+3. **Falta de modo de compatibilidad.**，No se puede conservar la traduccion legacy Rango semantico al tiempo que se abre un comportamiento recursivo opcional。
 
-## 3. 实现映射（需求 -> 代码证据）
+## 3. Implementar el mapeo (requisitos -> Evidencia del codigo）
 
-| 需求 | 代码证据 | 状态 |
+| Requisitos | Evidencia del codigo | Estado |
 |---|---|---|
-| 引入统一文件夹任务 selector | `src/folderTaskFileSelector.ts` | 已落地 |
-| 支持 `none/contains/regex/glob` | `FolderTaskFileFilterMode`、matcher 编译逻辑 | 已落地 |
-| 支持 `relativePath/basename` 目标切换 | `FolderTaskFileFilterTarget`、target resolver | 已落地 |
-| 支持可选 `includeSubfolders` 且保留兼容默认 | `FolderTaskIncludeSubfoldersMode` + `legacy` 任务映射（翻译默认非递归） | 已落地 |
-| 默认行为保持稳定 | `DEFAULT_SETTINGS` 中 `folderTaskIncludeSubfoldersMode = "legacy"`、`folderTaskFileFilterMode = "none"` | 已落地 |
-| regex 失败不静默 | regex 编译 `try/catch`，显式报错 | 已落地 |
-| 覆盖主要文件夹任务路径 | `noteProcessingCommandHostAdapter.ts`、`fileUtils.ts`、`translate.ts`、`formulaFixer.ts` | 已落地 |
-| 设置页可配置 | `NotemdSettingTab` 新增筛选区块 + EN/ZH-CN/ZH-TW i18n | 已落地 |
-| 回归测试锁定行为 | `folderTaskFileSelector.test.ts`、`translateContract.test.ts`、host/contract 测试 | 已落地 |
-| 增加 operation 级可选覆盖（不改变全局默认行为） | `applyFolderTaskSelectionOverride`、host adapter 覆盖参数打通、operation 输入 schema 扩展 | 已落地 |
+| Introducir la tarea de carpeta unificada selector | `src/folderTaskFileSelector.ts` | Ya implementado |
+| Apoyo `none/contains/regex/glob` | `FolderTaskFileFilterMode`、matcher Logica de compilacion | Ya implementado |
+| Apoyo `relativePath/basename` Cambio de objetivo | `FolderTaskFileFilterTarget`、target resolver | Ya implementado |
+| Soporte opcional `includeSubfolders` Y manten el valor predeterminado compatible | `FolderTaskIncludeSubfoldersMode` + `legacy` Mapeo de tareas (la traduccion predeterminada es no recursiva） | Ya implementado |
+| El comportamiento predeterminado se mantiene estable | `DEFAULT_SETTINGS` Medio `folderTaskIncludeSubfoldersMode = "legacy"`、`folderTaskFileFilterMode = "none"` | Ya implementado |
+| regex El fracaso no guarda silencio | regex compilar `try/catch`，Informe de errores explicitos | Ya implementado |
+| Sobrescribir la ruta de la tarea de la carpeta principal | `noteProcessingCommandHostAdapter.ts`、`fileUtils.ts`、`translate.ts`、`formulaFixer.ts` | Ya implementado |
+| La pagina de configuracion es configurable. | `NotemdSettingTab` Bloque de filtrado agregado + EN/ZH-CN/ZH-TW i18n | Ya implementado |
+| Comportamiento de bloqueo de pruebas de regresion | `folderTaskFileSelector.test.ts`、`translateContract.test.ts`、host/contract Pruebas | Ya implementado |
+| aumentar operation Anulacion opcional de nivel (no cambia el comportamiento predeterminado global） | `applyFolderTaskSelectionOverride`、host adapter Abrir parametros de cobertura、operation Entrada schema Extension | Ya implementado |
 
-## 4. 架构推进评估
+## 4. Evaluacion del avance de la arquitectura.
 
-本次改动符合既有“先稳定再扩展”的推进路线：
+Este cambio esta en consonancia con la ruta de promocion existente de “estabilizar primero y luego expandir”：
 
-1. **从分散逻辑收敛到统一契约**
-   文件选择规则提升为共享工具，降低任务间长期语义漂移。
-2. **兼容优先迁移**
-   `legacy` 子目录模式保证翻译默认行为不变，同时允许显式开启递归。
-3. **边界加固而非能力泛化**
-   这是任务编排一致性升级，不是运行时打包路线偏航。
-4. **错误语义收紧**
-   无效 regex 现在显式失败，避免静默误筛选导致批处理范围失控。
+1. **Convergencia de la logica descentralizada al contrato unificado**
+   Las reglas de seleccion de archivos se actualizan a herramientas compartidas para reducir la deriva semantica a largo plazo entre tareas.。
+2. **Migracion prioritaria compatible**
+   `legacy` El modo de subdirectorio garantiza que el comportamiento predeterminado de la traduccion permanezca sin cambios, al tiempo que permite activar explicitamente la recursividad.。
+3. **Refuerzo de limites en lugar de generalizacion de capacidades**
+   Esta es una mejora de la coherencia de la programacion de tareas, no una desviacion de la ruta de empaquetado del tiempo de ejecucion.。
+4. **Ajuste de la semantica de errores.**
+   Invalido regex El fallo explicito se utiliza ahora para evitar una filtracion silenciosa que conduzca a un procesamiento por lotes fuera de control.。
 
-## 5. 与先前方案轨道的深度对比
+## 5. Comparacion en profundidad con las orbitas del esquema anterior.
 
-### 5.1 对齐 `mainline-stabilization-next-batch` 方向
+### 5.1 Alineacion `mainline-stabilization-next-batch` Direccion
 
-一致点：
+Puntos de acuerdo：
 
-- 用共享契约提升命令/任务行为可预测性。
-- 延续 CI-safe 的增量交付方式。
-- 不重开无关的 renderer/runtime packaging 范围。
+- Utilice contratos compartidos para promover comandos./Previsibilidad del comportamiento de la tarea.。
+- Continuacion CI-safe Metodo de entrega incremental。
+- No vuelvas a abrir cosas irrelevantes renderer/runtime packaging Alcance。
 
-差异点：
+Diferencias：
 
-- 本切片主要作用于设置项与任务编排层，而非图表命令表面本身。
-- 但其推进哲学与边界治理方式与主线稳定化方案一致。
+- Este segmento afecta principalmente a los elementos de configuracion y la capa de disposicion de tareas, en lugar de a la superficie de comando del grafico en si.。
+- Sin embargo, su filosofia de avance y sus metodos de gobernanza fronteriza son consistentes con el plan principal de estabilizacion.。
 
-### 5.2 对齐 packaging/semantic convergence 轨道
+### 5.2 Alineacion packaging/semantic convergence orbita
 
-一致点：
+Puntos de acuerdo：
 
-- 同样遵循“集中真值 + 回归锁定 + 文档同批更新”的反漂移模式。
-- 同样执行完整门禁（`build`、全量测试、audits、diff-check、Obsidian CLI 检查）。
+- Siga tambien el "valor de verdad centralizado" + Volver a bloquear + Modo anti-deriva de "los documentos se actualizan en el mismo lote"。
+- Realiza tambien un control de acceso completo（`build`、Prueba completa、audits、diff-check、Obsidian CLI Inspeccion）。
 
-差异点：
+Diferencias：
 
-- 本切片关注内容处理范围选择，不属于 release packaging 边界语义层。
+- Esta seccion se centra en la seleccion del alcance del procesamiento de contenido y no pertenece a release packaging Capa semantica limite。
 
-## 6. 风险清单与控制措施
+## 6. Lista de riesgos y medidas de control.
 
-1. **风险：** regex 配置错误导致处理范围异常放大。
-   **控制：** 编译失败显式报错，不做静默降级。
-2. **风险：** `invert` + 空 pattern 导致“全排除”误行为。
-   **控制：** 空 pattern 被定义为 no-op，即使 invert=true 也不改变文件集合。
-3. **风险：** mock/边界文件对象缺失 `extension` 时筛选异常。
-   **控制：** 当 `file.extension` 缺失时回退到 `name/path` 推导扩展名。
-4. **风险：** 翻译任务因递归默认改变产生回归。
-   **控制：** 翻译在 `legacy` 下仍默认非递归，仅在用户显式设为 include 时递归。
+1. **Riesgos：** regex Los errores de configuracion provocan una expansion anormal del alcance del procesamiento。
+   **controlar：** Si la compilacion falla, se informara explicitamente un error y no se realizara ninguna degradacion silenciosa.。
+2. **Riesgos：** `invert` + vacio pattern Conducir al comportamiento equivocado de "exclusion total"。
+   **controlar：** vacio pattern se define como no-op，Incluso si invert=true Tampoco cambies la coleccion de archivos。
+3. **Riesgos：** mock/Falta el objeto del archivo de limites `extension` Excepciones al filtrar。
+   **controlar：** Cuando `file.extension` Repliegue cuando falta `name/path` Derivar extensiones。
+4. **Riesgos：** Regresion en las tareas de traduccion debido a cambios predeterminados recursivos。
+   **controlar：** Traduccion en `legacy` El valor predeterminado sigue siendo no recursivo, solo cuando el usuario lo establece explicitamente en include Recursion temporal。
 
-## 7. 本次交付验证证据
+## 7. Constancia de verificacion de esta entrega
 
-已执行且通过：
+Ejecutado y aprobado：
 
 1. `npm run build`
-2. `npm test -- --runInBand`（全量绿）
+2. `npm test -- --runInBand`（Verde completo）
 3. `npm run audit:i18n-ui`
 4. `npm run audit:render-host`
 5. `git diff --check`
 6. `obsidian help`
 7. `obsidian-cli help`
 
-## 8. 增量进展更新（operation 级覆盖切片）
+## 8. Actualizacion de progreso incremental（operation Corte de cobertura de nivel）
 
-在全局筛选能力落地后，本轮后续切片也已完成：
+Una vez implementada la capacidad de deteccion global, tambien se ha completado el corte posterior en esta ronda.：
 
-1. 文件夹范围 operation 输入 schema 已支持可选覆盖字段：
+1. Alcance de la carpeta operation Entrada schema Se admiten campos de anulacion opcionales：
    `includeSubfoldersMode`、`fileFilterMode`、`fileFilterPattern`、`fileFilterTarget`、`fileFilterCaseSensitive`、`fileFilterInvert`。
-2. note-processing 与 utility 两条 host adapter 路径已打通覆盖参数，并统一通过共享 helper（`applyFolderTaskSelectionOverride`）合成有效设置，避免多处重复合成逻辑漂移。
-3. 未传覆盖参数时行为与原来完全一致；翻译任务在 `legacy` 下仍保持默认非递归。
-4. 回归覆盖已扩展到 selector helper、CLI contract、operation registry 元数据和 host adapter 行为层。
-5. sidebar/workflow 在已有上下文 folder 时，已对更多文件夹动作完成覆盖透传对齐（`extract-concepts-folder`、`batch-extract-original-text`、`batch-fix-formula`），避免同一工作流中出现“部分动作沿用上下文、部分动作重新弹选择器”的语义割裂。
+2. note-processing con utility dos piezas host adapter Se ha abierto el camino para abarcar parametros y compartirlos a traves de unificado helper（`applyFolderTaskSelectionOverride`）Sintetizar configuraciones efectivas para evitar la deriva repetida de la logica de sintesis en multiples lugares。
+3. Cuando no se pasa ningun parametro de cobertura, el comportamiento es completamente consistente con el original; la tarea de traduccion es `legacy` Mantenga el valor no recursivo predeterminado。
+4. La cobertura de la regresion se ha ampliado a selector helper、CLI contract、operation registry Metadatos y host adapter Capa de comportamiento。
+5. sidebar/workflow En el contexto existente folder Hasta ahora, se han sobrescrito y alineado de forma transparente mas acciones de carpeta.（`extract-concepts-folder`、`batch-extract-original-text`、`batch-fix-formula`），Evite la separacion semantica de "algunas acciones heredan el contexto y algunas acciones vuelven a completar el selector" en el mismo flujo de trabajo.。
 
-## 9. 后续推进方向（具体）
+## 9. Direccion de seguimiento (especifica）
 
-1. 在更多反馈/观测到位前保持 `legacy` 兼容默认，避免默认语义大迁移风险。
-2. 若后续扩展外部自动化调用面，优先把覆盖字段直接映射到 canonical operation 执行路径，不绕过 host adapter 的 guard/校验层。
-3. 为 regex/glob 增加更聚焦的示例提示与非法 pattern 指引，不阻断高级语法输入。
-4. 按既定路线继续推进 packaging / semantic-verification convergence，不重开无关 runtime 范围。
+1. Mas comentarios sobre/Mantener hasta que la observacion este en su lugar `legacy` Compatible con los valores predeterminados para evitar el riesgo de una migracion a gran escala de la semantica predeterminada。
+2. Si posteriormente se amplia la superficie de llamada de automatizacion externa, se debe dar prioridad a mapear directamente los campos de cobertura a canonical operation Ruta de ejecucion, sin derivacion host adapter de guard/Capa de verificacion。
+3. para regex/glob Agregue indicaciones de ejemplo mas enfocadas e ilegales. pattern Pautas, no bloquee la entrada gramatical avanzada。
+4. Continuar avanzando por la ruta establecida. packaging / semantic-verification convergence，No importa si no vuelve a abrir runtime Alcance。
 
-## 10. 增量进展更新（批量提取指定原文 operation 契约）
+## 10. Actualizacion de progreso incremental (extraccion por lotes del texto original especificado) operation Contrato）
 
-本切片补齐了此前识别出的“文件夹级提取指定原文”在 operation 层的契约空缺：
+Este segmento complementa la "extraccion a nivel de carpeta del texto original especificado" previamente identificada en operation Vacante de contrato de capa：
 
-1. 在 `src/operations/registry.ts` 中新增 operation `content.batch-extract-original-text`。
-2. 命令绑定统一为 `batch-extract-original-text`，并复用工作流动作元数据语义（`interactive-ui`、`folder-selection`、`batch-write`）。
-3. 输入 schema 已支持文件夹筛选覆盖字段：
+1. en `src/operations/registry.ts` Nuevo en operation `content.batch-extract-original-text`。
+2. Las vinculaciones de mando estan unificadas como `batch-extract-original-text`，Y reutilizar la semantica de los metadatos de las acciones del flujo de trabajo.（`interactive-ui`、`folder-selection`、`batch-write`）。
+3. Entrada schema Se han admitido campos de cobertura de filtro de carpetas：
    `includeSubfoldersMode`、`fileFilterMode`、`fileFilterPattern`、`fileFilterTarget`、`fileFilterCaseSensitive`、`fileFilterInvert`。
-4. 结果 schema 已对齐 `BatchExtractOriginalTextResult` 结构：
+4. Resultados schema alineado `BatchExtractOriginalTextResult` Estructura：
    `folderPath`、`processedFileCount`、`extractedCount`、`cancelled`、`fileResults`、`errors`。
-5. 回归测试已扩展并锁定该 operation 在以下层面的可见性与契约稳定性：
+5. Las pruebas de regresion han ampliado y bloqueado el operation Visibilidad y estabilidad del contrato en los siguientes niveles：
    `operationsRegistry`、`cliContracts`、`cliCapabilityManifest`。
 
-## 11. 增量进展更新（筛选语法指引与 Regex 早期提示）
+## 11. Actualizaciones de progreso incrementales (pautas de sintaxis de deteccion y Regex Alerta temprana）
 
-按既定路线的下一步低风险 UX 加固切片已落地：
+El siguiente paso en la ruta establecida es de bajo riesgo. UX El corte reforzado ha aterrizado.：
 
-1. 在文件夹任务筛选区域新增“模式语法指引”设置行，提供 regex/glob 规范示例与匹配目标对齐提醒。
-2. 当筛选模式为 `regex` 时，用户在设置页修改模式串或切换到 regex 模式会触发非阻塞编译校验。
-3. 若 regex 无效，设置页立即给出本地化提示；但仍保留保存行为，不阻断高级用户的连续编辑流程。
-4. 该改动不改变任务运行时默认语义，仅把错误暴露时机前移，降低“执行批处理后才发现 pattern 错误”的延迟成本。
-5. i18n 与回归覆盖已同步更新，锁定新增 key 与设置页对 key 的使用。
+1. Se agrego una linea de configuracion de "Pautas de sintaxis de modo" en el area de filtrado de tareas de carpeta para proporcionar regex/glob Ejemplos de especificaciones y recordatorios de alineacion de objetivos coincidentes。
+2. Cuando el modo de filtro esta `regex` Cuando el usuario modifica la cadena del patron en la pagina de configuracion o cambia a regex El modo activa la verificacion de compilacion sin bloqueo.。
+3. Si regex No valido, la pagina de configuracion mostrara inmediatamente un mensaje de localizacion; sin embargo, el comportamiento de guardado se mantendra y el proceso de edicion continua de los usuarios avanzados no se bloqueara.。
+4. Este cambio no cambia la semantica predeterminada al ejecutar tareas, solo mueve el momento en que se exponen los errores para reducir el riesgo de "descubrir despues de ejecutar el procesamiento por lotes". pattern El coste del retraso de los “errores”。
+5. i18n Actualizado sincronicamente con la cobertura de regresion, bloqueando nuevas incorporaciones. key Corregir con la pagina de configuracion key Uso de。
 
-## 12. 增量进展更新（共享 Regex 校验收敛 + Adapter 覆盖锁定）
+## 12. Actualizaciones de progreso incrementales (compartidas Regex Verificacion de la convergencia + Adapter Anular bloqueo）
 
-又一个稳定化增量切片已落地，用于降低设置页与运行时校验语义漂移风险：
+Se implemento otro segmento incremental estabilizado para reducir el riesgo de deriva semantica en la pagina de configuracion y la verificacion del tiempo de ejecucion.：
 
-1. regex 语法预检已收敛到 `src/folderTaskFileSelector.ts` 的共享 helper（`getFolderTaskRegexValidationError`），不再由设置页本地重复实现。
-2. 运行时 regex matcher 编译与设置页预检现在复用同一套校验语义，降低后续维护中“提示可过但运行时报错”或反向漂移的概率。
-3. host-adapter 回归已锁定 `runBatchExtractOriginalTextCommandWithHost` 的覆盖行为，包括：
-   - `folderPathOverride + fileSelectionOverride` 的执行语义
-   - base settings 对象不被 override 流程污染的保证
-4. 该改动不改变命令默认语义，仅增强契约到执行层的一致性与可回归性。
+1. regex La verificacion previa gramatical ha convergido a `src/folderTaskFileSelector.ts` Compartir helper（`getFolderTaskRegexValidationError`），Ya no se repite localmente en la pagina de configuracion.。
+2. tiempo de ejecucion regex matcher La verificacion previa de la pagina de compilacion y configuracion ahora reutiliza el mismo conjunto de semantica de verificacion, lo que reduce la probabilidad de que "se pase el mensaje pero se produzca un error durante la ejecucion" o la deriva inversa en el mantenimiento posterior.。
+3. host-adapter Regreso bloqueado `runBatchExtractOriginalTextCommandWithHost` Comportamiento de cobertura, incluyendo：
+   - `folderPathOverride + fileSelectionOverride` Semantica de ejecucion de
+   - base settings El objeto no es override Garantia de contaminacion del proceso
+4. Este cambio no cambia la semantica predeterminada del comando, solo mejora la coherencia y la regresibilidad del contrato a la capa de ejecucion.。
 
-## 13. 主线落盘与工作区卫生结论
+## 13. Conclusion de colocacion de linea principal y saneamiento del area de trabajo.
 
-该切片已具备主线落盘条件：
+Este segmento ha cumplido las condiciones de colocacion de la linea principal.：
 
-- 具体方案已文档化。
-- 进度对比与架构推进评估已文档化并可追溯。
-- 后续方向明确且可执行。
-- 计划在 `main` 上提交推送后执行 clean 状态复核。
+- El plan especifico ha sido documentado.。
+- La comparacion del progreso y la evaluacion del avance de la arquitectura estan documentadas y rastreables.。
+- La direccion de seguimiento es clara y ejecutable.。
+- Planea `main` Ejecutar despues de enviar el push. clean Revision de estado。
 
-## 14. 1.8.7 发布收敛评估（深度对比 + 后续方向）
+## 14. 1.8.7 Evaluacion de la convergencia de versiones (comparacion en profundidad + Direccion de seguimiento）
 
-本次 `1.8.7` 发布切点补齐了“功能已落地”到“发布真值完全收敛”之间的最后差距。
+Esta vez `1.8.7` El punto de corte de liberacion llena el espacio final entre "la funcion se ha implementado" y "el valor real de liberacion ha convergido por completo"。
 
-### 14.1 现有代码与先前方案差异对比
+### 14.1 Comparacion de diferencias entre el codigo existente y la solucion anterior
 
-对照本文前述方案要求，当前状态如下：
+Segun los requisitos del programa mencionados anteriormente en este articulo, el estado actual es el siguiente：
 
-1. **共享 selector 契约要求** 不仅已实现，还已同步到欢迎弹窗摘要、release notes、change log，形成发布层可见真值。
-2. **`includeSubfolders` 可选且兼容要求** 继续保持：`legacy` 默认兼容行为未变化，并在发布文档中显式固化。
-3. **`relativePath`/`basename` 目标切换要求** 继续维持设置驱动与回归锁定，未被发布流程或打包边界改动打断。
-4. **稳定性要求** 在本轮新增一层反漂移保障：
-   regex 预检与运行时编译统一复用 `getFolderTaskRegexValidationError`。
-5. **CI-safe 纪律要求** 仍通过完整门禁验证后再发布，未出现“先发后补测”的逆序风险。
+1. **Compartir selector Requisitos contractuales** No solo se ha implementado, sino que tambien se ha sincronizado con el resumen emergente de bienvenida.、release notes、change log，Forme el valor de verdad visible de la capa de publicacion.。
+2. **`includeSubfolders` Requisitos opcionales y compatibles** Sigue asi：`legacy` El comportamiento de compatibilidad predeterminado permanece sin cambios y se corrige explicitamente en el documento de lanzamiento.。
+3. **`relativePath`/`basename` Requisitos de cambio de objetivos** Continuar manteniendo los controladores de configuracion y los bloqueos de regresion sin interrupcion del proceso de lanzamiento ni cambios en los limites del paquete.。
+4. **Requisitos de estabilidad** Anade una nueva capa de proteccion antiderrapante en esta ronda：
+   regex Reutilizacion unificada de verificacion previa y compilacion en tiempo de ejecucion `getFolderTaskRegexValidationError`。
+5. **CI-safe Requisitos disciplinarios** Aun se publicara despues de pasar la verificacion completa del control de acceso y no existe el riesgo de orden inverso de "liberar primero y luego realizar pruebas complementarias".。
 
-### 14.2 架构推进状态评估
+### 14.2 Evaluacion del estado de avance de la arquitectura.
 
-相对既有架构方向，本轮推进状态为：
+En comparacion con la direccion arquitectonica existente, el estado de avance actual es：
 
-1. **契约层收敛：本阶段完成**
-   selector 语义、host-adapter 覆盖合成、operation 契约注册、设置页提示已对齐。
-2. **跨层一致性：显著提升**
-   设置页校验与运行时行为共享 regex 校验真值，减少双实现漂移面。
-3. **发布面一致性：本阶段完成**
-   包元数据、文档、变更记录、欢迎弹窗摘要、双语 release notes 在同一版本边界上同步。
+1. **Convergencia de la capa de contrato: esta etapa esta completa**
+   selector Semantica、host-adapter Sintesis de cobertura、operation Se han alineado las indicaciones de la pagina de configuracion y registro del contrato.。
+2. **Consistencia entre capas: mejora significativa**
+   Establecer la validacion de paginas y el uso compartido del comportamiento en tiempo de ejecucion. regex Verifique el valor real y reduzca la superficie de deriva de la doble implementacion.。
+3. **Liberar la consistencia de la superficie: completado en esta etapa**
+   Incluye metadatos, documentacion, registros de cambios, resumen emergente de bienvenida, bilingue release notes Sincronizar en el mismo limite de version。
 
-### 14.3 剩余风险与控制
+### 14.3 Riesgo residual y control
 
-1. **风险：** regex/glob 对非技术用户仍有理解门槛。
-   **控制：** 继续保持轻量语法指引与非阻塞编辑，不牺牲高级语法。
-2. **风险：** 后续新 operation 可能绕过共享覆盖 helper，导致漂移回归。
-   **控制：** 新文件夹 operation adapter 强制复用 `applyFolderTaskSelectionOverride`，并通过契约测试锁定。
-3. **风险：** 未来若调整 `legacy` 默认语义，兼容风险仍高。
-   **控制：** 将默认语义迁移单独作为兼容性专项交付，配套显式回归矩阵与分阶段说明。
+1. **Riesgos：** regex/glob Todavia existe un umbral de comprension para los usuarios no tecnicos.。
+   **controlar：** Continue manteniendo pautas de sintaxis ligeras y edicion sin bloqueo sin sacrificar la sintaxis avanzada.。
+2. **Riesgos：** Seguimiento operation Posible omision de la superposicion compartida helper，Causar regresion a la deriva.。
+   **controlar：** Nueva carpeta operation adapter Reutilizacion forzada `applyFolderTaskSelectionOverride`，Y bloquear las pruebas de contrato。
+3. **Riesgos：** Si se hacen ajustes en el futuro `legacy` Semantica predeterminada, el riesgo de compatibilidad sigue siendo alto。
+   **controlar：** Ofrecer la migracion semantica predeterminada como un proyecto de compatibilidad independiente, completo con una matriz de regresion explicita e instrucciones por fases.。
 
-### 14.4 后续推进方向（1.8.7 之后）
+### 14.4 Direccion de seguimiento（1.8.7 Despues）
 
-1. 按既定 Stage-B2 路线继续推进 packaging / semantic-verification convergence，不把 runtime-boundary 拓扑改造混入文件夹任务切片。
-2. 对新增文件夹动作默认补齐 `operationsRegistry` + `cliContracts` + `cliCapabilityManifest` 三层契约对齐检查。
-3. 在不改变行为契约前提下，做一次聚焦的筛选预设/示例 UX 强化实验。
+1. Segun lo establecido Stage-B2 La ruta sigue avanzando packaging / semantic-verification convergence，No runtime-boundary Transformacion de topologia combinada con division de tareas de carpetas。
+2. Finalizacion de acciones de nuevas carpetas de forma predeterminada. `operationsRegistry` + `cliContracts` + `cliCapabilityManifest` Verificacion de la alineacion del contrato de tres niveles。
+3. Haga un ajuste preestablecido de deteccion enfocado sin cambiar el contrato de comportamiento./Ejemplo UX Experimentos intensivos。
 
-## 15. 增量进展更新（命名 file-selection profile）
+## 15. Actualizaciones de progreso incrementales (llamadas file-selection profile）
 
-### 15.1 当前代码真值相对先前要求的扩展
+### 15.1 Extension del valor de verdad del codigo actual en relacion con los requisitos anteriores
 
-此前文件夹任务筛选的要求现在是在保持兼容底座不变的前提下被有界扩展，而不是被替换：
+Los requisitos de filtrado de tareas de carpetas anteriores ahora se amplian de forma limitada en lugar de reemplazarse, manteniendo la base de compatibilidad sin cambios.：
 
-1. 全局文件夹任务默认值仍然是 canonical compatibility base；
-2. 已保存命名档案是可复用 overlay，不是第二套竞争性的执行路径；
-3. 新的持久化设置为 `folderTaskFileSelectionProfiles`，每个档案现在包含：
+1. El valor predeterminado de la tarea de carpeta global sigue siendo canonical compatibility base；
+2. Los archivos con nombre guardados son reutilizables overlay，No hay un segundo conjunto de rutas de ejecucion en competencia；
+3. Las nuevas configuraciones de persistencia son `folderTaskFileSelectionProfiles`，Cada archivo ahora contiene：
    - `id`
    - `name`
-   - 可选 `folderPathHint`
+   - Opcional `folderPathHint`
    - `includeSubfoldersMode`
    - `fileFilterMode`
    - `fileFilterPattern`
    - `fileFilterTarget`
    - `fileFilterCaseSensitive`
    - `fileFilterInvert`
-4. 优先级现在已经显式化并由回归测试锁定：
-   `单次运行显式 override > 选中的已保存档案 > 全局默认值`。
+4. Las prioridades ahora son explicitas y estan determinadas por pruebas de regresion.：
+   `Ejecucion unica explicita override > Archivo guardado seleccionado > Impagos globales`。
 
-### 15.2 架构边界解释
+### 15.2 Explicacion de los limites arquitectonicos
 
-对这层 profile 能力的正确解释应当是：
+Para esta capa profile La explicacion correcta de la habilidad debe ser：
 
-1. 这是 selector-layer 的易用性与一致性增强，不是 workflow runtime expansion；
-2. `folderPathHint` 被刻意限定为选择器预填充值，而不是隐藏执行绑定，从而避免陈旧路径在后续运行中静默劫持执行目标；
-3. host adapter 现在在可用时优先走 profile-aware 的 `getFolderTaskSelection(...)`，但在宿主未实现该方法时仍会回退到旧的 `getFolderSelection()`；
-4. 有界 maintainer bridge 现在也已支持 batch-generate 通过 `fileSelectionProfileId` / `fileSelectionProfileName` 复用档案，但这并不扩大 public-safe CLI slice。
+1. Esto es selector-layer Facilidad de uso y mejoras de consistencia, no workflow runtime expansion；
+2. `folderPathHint` Limitado deliberadamente a valores precargados del selector en lugar de ocultar enlaces de ejecucion, evitando asi que las rutas obsoletas se apropien silenciosamente de los objetivos de ejecucion en ejecuciones posteriores.；
+3. host adapter Ahora tenga prioridad cuando este disponible profile-aware de `getFolderTaskSelection(...)`，Pero cuando el host no implementa este metodo, seguira recurriendo al anterior. `getFolderSelection()`；
+4. delimitado maintainer bridge Ahora tambien compatible batch-generate Pase `fileSelectionProfileId` / `fileSelectionProfileName` Reutilizar el archivo, pero esto no lo expande. public-safe CLI slice。
 
-### 15.3 当前进展与下一步方向
+### 15.3 Progreso actual y proximos pasos
 
-相对先前方案，当前推进含义是：
+En comparacion con el plan anterior, el avance actual significa：
 
-1. 原始的 `includeSubfolders` 与 `relativePath/basename` 要求不再只停留在全局设置层，而是已经可在档案层复用；
-2. interactive picker、selector merge、host adapter 执行、maintainer CLI 输入解析现在共享同一套优先级模型，跨层漂移面继续缩小；
-3. 下一步应继续做 profile-surface hardening，而不是扩大 runtime scope：
-   - profile export/import 在 secrecy 与 mutability 规则未明确前，不应进入 public-safe slice；
-   - 如果更多文件夹 operation 进入 maintainer bridge，应默认要求同样的优先级与 non-mutation 回归；
-   - picker UX 的后续打磨，也应继续保持“已保存 hint + 运行时可改 folder”这一核心契约。
+1. Originales `includeSubfolders` con `relativePath/basename` Los requisitos ya no solo se quedan en el nivel de configuracion global, sino que ahora se pueden reutilizar en el nivel de archivo.；
+2. interactive picker、selector merge、host adapter Ejecucion、maintainer CLI El analisis de entrada ahora comparte el mismo conjunto de modelos de prioridad y la superficie de deriva entre capas continua reduciendose.；
+3. ¿Que se debe hacer a continuacion? profile-surface hardening，En lugar de expandirse runtime scope：
+   - profile export/import en secrecy con mutability No entres hasta que las reglas esten claras. public-safe slice；
+   - Si hay mas carpetas operation Entrar maintainer bridge，En caso de no exigir la misma prioridad que non-mutation Regreso；
+   - picker UX Para su posterior pulido, el "Guardado" hint + Se puede cambiar en tiempo de ejecucion. folder”Este contrato principal。

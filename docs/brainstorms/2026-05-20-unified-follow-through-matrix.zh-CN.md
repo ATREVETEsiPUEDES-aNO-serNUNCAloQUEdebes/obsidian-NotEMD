@@ -5,111 +5,111 @@ topic: unified-follow-through-matrix
 canonical: true
 ---
 
-# 主线统一推进矩阵
+# Matriz de promocion unificada de linea principal
 
-> 目的：保留一份单一执行矩阵，明确区分 **被重写后的 live mainline** 与 **仍保留更多后续工作结果的备份分支**，避免后续规划继续高估当前主线已发货进展，或把新的结构性瓶颈继续隐藏起来。
+> Proposito: Mantener una matriz unica de ejecucion con distinciones claras **Despues de ser reescrito live mainline** con **Seguir conservando ramas de respaldo con mas resultados del trabajo posterior.**，Evitar que la planificacion posterior siga sobreestimando el progreso de los envios principales actuales o siga ocultando nuevos cuellos de botella estructurales.。
 
-## 1. Source-Of-Truth 规则
+## 1. Source-Of-Truth Reglas
 
-从这次检查点开始：
+A partir de este punto de control：
 
-1. 重写后的 `origin/main` 才是唯一的当前发货真值。
-2. `backup/main-before-origin-force-20260524` 只是 reintegration 证据，不是当前 release 真值。
-3. 任何新的当前进展都先更新本文。
-4. 只有当代码、测试、文档都真实存在于重写后的主线上时，某条轨道才允许被写成“已落地”。
+1. Reescrito `origin/main` es el unico valor verdadero del envio actual。
+2. `backup/main-before-origin-force-20260524` solo reintegration Evidencia, no actual release Valor de verdad。
+3. Primero actualice este articulo con cualquier novedad actual.。
+4. Solo cuando el codigo, las pruebas y los documentos realmente existen en la linea principal reescrita, una determinada pista se puede escribir como "implementada"”。
 
-## 2. 审计基线
+## 2. Linea base de auditoria
 
-本文基于以下事实建立：
+Este articulo se basa en los siguientes hechos.：
 
-1. 2026-05-24 force rewrite 之后的 live `origin/main`，并在 2026-06-06 基于 `1.9.2` 发货边界以及后续 post-release contract/evidence follow-through commits 重新审计当前 `main` 工作树；
-2. 先前仍与当前主线相关的文档：
+1. 2026-05-24 force rewrite Despues live `origin/main`，y en 2026-06-06 Basado en `1.9.2` Limites de envio y seguimiento post-release contract/evidence follow-through commits Vuelva a auditar el actual `main` Arbol de trabajo；
+2. Documentos anteriores que aun son relevantes para la linea principal actual.：
    - `docs/brainstorms/2026-05-07-cli-next-phase-planning.*`
    - `docs/brainstorms/2026-05-08-packaging-semantic-convergence-progress-and-next-steps.*`
    - `docs/superpowers/plans/2026-05-03-mainline-stabilization-next-batch.*`
    - `docs/brainstorms/2026-05-27-provider-settings-simplification-and-model-discovery-plan.*`
-3. 来自 `backup/main-before-origin-force-20260524` 的备份分支证据。
+3. de `backup/main-before-origin-force-20260524` Evidencia de la sucursal de respaldo。
 
-本次矩阵更新的当前执行基线：
+Linea base de ejecucion actual de esta actualizacion de la matriz：
 
-1. `890b21b`（`docs(progress): align post-recovery packaging truth`）是本次 Stage-C 质量跟进批次开始前 clean 的本地/远端基线；
-2. `824d07e`（`test(local-kb): cover chapter split showcase retrieval`）仍是更早的 local-KB fixture 锚点；当前 fixture lane 证明 Stage-B2/C/D 的 local-KB 与 chapter split 工作已经不再是“功能是否存在”的问题，因为 `npm run verify:local-kb-fixtures` 已经通过线上 MiniSearch path 覆盖 real-note-style chapter-split showcase retrieval，以及 chapter-split showcase 之外的真实 note/query 多样性；
-3. `7999a5f`（`test(local-kb): broaden stage-c fixture coverage`）之后，fixture lane 已把 chapter-split showcase 之外的真实 note/query 多样性纳入当前证明范围；
-4. 因此，本文把 local-KB、file selection 与 chapter split 视为已落地产品契约；下一步是评估深度、maintainer 示例对齐与 packaging 边界纪律，而不是继续做存在性重证。
-5. 当前批次继续把 maintainer example alignment 收口到真实 docs-vault 路径：helper help、双语 capability matrix 与测试现在共同覆盖 explicit research query、跨文件夹 batch-title source path、diagram-source retrieval，以及有界 `topK` / `slidingWindowSize` override；这仍是 maintainer-only 诊断面，不是 public CLI 扩面。
+1. `890b21b`（`docs(progress): align post-recovery packaging truth`）Esta vez Stage-C Seguimiento de calidad antes del inicio del lote. clean locales/Linea de base remota；
+2. `824d07e`（`test(local-kb): cover chapter split showcase retrieval`）Aun antes local-KB fixture punto de anclaje; actual fixture lane Prueba Stage-B2/C/D de local-KB con chapter split El trabajo ya no es una cuestion de “si la funcion existe” porque `npm run verify:local-kb-fixtures` Aprobado en linea MiniSearch path Cobertura real-note-style chapter-split showcase retrieval，y chapter-split showcase La realidad mas alla note/query Diversidad；
+3. `7999a5f`（`test(local-kb): broaden stage-c fixture coverage`）Despues，fixture lane Ya chapter-split showcase La realidad mas alla note/query Diversidad incluida en el alcance de la certificacion actual；
+4. Por lo tanto, este articulo considera local-KB、file selection con chapter split Se considera ejecutado el contrato de producto; El siguiente paso es evaluar la profundidad.、maintainer Ejemplo de alineacion con packaging Disciplina de limites en lugar de seguir haciendo reafirmacion existencial。
+5. El lote actual continua maintainer example alignment Manten tu boca cerca de la verdad. docs-vault Camino：helper help、bilingue capability matrix Cocobertura con pruebas ahora explicit research query、Carpetas cruzadas batch-title source path、diagram-source retrieval，Y acotado `topK` / `slidingWindowSize` override；Esto todavia es maintainer-only Lado de diagnostico, no public CLI Expansion。
 
-## 3. 当前统一矩阵
+## 3. Matriz unificada actual
 
-| 轨道 | 当前 `origin/main` 真值 | 备份分支证据 | 需要的下一步 | 严禁误判 | 优先级 |
+| orbita | Actual `origin/main` Valor de verdad | Copia de seguridad de la evidencia de la sucursal | Se requieren proximos pasos | Esta estrictamente prohibido juzgar mal | Prioridad |
 |---|---|---|---|---|---|
-| A. Packaging / semantic verification | 当前 live build/audit 真值仍是单入口 `main.js` + inline `srcdoc`；源码中仍保留 render-host runtime 候选模块，但当前执行链、semantic-helper 与审计真值已明确把它们保持为 non-shipped：既拒绝残留的 `render-host.mjs` 资产/引用，也把 `createRenderHostBundleBuildOptions()` 锁在 production `esbuild.config.mjs` 路径之外的 candidate-only 状态 | 更晚的备份分支曾进入更宽的 dedicated runtime-asset 通道 | 重新把它视为当前主线最优先的架构瓶颈：在未来真正补齐 build + release + audit + 文档之前，继续把当前 source-only 决策写清楚 | 不要因为 `src/` / `scripts/` 里存在 runtime 候选代码或候选 build options，就继续把 `render-host.mjs` 写成当前主线已发货 | P0 |
-| B. CLI / automation surface | 当前主线现已具备 registry-backed 的 config/profile export/import、脱敏 provider 导出、public-surface 导出、已进入 registry-backed typed contract 的 `content.split-note-by-chapters`，以及覆盖有界 path-based 操作与 export 操作的 repo-local maintainer help/invoke 脚本，其中也包含 maintainer-only 的 `local-knowledge.inspect` retrieval introspection | 备份分支还承载过更宽的 maintainer-bridge 设想，但当前 reintegration 刻意保持在窄边界内 | 继续把 maintainer helper 的边界写清楚；若任何 path-based operation 要提升为更广或更公共的 CLI 面，必须同批补齐契约/测试/文档；不要让最近 provider/settings 进展模糊这条分层边界 | 不要把当前能力面写成通用 public CLI，或无边界的 maintainer mutation API | P1 |
-| C. 用户可见 settings / preview / onboarding | 当前主线现已具备 preview flows、preview history、欢迎弹窗 release digest、provider diagnostics、settings reset、concept-note 前置配置提示、API liveness/activity UI、面向已保存工件的 preview 恢复链路、已恢复的 sidebar footer/API activity 滚动布局，并已重新同步 `1.9.2` 的 release-facing version truth | 备份分支还有更多 UX 收口尝试，但目前已恢复切片加上后续 `1.9.2` 的 sidebar 可观测性修复，已在当前主线上重新证明 | 继续保持 sidebar / preview / settings 的文案、i18n、已保存工件行为、footer-scroll 布局与 release-facing version truth 一致 | 不要再把这些 UX guardrail 写成“当前主线缺失”，但也不要顺手高估尚未恢复的 UX 想法，更不要把布局修复误写成 CLI/runtime 边界变化 | P1 |
-| D. Regex / 文件筛选 / local-KB / chapter split | 当前主线现已具备 file-selection profiles、文件夹 regex/glob 筛选、`relativePath` / `basename` 匹配、可选子目录范围控制、覆盖 `从标题生成`、`从标题批量生成`、`研究与总结`、`生成图形` 的 local-KB retrieval、混合的 Vault 相对文件/文件夹知识库路径、带默认回退语义的按任务知识库覆盖列表、chapter split、面向重复标题的稳定 TOC block ref、确定性的 TOC front-matter metadata、manifest-backed 的 guarded rerun overwrite 语义、对应回归测试、面向标题生成/研究总结/artifact-mode 图形结果路径的 machine-readable retrieval 摘要与 timing/size telemetry、用于检查 effective path/query/context 的 maintainer-only retrieval inspect seam、支持临时 `knowledgePaths` override 数组做 ad hoc task-scoped retrieval 检查、结构化 `queryDiagnostics`，以及通过 `npm run verify:local-kb-fixtures` 暴露、且已覆盖 mixed file/folder task-scoped inspect case、重复/空白 override、非 Markdown 干扰文件、无关文件夹与空 section 候选的 noisy mixed-corpus scope、real-note-style chapter-split showcase retrieval、跨文件夹任务契约检索、RAG 质量评估笔记与低信号导航源 diagnostics 的更宽离线夹具 | 备份分支提供了最初恢复证据；当前主线现在已直接携带该有界产品切片、后续 Stage C 收口结果，以及 `1.9.2` 的 inspect explainability 收紧 | 下一步应转向更多真实 note/query corpus 覆盖、maintainer example 对齐、chapter-split showcase/doc 对齐与基于当前任务契约的评估深度收口，而不是继续证明这些能力“是否存在” | 不要继续把这些能力写成只存在于 backup、或 live mainline 尚未具备；不要把 single-title / task-scoped retrieval 契约从文档里漏掉；也不要在文档或契约里把 retrieval 再压回 boolean-only signaling | P1 |
-| E. Provider settings / model discovery | 当前主线现已具备 metadata-driven 的 provider settings panel：其背后由 `src/llmProviders.ts` 提供共享字段 taxonomy，支持显式的 core/contextual/advanced/developer 分组、基于持久化 override 的 advanced auto-expand，以及面向一批已验证 OpenAI-compatible `/models` 预设（含 LM Studio、Groq、Fireworks、多项中国区 provider、`New API`、`OVMS`）、OpenRouter 有界 chat + embedding catalog 聚合、LiteLLM 显式 proxy-family `/models` + `/model/info` 聚合、Together 专用 `/models` 响应、Anthropic `GET /models`、Ollama tags、Google Gemini model listing、Huawei Cloud MaaS 专用 `v2/models`、Vercel AI Gateway 有界 `/v1/models` + `v3/ai/config` 双源合并、`AIHubMix` 托管 `/api/v1/models` registry、`GitHub Models` 的 `catalog/models` + `/v1/models` 双源发现、PPIO 的 chat + embedding + reranker 三路有界发现、OVMS 优先 `/v3/models` 并有界回退 `/v1/config` 的本地发现，以及 xAI 的 `/v1/language-models`；Google `nextPageToken` 与 Anthropic `has_more` / `last_id` 这类分页 registry 现在也会做有界多页遍历；runtime 与 discovery 还已收敛到共享的 OpenAI-compatible header owner 与 endpoint normalization，以避免 `Authorization` / `X-Api-Key` / `provider-specific compatibility header` 语义继续漂移，并容忍 `/responses`、`/chat/completions`、`/models` 这类 endpoint 形态；generic `OpenAI Compatible` 还会把 OVMS 风格本地 `/v3` 端点与 LiteLLM 风格本地 proxy 分开路由；同时仍保持手动 `model` 字符串作为持久化 source-of-truth，共享 parser 现已兼容 object-shaped proxy catalog、nested `specification.modelId`、wrapped `provider_models` / `publisherModels` / `registry` / `services` 目录，以及 `models/<id>`、`publishers/<owner>/models/<id>` 这类 resource-style 名称归一化，并已补齐对 gateway/provider-prefixed 模型的有界 token-cap guidance；此外，当 generic `OpenAI Compatible` 的 base URL 指向 OpenAI、DashScope/Qwen、Xiaomi MiMo、Fireworks、Hugging Face 这类已知 trusted official host 时，bare model ID 现在也会复用官方 provider 的 token-cap 元数据 | 这里没有值得“恢复”的 backup-branch 已发货实现；这条能力来自 current-main 代码、`.trellis/tasks/05-27-provider-settings-model-discovery/` 下的 Cherry Studio 对照研究，以及已经验证完成并合回的隔离实现通道 | 把这条轨道降为 bounded breadth-maintenance：继续通过共享 family/response-shape 语义扩宽支持，而不是退回 provider-name 分支；只有在 endpoint 语义、header owner、fallback 行为、token metadata 与测试/文档都足够稳定时，才扩到更多 provider family | 不要把当前有界 helper 误写成已经具备完整 Cherry Studio parity、持久化远程 model catalog、或所有 provider 都支持模型发现；generic `OpenAI Compatible` 的 bare model token ceiling 也只能在已知 trusted host 上写成当前主线真值，不能扩写成对任意 custom gateway 都成立 | P1/P2 |
-| F. Release / repo-saga / clean-state hygiene | 当前主线现已具备 release/repo-saga 脚本、repo-saga 执行锁、测试、文档、本地工件忽略 guardrail、chronicle refresh authorship 保护，且 release assets / tags / notes / workflow tag-trigger globs / workflow-source branch / chronicle-target branch 已进入同一套 shared release contract；远端主线同步到已发货 `1.9.2` 后也持续保持 clean-state 收尾纪律 | 备份分支推动了这些 guardrail；当前主线已恢复有界串行安全切片并进一步收紧 release truth | 保持 repo-saga 刷新流程的串行纪律，让 release-facing truth 始终与真实发货分支头部一致，让 workflow trigger、workflow-source 与 chronicle-target 真值继续由 contract 锁住，并把 clean-state 证明作为持续满足的收尾不变量，而不是重新积累成“以后再清理”的债务 | 不要把“脚本还在”误读为“可以并行跑 repo-saga 刷新路径”，不要让 YAML-local trigger 或分支 bootstrap 字面量漂离 repo-owned release contracts，也不要再回到“先做完再说，工作区之后再清”的收尾漂移，或继续使用过时版本真值措辞 | P0 |
+| A. Packaging / semantic verification | Actual live build/audit El verdadero valor sigue siendo una entrada unica `main.js` + inline `srcdoc`；Aun retenido en el codigo fuente. render-host runtime Modulo candidato, pero cadena de ejecucion actual.、semantic-helper Con los valores de verdad de auditoria se han mantenido explicitamente como non-shipped：Rechazar el residuo `render-host.mjs` Activos/Cita, tambien puesta `createRenderHostBundleBuildOptions()` Bloquear production `esbuild.config.mjs` Fuera del camino candidate-only Estado | Una rama de respaldo posterior una vez entro en un ambito mas amplio dedicated runtime-asset canal | Volver a considerarlo como el cuello de botella arquitectonico de mayor prioridad de la linea principal actual: compensarlo verdaderamente en el futuro. build + release + audit + Antes del documento, continua poniendo el actual. source-only Escribe las decisiones con claridad. | No lo hagas porque `src/` / `scripts/` existe en runtime Codigo de candidato o candidato build options，Solo sigue adelante `render-host.mjs` Escriba que la linea principal actual ha sido enviada. | P0 |
+| B. CLI / automation surface | La linea principal actual ya esta disponible. registry-backed de config/profile export/import、Desensibilizacion provider Exportar、public-surface Exportado, ingresado registry-backed typed contract de `content.split-note-by-chapters`，Y la cobertura esta limitada path-based Operacion y export Operacional repo-local maintainer help/invoke Guiones, que tambien contienen maintainer-only de `local-knowledge.inspect` retrieval introspection | La sucursal de respaldo tambien albergaba mas maintainer-bridge Supuesto, pero actualmente reintegration Permanecer deliberadamente dentro de limites estrechos | Continuar con maintainer helper Escribe los limites claramente; si alguno path-based operation Para ser promocionado a un publico mas amplio o mas CLI El contrato debe completarse con el mismo lote./prueba/Documentacion; no dejes reciente provider/settings El progreso desdibuja este limite estratificado | No escribas la habilidad actual como general. public CLI，O sin fronteras maintainer mutation API | P1 |
+| C. Visible para los usuarios settings / preview / onboarding | La linea principal actual ya esta disponible. preview flows、preview history、Ventana emergente de bienvenida release digest、provider diagnostics、settings reset、concept-note Avisos de preconfiguracion、API liveness/activity UI、Para artefactos guardados preview Restaurar enlace, restaurado sidebar footer/API activity Diseno de desplazamiento y resincronizacion. `1.9.2` de release-facing version truth | Ramas de respaldo y mas UX Intento cerrar la boca, pero el corte se restablecio con el seguimiento. `1.9.2` de sidebar Correccion de observabilidad, probada nuevamente en la linea principal actual | Sigue asi sidebar / preview / settings Redaccion publicitaria、i18n、Comportamiento del artefacto guardado、footer-scroll Diseno y diseno release-facing version truth consistente | Deja de poner estos UX guardrail Escriba "falta la linea principal actual", pero no sobreestime lo que aun no se ha restaurado. UX Ideas, no confundas la correccion del diseno con CLI/runtime Cambios de limites | P1 |
+| D. Regex / Filtrado de archivos / local-KB / chapter split | La linea principal actual ya esta disponible. file-selection profiles、carpeta regex/glob Deteccion、`relativePath` / `basename` Coincidencia, control de rango de subdirectorio opcional, cobertura `Generar a partir del titulo`、`Generacion por lotes a partir de titulos.`、`Investigacion y resumen`、`Generar graficos` de local-KB retrieval、Mixto Vault Archivos relativos/Ruta de la base de conocimientos de carpetas, lista de cobertura de la base de conocimientos por tarea con semantica alternativa predeterminada、chapter split、Estabilidad para titulos duplicados TOC block ref、determinista TOC front-matter metadata、manifest-backed de guarded rerun overwrite Semantica, pruebas de regresion correspondientes y generacion de titulos./Resumen de la investigacion/artifact-mode Ruta de resultados grafica machine-readable retrieval Resumen y timing/size telemetry、Para inspeccion effective path/query/context de maintainer-only retrieval inspect seam、Apoyo temporal `knowledgePaths` override Matriz de hacer ad hoc task-scoped retrieval Control y estructura. `queryDiagnostics`，y por `npm run verify:local-kb-fixtures` Expuesto y cubierto mixed file/folder task-scoped inspect case、Repetir/En blanco override、No Markdown Archivos que interfieren, carpetas irrelevantes y archivos vacios section Candidato noisy mixed-corpus scope、real-note-style chapter-split showcase retrieval、Recuperacion de contratos de tareas entre carpetas、RAG Notas de evaluacion de calidad y fuentes de navegacion con baja senal. diagnostics Abrazadera sin conexion mas amplia | La sucursal de respaldo proporciona la evidencia de recuperacion inicial; la linea principal actual ahora lleva directamente la porcion de producto limitada y la subsiguiente Stage C Resultados finales, y `1.9.2` de inspect explainability Apretar | El siguiente paso deberia ser avanzar hacia mas verdad. note/query corpus Cobertura、maintainer example Alineacion、chapter-split showcase/doc Alineacion con el cierre de la profundidad de la evaluacion basado en los contratos de mision actuales en lugar de continuar demostrando si estas capacidades “existen”” | No sigas escribiendo sobre estas habilidades como si existieran solo en backup、o live mainline Aun no disponible; no lo trates como single-title / task-scoped retrieval Dejar el contrato fuera del documento; no lo incluyas en el documento o contrato retrieval Presione hacia atras boolean-only signaling | P1 |
+| E. Provider settings / model discovery | La linea principal actual ya esta disponible. metadata-driven de provider settings panel：La razon detras de esto `src/llmProviders.ts` Proporcionar campos compartidos taxonomy，Apoyo explicito core/contextual/advanced/developer Agrupacion, basada en la persistencia override de advanced auto-expand，Y para un lote de verificados OpenAI-compatible `/models` Incumplimiento (incluido LM Studio、Groq、Fireworks、Multiples proyectos en China provider、`New API`、`OVMS`）、OpenRouter Limitado chat + embedding catalog Agregacion、LiteLLM Explicito proxy-family `/models` + `/model/info` Agregacion、Together Exclusivo `/models` Respuesta、Anthropic `GET /models`、Ollama tags、Google Gemini model listing、Huawei Cloud MaaS Exclusivo `v2/models`、Vercel AI Gateway Limitado `/v1/models` + `v3/ai/config` Fusion de doble fuente、`AIHubMix` Alojamiento `/api/v1/models` registry、`GitHub Models` de `catalog/models` + `/v1/models` Descubrimiento de fuente dual、PPIO de chat + embedding + reranker Descubrimiento acotado de tres vias、OVMS Prioridad `/v3/models` Y retroceso acotado `/v1/config` descubrimiento local, y xAI de `/v1/language-models`；Google `nextPageToken` con Anthropic `has_more` / `last_id` Este tipo de paginacion registry Ahora tambien podemos realizar un recorrido acotado de varias paginas.；runtime con discovery Tambien ha convergido hacia lo compartido OpenAI-compatible header owner con endpoint normalization，Para evitar `Authorization` / `X-Api-Key` / `provider-specific compatibility header` La semantica sigue a la deriva y tolera `/responses`、`/chat/completions`、`/models` Este tipo endpoint Formulario；generic `OpenAI Compatible` Seguire usando OVMS Estilo local `/v3` Puntos finales vs. LiteLLM Estilo local proxy Rutas separadas; sin dejar de ser manual `model` Cadena como persistencia source-of-truth，compartir parser Ahora compatible object-shaped proxy catalog、nested `specification.modelId`、wrapped `provider_models` / `publisherModels` / `registry` / `services` Indice de contenidos, y `models/<id>`、`publishers/<owner>/models/<id>` Este tipo resource-style Los nombres estan normalizados y completados. gateway/provider-prefixed Acotacion del modelo token-cap guidance；Ademas, cuando generic `OpenAI Compatible` de base URL Senalando OpenAI、DashScope/Qwen、Xiaomi MiMo、Fireworks、Hugging Face Tal conocido trusted official host horas，bare model ID Ahora tambien reutilizaremos la version oficial. provider de token-cap Metadatos | Aqui no hay nada que valga la pena “restaurar” backup-branch Ya enviado; esta capacidad proviene de current-main Codigo、`.trellis/tasks/05-27-provider-settings-model-discovery/` bajado Cherry Studio Estudios comparativos y canales de implementacion del aislamiento que han sido verificados e integrados | Reduce esta pista a bounded breadth-maintenance：Continuar compartiendo family/response-shape Soporte de ampliacion semantica en lugar de retroceso provider-name Sucursal; solo en endpoint Semantica、header owner、fallback Comportamiento、token metadata Y probando/Solo amplie a mas documentos cuando sean lo suficientemente estables. provider family | No trates la corriente como limitada helper Escrito erroneamente como ya completo Cherry Studio parity、Remoto persistente model catalog、o todos provider Ambos admiten el descubrimiento de modelos.；generic `OpenAI Compatible` de bare model token ceiling Solo se puede hacer cuando se sabe trusted host Lo anterior esta escrito como el valor de verdad de la linea principal actual y no se puede expandir a ningun par. custom gateway Todo establecido | P1/P2 |
+| F. Release / repo-saga / clean-state hygiene | La linea principal actual ya esta disponible. release/repo-saga Guion、repo-saga Bloqueos de ejecucion, pruebas, documentacion y artefactos locales ignorados. guardrail、chronicle refresh authorship proteger, y release assets / tags / notes / workflow tag-trigger globs / workflow-source branch / chronicle-target branch Ya entre al mismo set shared release contract；Sincronice la linea principal remota con la enviada `1.9.2` Continuar manteniendo despues clean-state Terminar la disciplina | Las ramas de respaldo impulsan estos guardrail；La linea principal actual ha restaurado la division de seguridad en serie limitada y la ha reforzado aun mas. release truth | mantener repo-saga Actualizar la disciplina serial del proceso para que release-facing truth Sea siempre coherente con el jefe de la rama naviera real, deje que workflow trigger、workflow-source con chronicle-target El valor de verdad continua por contract Bloquear y poner clean-state Demostrar como una invariante final de satisfaccion continua en lugar de volver a acumularse en una deuda que “se limpiara mas tarde” | No malinterpretes "el script todavia esta disponible" como "se puede ejecutar en paralelo". repo-saga Actualizar ruta", no dejes YAML-local trigger O sucursal bootstrap Alejamiento literal repo-owned release contracts，No vuelva a la tendencia final de “terminarlo primero, hablar de ello despues y limpiar el espacio de trabajo despues”, ni continuar usando versiones obsoletas de redaccion de valores de verdad. | P0 |
 
-本轮 Batch-C 对齐说明：
+Esta ronda Batch-C Instrucciones de alineacion：
 
-1. CLI / automation surface 的变化只限 maintainer helper truth-maintenance：`local-knowledge.inspect` 的 help 输出与双语 capability matrix 已补上真实 docs-vault example payload，仍不进入 public-safe slice。
-2. Regex / 文件筛选 / local-KB / chapter split 轨道的当前进展从“需要 maintainer 示例对齐”推进为“helper/docs/tests 已对齐当前 fixture lane 的真实 note/query 多样性”；后续再扩大时，应先补失败态、低信号 query 与 noisy-corpus 证据，而不是扩任务数量。
-3. 这批更新没有改变 MiniSearch retrieval algorithm、chapter split 写入契约、packaging 边界或 provider control-plane；它只降低测试证据、维护者可执行示例与进度文档之间的漂移风险。
+1. CLI / automation surface Los cambios se limitan a maintainer helper truth-maintenance：`local-knowledge.inspect` de help Produccion y bilinguismo capability matrix Completado con la verdad docs-vault example payload，Aun No Entro public-safe slice。
+2. Regex / Filtrado de archivos / local-KB / chapter split Progreso actual de las pistas de "requiere maintainer Ejemplo de alineacion” Avance a“helper/docs/tests Corriente alineada fixture lane La verdad note/query Diversidad"; en caso de ampliacion posterior, primero se deben compensar los estados de fallo y las senales bajas query con noisy-corpus Evidencia, no aumentar el numero de tareas.。
+3. No hay cambios en este lote de actualizaciones. MiniSearch retrieval algorithm、chapter split Escribe el contrato.、packaging Limite o provider control-plane；Solo reduce el riesgo de deriva entre la evidencia de prueba, los ejemplos ejecutables del mantenedor y la documentacion de progreso.。
 
-## 4. 当前主线已确认 register
+## 4. Se ha confirmado la linea principal actual. register
 
-以下内容可以安全地继续描述为当前主线已存在：
+Lo siguiente puede seguir describiendose con seguridad como existente en la linea principal actual：
 
-1. packaging / semantic helper 与 maintainer 文档；
-2. inline render-host 审计与相关测试；
-3. provider profile export/import 命令面；
-4. 欢迎弹窗 release digest；
+1. packaging / semantic helper con maintainer Documentacion；
+2. inline render-host Auditoria y pruebas relacionadas.；
+3. provider profile export/import Superficie de mando；
+4. Ventana emergente de bienvenida release digest；
 5. preview artifact save/export helpers；
-6. 脱敏 / public-safe CLI 导出表面与仓库内 maintainer help/invoke（含有界 path-based 操作）；
-7. settings reset、concept-note 前置提示、concept synonym suppression 与 API liveness/activity UI；
-8. file-selection profiles 与 folder-scope regex/glob 控制；
-9. local knowledge-base retrieval，包括单文件标题生成与按任务启用、混合文件/文件夹知识库源路径、面向标题生成、研究总结与 artifact-mode 图形结果路径的 machine-readable retrieval 摘要、用于检查 effective path/query/context 的 maintainer-only `local-knowledge.inspect` seam、用于 ad hoc task-scoped 检查的临时 `knowledgePaths` override 数组，以及 `npm run verify:local-kb-fixtures` 这条现已覆盖 mixed file/folder task-scoped inspect case、noisy mixed-corpus scope、real-note-style chapter-split showcase retrieval、chapter-split showcase 之外真实 note/query 多样性，以及 helper/docs/tests 对同一批真实 docs-vault example payload 的对齐；
-10. chapter split（含 repeated-heading-safe TOC block ref、确定性的 TOC front-matter metadata 与 guarded rerun overwrite 语义）；
-11. package metadata、welcome digest、README family、change log 与 release-note artifacts 上当前 `1.9.2` 的 release-facing version truth；
-12. transport-driven provider registry 增长，以及 OpenAI-compatible base-URL normalization、`models-then-chat` probing 等连接测试语义，同时仍保持手动 model 输入作为 live configuration truth；
-13. 当前主线已落地的 schema-driven provider-settings field grouping、基于持久化 advanced 值的自动展开，以及当前有界 family 批次的 in-plugin provider model discovery suggestions，包括 OpenAI-compatible（含 LM Studio、多项中国区 provider、Groq、Fireworks、`New API`、`OVMS`）、OpenRouter、LiteLLM proxy-family、Together、Anthropic、Ollama、Google、Huawei Cloud MaaS、`AIHubMix`、`GitHub Models`、`PPIO`、Vercel AI Gateway 与 xAI；
-14. 当前主线已落地的 host-aware token-cap guidance：generic `OpenAI Compatible` 在 base URL 指向已知 trusted official host 时，可让 bare model ID 复用上游 provider 的已知输出 token ceiling；手动 typed model change 仍可推进全局 auto-managed baseline，而 transient discovered-model max-output-token hint 则只驱动 provider-scoped 的输出 Token 覆盖上限 autofill，不会静默改写全局 `Max tokens`。
+6. Desensibilizacion / public-safe CLI Superficie de exportacion y almacen maintainer help/invoke（Contener limites path-based Operacion）；
+7. settings reset、concept-note Aviso previo、concept synonym suppression con API liveness/activity UI；
+8. file-selection profiles con folder-scope regex/glob controlar；
+9. local knowledge-base retrieval，Incluye generacion de titulos de archivos unicos y habilitacion basada en tareas, archivos mixtos/Ruta de origen de la base de conocimientos de carpetas, generacion orientada a titulos, resumen de investigacion y artifact-mode Ruta de resultados grafica machine-readable retrieval Resumen, para inspeccion effective path/query/context de maintainer-only `local-knowledge.inspect` seam、Utilizado para ad hoc task-scoped Inspeccion temporal `knowledgePaths` override Matrices y `npm run verify:local-kb-fixtures` Este articulo ahora esta cubierto. mixed file/folder task-scoped inspect case、noisy mixed-corpus scope、real-note-style chapter-split showcase retrieval、chapter-split showcase Fuera de la realidad note/query Diversidad y helper/docs/tests Sea fiel al mismo lote docs-vault example payload Alineacion；
+10. chapter split（Incluyendo repeated-heading-safe TOC block ref、determinista TOC front-matter metadata con guarded rerun overwrite Semantica）；
+11. package metadata、welcome digest、README family、change log con release-note artifacts Sube a la actualidad `1.9.2` de release-facing version truth；
+12. transport-driven provider registry Crecimiento y OpenAI-compatible base-URL normalization、`models-then-chat` probing Esperando conexiones para probar la semantica sin dejar de ser manual model Ingrese como live configuration truth；
+13. Se ha implementado la linea principal actual. schema-driven provider-settings field grouping、Basado en la perseverancia advanced Expansion automatica de valores, y actualmente acotada. family Lote in-plugin provider model discovery suggestions，Incluye OpenAI-compatible（Incluyendo LM Studio、Multiples proyectos en China provider、Groq、Fireworks、`New API`、`OVMS`）、OpenRouter、LiteLLM proxy-family、Together、Anthropic、Ollama、Google、Huawei Cloud MaaS、`AIHubMix`、`GitHub Models`、`PPIO`、Vercel AI Gateway con xAI；
+14. Se ha implementado la linea principal actual. host-aware token-cap guidance：generic `OpenAI Compatible` en base URL Senalar lo conocido trusted official host Cuando, permitir bare model ID Reutilizar aguas arriba provider Salida conocida de token ceiling；manuales typed model change Todavia se puede avanzar en la situacion general. auto-managed baseline，y transient discovered-model max-output-token hint entonces solo conduce provider-scoped La salida de Token Limite de cobertura autofill，No reescribira silenciosamente la situacion global. `Max tokens`。
 
-以下内容当前必须描述为 **未在重写后的主线上被证明存在**：
+Lo siguiente debe actualmente describirse como **No se ha demostrado que exista en la linea principal reescrita.**：
 
-1. 已发货 dedicated runtime assets；
-2. 超出当前有界 path-based helper 边界的更宽 maintainer mutation surface；
-3. 任何绕开当前单入口 `main.js` + inline `srcdoc` 真值的 dedicated-runtime 叙述；
-4. 当前主线已存在持久化 provider model catalog 或 Cherry Studio 风格 model CRUD 子系统的说法；
-5. 当前主线已覆盖所有 provider 的 remote model discovery，或任意 custom gateway 都自动具备权威模型发现、token metadata 与 provider ownership 推断能力的说法。
+1. enviado dedicated runtime assets；
+2. Mas alla de los limites actuales path-based helper Fronteras mas amplias maintainer mutation surface；
+3. Cualquier derivacion de la actual entrada unica `main.js` + inline `srcdoc` Valor verdadero dedicated-runtime Narracion；
+4. Ya existe persistencia en la linea principal actual. provider model catalog o Cherry Studio Estilo model CRUD El termino subsistema；
+5. La linea principal actual ha cubierto todos provider de remote model discovery，O cualquiera custom gateway Todos tienen automaticamente descubrimiento de modelo autorizado.、token metadata con provider ownership Afirmaciones sobre la capacidad de inferencia。
 
-## 5. 单一执行顺序
+## 5. Secuencia de ejecucion unica
 
-除非出现打断当前顺序的回归：
+A menos que haya una regresion que interrumpa la secuencia actual：
 
-1. **P0**：保持 packaging / semantic 当前主线真值诚实
-2. **P0/P1**：在未来拓宽 packaging 叙述之前，持续显式守住 latent render-host runtime source 的 candidate-only production-build guard
-3. **P1**：保持有界 CLI / maintainer-surface 真值收敛且测试充分，再决定是否有 path-based operation 适合做有界 public 提升
-4. **P1**：通过更宽 corpus 评估与 maintainer 示例对齐，继续深化 file-selection、local-KB、chapter split 的质量，而不是重开“功能存在性”论证
-5. **P1/P2**：把已落地的 provider-settings/model-discovery control plane 作为维护轨道持续收口，只通过显式 shared-core 语义继续扩 family
-6. **P1**：持续保持已恢复的用户可见 settings / preview guardrails 在代码、i18n、文档与 `1.9.2` release-facing version truth 之间一致
-7. **P0**：把 repo-saga 串行 guardrail 与 clean-state 证明继续作为每个批次的 finish criteria
+1. **P0**：mantener packaging / semantic La linea principal actual es veraz y honesta.
+2. **P0/P1**：Ampliar en el futuro packaging Antes de narrar, continua resguardando explicitamente latent render-host runtime source de candidate-only production-build guard
+3. **P1**：Mantenga los limites CLI / maintainer-surface Despues de que el valor verdadero converja y la prueba sea suficiente, decida si hay path-based operation Adecuado para acotados public Promocion
+4. **P1**：Pase mas ancho corpus Evaluacion y evaluacion maintainer Alinear ejemplos y seguir profundizando file-selection、local-KB、chapter split La calidad de, en lugar de reabrir, el argumento de la “existencia funcional”
+5. **P1/P2**：Pon lo que ha aterrizado provider-settings/model-discovery control plane A medida que la pista de mantenimiento continua cerrandose, solo mediante shared-core La semantica continua expandiendose. family
+6. **P1**：Mantenga visibles a los usuarios restaurados settings / preview guardrails En codigo、i18n、Documentacion y `1.9.2` release-facing version truth Coherencia entre
+7. **P0**：poner repo-saga Serie guardrail con clean-state La prueba continua con cada lote. finish criteria
 
-## 6. 文档同步规则
+## 6. Reglas de sincronizacion de documentos.
 
-每次触碰任一轨道，至少同步检查：
+Cada vez que toques cualquier pista, al menos sincroniza el check：
 
 1. `change.md`
-2. 对应专题 brainstorm 文档
-3. 本矩阵
-4. 若涉及 automation/verification 文案，则同步检查对应 maintainer 文档
+2. Temas correspondientes brainstorm Documentacion
+3. Esta matriz
+4. Si se trata de automation/verification Redaccion publicitaria, luego revisa el correspondiente maintainer Documentacion
 
-## 7. 验证门禁
+## 7. Verificar el control de acceso
 
-任何会更新本文判断的改动，都必须以以下结果收尾：
+Cualquier cambio que actualice la sentencia de este articulo debera terminar con los siguientes resultados：
 
 1. `npm run build`
 2. `npm test -- --runInBand`
 3. `npm run audit:i18n-ui`
 4. `npm run audit:render-host`
 5. `git diff --check`
-6. clean 的 `git status --short --branch`
+6. clean de `git status --short --branch`

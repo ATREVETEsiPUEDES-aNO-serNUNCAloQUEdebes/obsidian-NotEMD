@@ -1,6 +1,6 @@
 # Notemd Docs Hub
 
-Language: **English** | [简体中文](./README.zh-CN.md)
+Language: **English** | [Chino simplificado](./README.zh-CN.md)
 
 This directory contains repository-level documentation for maintainers and contributors.
 

@@ -60,7 +60,7 @@ describe('task language policy', () => {
             useDifferentLanguagesForTasks: false
         });
 
-        expect(resolveTaskLanguageName(settings, 'addLinks')).toBe('简体中文');
+        expect(resolveTaskLanguageName(settings, 'addLinks')).toBe('Chino simplificado');
     });
 
     test('keeps unsupported language codes visible instead of collapsing them to English', () => {

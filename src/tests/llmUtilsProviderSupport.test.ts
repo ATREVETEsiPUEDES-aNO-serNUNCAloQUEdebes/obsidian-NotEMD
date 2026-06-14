@@ -448,7 +448,7 @@ describe('llmUtils expanded provider support', () => {
             text: '{"choices":[{"message":{"content":"qwen-ok"}}]}'
         });
 
-        const result = await callLLM(provider, 'System prompt', '中文内容', settings, reporter);
+        const result = await callLLM(provider, 'System prompt', 'contenido chino', settings, reporter);
 
         expect(result).toBe('qwen-ok');
         expect(requestUrl).toHaveBeenCalledWith(expect.objectContaining({

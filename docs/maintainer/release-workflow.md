@@ -1,6 +1,6 @@
 # Notemd Release Workflow (Maintainers)
 
-Language: **English** | [简体中文](./release-workflow.zh-CN.md)
+Language: **English** | [Chino simplificado](./release-workflow.zh-CN.md)
 
 This document is for maintainers and contributors, not end users.
 

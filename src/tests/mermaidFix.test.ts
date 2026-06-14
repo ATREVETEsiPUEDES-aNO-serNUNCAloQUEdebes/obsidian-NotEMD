@@ -5,11 +5,11 @@ describe('Mermaid Fix Mode Tests', () => {
     test('should fix unquoted labels with nested brackets (Example 1)', async () => {
         const content = `\`\`\`mermaid
 graph LR
-CorpBonds -- "Cost of Capital" --> Investment[Corporate Investment "[企业投资]"];
+CorpBonds -- "Cost of Capital" --> Investment[Corporate Investment "[Inversion corporativa]"];
 \`\`\``;
         const expected = `\`\`\`mermaid
 graph LR
-CorpBonds -- "Cost of Capital" --> Investment["Corporate Investment [企业投资]"];
+CorpBonds -- "Cost of Capital" --> Investment["Corporate Investment [Inversion corporativa]"];
 \`\`\``;
         const result = await refineMermaidBlocks(content);
         expect(result).toBe(expected);
@@ -18,11 +18,11 @@ CorpBonds -- "Cost of Capital" --> Investment["Corporate Investment [企业投�
     test('should fix unquoted labels with nested brackets (Example 2)', async () => {
         const content = `\`\`\`mermaid
 graph LR
-MBS -- "Housing Demand" --> Consumption[Consumption [消费]];
+MBS -- "Housing Demand" --> Consumption[Consumption [Consumo]];
 \`\`\``;
         const expected = `\`\`\`mermaid
 graph LR
-MBS -- "Housing Demand" --> Consumption["Consumption [消费]"];
+MBS -- "Housing Demand" --> Consumption["Consumption [Consumo]"];
 \`\`\``;
         const result = await refineMermaidBlocks(content);
         expect(result).toBe(expected);
@@ -31,11 +31,11 @@ MBS -- "Housing Demand" --> Consumption["Consumption [消费]"];
     test('should fix unquoted labels with nested brackets (Example 3 - White Dwarf)', async () => {
         const content = `\`\`\`mermaid
 graph TD
-PlanetaryNebula --> WhiteDwarf[白矮星 [White Dwarf]];
+PlanetaryNebula --> WhiteDwarf[enana blanca [White Dwarf]];
 \`\`\``;
         const expected = `\`\`\`mermaid
 graph TD
-PlanetaryNebula --> WhiteDwarf["白矮星 [White Dwarf]"];
+PlanetaryNebula --> WhiteDwarf["enana blanca [White Dwarf]"];
 \`\`\``;
         const result = await refineMermaidBlocks(content);
         expect(result).toBe(expected);
@@ -44,7 +44,7 @@ PlanetaryNebula --> WhiteDwarf["白矮星 [White Dwarf]"];
     test('should NOT fix interference items (already quoted)', async () => {
         const content = `\`\`\`mermaid
 graph LR
-GovCurve -- "Mortgage Rates" --> MBS["MBS Pricing [MBS定价]["];
+GovCurve -- "Mortgage Rates" --> MBS["MBS Pricing [MBSPrecios]["];
 \`\`\``;
         const result = await refineMermaidBlocks(content);
         expect(result).toBe(content);
@@ -53,15 +53,15 @@ GovCurve -- "Mortgage Rates" --> MBS["MBS Pricing [MBS定价]["];
     test('should handle full example block correctly', async () => {
         const content = `\`\`\`mermaid
 graph LR
-subgraph "Monetary Policy Transmission 货币政策传导"
-CentralBank["Central Bank Rate 央行利率"] --> Interbank["Interbank Rates 银行间利率"];
-Interbank --> GovCurve["Sovereign Yield Curve 国债收益率曲线"];
+subgraph "Monetary Policy Transmission Transmision de la politica monetaria"
+CentralBank["Central Bank Rate Tasas de interes del banco central"] --> Interbank["Interbank Rates Tasa de interes interbancaria"];
+Interbank --> GovCurve["Sovereign Yield Curve Curva de rendimiento del Tesoro"];
 
-GovCurve -- "Risk-Free Benchmark" --> CorpBonds["Corporate Bond Yields 公司债收益率"];
-GovCurve -- "Mortgage Rates" --> MBS["MBS Pricing [MBS定价]["];
+GovCurve -- "Risk-Free Benchmark" --> CorpBonds["Corporate Bond Yields Rendimientos de los bonos corporativos"];
+GovCurve -- "Mortgage Rates" --> MBS["MBS Pricing [MBSPrecios]["];
 
-CorpBonds -- "Cost of Capital" --> Investment[Corporate Investment "[企业投资]"];
-MBS -- "Housing Demand" --> Consumption[Consumption [消费]];
+CorpBonds -- "Cost of Capital" --> Investment[Corporate Investment "[Inversion corporativa]"];
+MBS -- "Housing Demand" --> Consumption[Consumption [Consumo]];
 end
 
 style CentralBank fill:#fff9c4,stroke:#fbc02d
@@ -70,15 +70,15 @@ style GovCurve fill:#e0f2f1,stroke:#00695c
         
         const expected = `\`\`\`mermaid
 graph LR
-subgraph "Monetary Policy Transmission 货币政策传导"
-CentralBank["Central Bank Rate 央行利率"] --> Interbank["Interbank Rates 银行间利率"];
-Interbank --> GovCurve["Sovereign Yield Curve 国债收益率曲线"];
+subgraph "Monetary Policy Transmission Transmision de la politica monetaria"
+CentralBank["Central Bank Rate Tasas de interes del banco central"] --> Interbank["Interbank Rates Tasa de interes interbancaria"];
+Interbank --> GovCurve["Sovereign Yield Curve Curva de rendimiento del Tesoro"];
 
-GovCurve -- "Risk-Free Benchmark" --> CorpBonds["Corporate Bond Yields 公司债收益率"];
-GovCurve -- "Mortgage Rates" --> MBS["MBS Pricing [MBS定价]["];
+GovCurve -- "Risk-Free Benchmark" --> CorpBonds["Corporate Bond Yields Rendimientos de los bonos corporativos"];
+GovCurve -- "Mortgage Rates" --> MBS["MBS Pricing [MBSPrecios]["];
 
-CorpBonds -- "Cost of Capital" --> Investment["Corporate Investment [企业投资]"];
-MBS -- "Housing Demand" --> Consumption["Consumption [消费]"];
+CorpBonds -- "Cost of Capital" --> Investment["Corporate Investment [Inversion corporativa]"];
+MBS -- "Housing Demand" --> Consumption["Consumption [Consumo]"];
 end
 
 style CentralBank fill:#fff9c4,stroke:#fbc02d

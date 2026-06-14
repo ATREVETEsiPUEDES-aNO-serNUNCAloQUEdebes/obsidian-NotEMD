@@ -5,31 +5,31 @@ topic: mainline-progress-audit-and-next-level-direction
 canonical: true
 ---
 
-# 当前主线进度审计与 Next-Level 方向
+# Auditoria actual del progreso de la linea principal y Next-Level Direccion
 
-## 1. 为什么需要这份文档
+## 1. ¿Por que se necesita este documento?
 
-仓库在 2026-05-28 的 provider-settings/model-discovery 收口审计之后，又发生了一次需要重新落盘的真值变化。
+El almacen esta en 2026-05-28 de provider-settings/model-discovery Despues de la auditoria de cierre, se produjo otro cambio en el valor real que requirio realizar un nuevo pedido.。
 
-当前主线已经不应再被描述为：
+La linea principal actual ya no deberia describirse como：
 
-1. 仍在证明 bounded recovery 是否真正落地；
-2. provider-settings/model-discovery 还停留在第一阶段里程碑；
-3. 当前 control-plane 边界还没有稳定说法。
+1. Aun demostrando bounded recovery ¿Esta realmente implementado?；
+2. provider-settings/model-discovery Todavia estancado en el hito de la primera etapa.；
+3. Actual control-plane No hay ninguna declaracion sobre la estabilidad de la frontera.。
 
-现在真正需要的是更窄、更操作化的收口：
+Lo que realmente se necesita ahora es un cierre mas estrecho y operativo：
 
-1. 以最新 `1.9.2` 发货边界、远端同步以及后续 post-release contract/evidence follow-through commits 为基准，重述 current main；
-2. 对照先前计划语言，指出哪些表述已经滞后；
-3. 在不重开已收口存在性问题的前提下，明确下一阶段的有界推进方向。
+1. Utilice lo ultimo `1.9.2` Limite de envio, sincronizacion remota y seguimiento post-release contract/evidence follow-through commits Reexpresado como base current main；
+2. Compare el lenguaje del plan anterior e indique que declaraciones estan rezagadas.；
+3. Aclarar la direccion acotada de avance en la siguiente etapa sin reabrir problemas existentes que han sido cerrados.。
 
-主要对比来源：
+Fuentes primarias de comparacion.：
 
 1. `docs/brainstorms/2026-05-20-unified-follow-through-matrix.zh-CN.md`
 2. `docs/brainstorms/2026-05-25-post-bounded-recovery-audit-and-next-level-direction.zh-CN.md`
 3. `docs/brainstorms/2026-05-27-provider-settings-simplification-and-model-discovery-plan.zh-CN.md`
 4. `.trellis/spec/claude-dev/frontend/provider-settings-model-discovery.md`
-5. 当前主线代码中的：
+5. En el codigo principal actual：
    - `src/llmProviders.ts`
    - `src/providerModelDiscovery.ts`
    - `src/openaiCompatibleEndpointFamily.ts`
@@ -40,475 +40,475 @@ canonical: true
    - `src/localKnowledgeBase.ts`
    - `src/ui/NotemdSidebarView.ts`
    - `styles.css`
-6. 当前已发货 release/docs 真值：
+6. Actualmente enviado release/docs Valor de verdad：
    - `docs/releases/1.9.2.md`
    - `docs/releases/1.9.2.zh-CN.md`
    - `change.md`
    - `src/ui/welcomeReleaseNotes.ts`
 
-## 2. 当前主线真值
+## 2. Valor de verdad de la linea principal actual
 
-### 2.0 当前 live 分支与 release 边界已经重新明确
+### 2.0 Actual live Ramificacion y release Se han redefinido los limites
 
-当前审计基线不再是“某个计划之后的本地工作树”。
+La linea de base de auditoria actual ya no es "el arbol de trabajo local despues de un plan determinado"”。
 
-它现在明确是：
+Ahora esta claro：
 
-1. `origin/main` 已越过 `1.9.2` release cut，并包含后续 post-release contract/evidence follow-through commits；
-2. 本地 `main` 在本批次开始前已重新同步到该远端头部；
-3. 本文更新前仓库处于 clean 的 `main...origin/main` 状态。
+1. `origin/main` cruzado `1.9.2` release cut，E incluye el seguimiento post-release contract/evidence follow-through commits；
+2. locales `main` Resincronizado con el encabezado remoto antes del inicio de este lote；
+3. Antes de que se actualizara este articulo, el almacen estaba en clean de `main...origin/main` Estado。
 
-正确解释：
+Explicacion correcta：
 
-1. 这次审计基于真实已发货且已重新同步的主线边界，而不是本地推演中的 WIP；
-2. 任何仍把 remote sync 或 clean-state 写成未完成事项的旧措辞，都已经过时。
+1. Esta auditoria se basa en el limite de la linea principal real que se envio y resincronizo, no en el de la deduccion local. WIP；
+2. Cualquier resto remote sync o clean-state La antigua redaccion de los asuntos pendientes esta obsoleta.。
 
-### 2.1 Packaging / runtime 真值仍刻意保持收窄
+### 2.1 Packaging / runtime El valor real sigue siendo deliberadamente limitado.
 
-这一轮并没有改变发货边界：
+Los limites de envio no cambian en esta ronda.：
 
-1. 当前构建真值仍然是单入口 `main.js`；
-2. `audit:render-host` 仍然只承认 inline/runtime-host 真值，不承认已发货 detached render-host asset；
-3. 源码里继续保留 latent render-host/runtime candidates，但它们仍是源码组织层真值，不是 release 真值；
-4. production build 路径现在已经围绕这条分层补上显式 guard：除非 release assets、audit rules 与 docs 同批前进，否则 `createRenderHostBundleBuildOptions()` 继续保持 candidate-only，不能被 `esbuild.config.mjs` 消费。
+1. La verdad de la construccion actual sigue siendo de entrada unica. `main.js`；
+2. `audit:render-host` Todavia solo admitir inline/runtime-host Valor verdadero, no reconozca que ha sido enviado detached render-host asset；
+3. Guardalo en el codigo fuente. latent render-host/runtime candidates，Pero siguen siendo valores de verdad de la capa de organizacion del codigo fuente, no release Valor de verdad；
+4. production build La ruta ahora se ha poblado explicitamente alrededor de esta capa. guard：A menos que release assets、audit rules con docs Avanzar con la misma tanda, en caso contrario `createRenderHostBundleBuildOptions()` Sigue asi candidate-only，no puede ser `esbuild.config.mjs` Consumo。
 
-正确解释：
+Explicacion correcta：
 
-1. packaging 仍然是独立架构轨道；
-2. provider-settings/model-discovery 的推进不能模糊 packaging 真值。
+1. packaging Sigue siendo una pista de arquitectura independiente.；
+2. provider-settings/model-discovery El avance no puede ser vago packaging Valor de verdad。
 
-### 2.2 CLI / automation 真值边界未变，但重要性更高
+### 2.2 CLI / automation El limite de la verdad permanece sin cambios, pero es mas importante
 
-最近的 provider 工作没有扩宽 public CLI surface。
+mas reciente provider Los puestos de trabajo no se amplian public CLI surface。
 
-当前真值仍然是：
+El valor de verdad actual sigue siendo：
 
-1. public-safe export slice 仍然刻意保持收窄；
-2. maintainer/helper surface 依然更宽，但有边界；
-3. provider-settings/model-discovery 的改进仍然属于产品面与设置面，而不是更宽 public CLI 契约的证据。
+1. public-safe export slice Todavia deliberadamente estrecho；
+2. maintainer/helper surface Aun mas amplio, pero con fronteras；
+3. provider-settings/model-discovery La mejora todavia pertenece al lado del producto y al lado de la configuracion, en lugar de ser mas amplio. public CLI Prueba del contrato。
 
-正确解释：
+Explicacion correcta：
 
-1. 不要把新的 provider helper 能力写成 public CLI 已扩宽；
-2. CLI 是否提升仍是独立决策门。
+1. No pongas nuevos provider helper Habilidad escrita public CLI ampliado；
+2. CLI Promocionar o no sigue siendo un proceso de toma de decisiones independiente。
 
-### 2.3 产品面真值已明显跨过旧 recovery 基线
+### 2.3 El valor real del producto ha superado significativamente al del antiguo. recovery Linea de base
 
-先前恢复回来的有界产品切片仍然稳定存在于当前主线：
+Las porciones de productos limitadas restauradas anteriormente todavia existen de manera estable en la linea principal actual.：
 
-1. preview history 与 saved-artifact-aware reopening；
+1. preview history con saved-artifact-aware reopening；
 2. onboarding release digest；
 3. settings reset；
 4. concept-note prerequisite guidance；
-5. 面向有界任务集的 local knowledge-base retrieval；
-6. chapter split 与确定性的 managed-artifact 行为；
-7. regex/file-selection profiles 与 batch input 控制；
-8. API liveness/activity UI 与相关 operator feedback surface。
+5. Para conjuntos de tareas acotados local knowledge-base retrieval；
+6. chapter split Con certeza managed-artifact Comportamiento；
+7. regex/file-selection profiles con batch input controlar；
+8. API liveness/activity UI Relacionado con operator feedback surface。
 
-正确解释：
+Explicacion correcta：
 
-1. 当前进展瓶颈已经不是“这些用户可见 guardrail 有没有回来”；
-2. 下一瓶颈是 control-plane 收敛与有界宽度管理。
+1. El actual cuello de botella del progreso ya no es “visible para estos usuarios” guardrail ¿Has vuelto?”；
+2. El siguiente cuello de botella es control-plane Convergencia y gestion de ancho acotado.。
 
-### 2.4 Provider settings 与 model discovery 才是当前主线最主要的 control-plane 真值变化
+### 2.4 Provider settings con model discovery Es la linea principal actual mas importante. control-plane Cambios en el valor real
 
-当前 `main` 现在直接携带的有界收敛程度，已经明显超过 2026-05-25 审计里的描述。
+Actual `main` Ahora bien, el grado de convergencia acotado del acarreo directo ha excedido obviamente 2026-05-25 Descripcion en auditoria。
 
-现在已经真实成立的是：
+Lo que ahora esta verdaderamente establecido es que：
 
-1. `src/llmProviders.ts` 已不再只是 transport/runtime metadata：
-   - 现已承载共享 `settingFields` taxonomy（`core`、`contextual`、`advanced`、`developer`）；
-   - 现已承载按 provider 的 `modelDiscovery` metadata；
-   - 现已支持 provider-specific/manual-first discovery disable reason；
-   - 现已支持 canonical provider-name normalization 与 host-aware known-model token lookup。
-2. `src/ui/NotemdSettingTab.ts` 已不再主要依赖 provider-name 来决定设置 taxonomy：
-   - provider panel 现在通过共享字段 metadata 渲染；
-   - advanced disclosure 的开合状态会在当前设置会话内跨 re-render 保持；
-   - 已存在的 advanced/developer override 在需要时仍会强制可见；
-   - discovered-model selection 现在会更新 model 字段、给出 apply feedback、收起 discovered-model panel，并进入 model-aware token 同步链路。
-3. `src/providerModelDiscovery.ts` 已不再只是最小 first-batch helper：
-   - 现在支持的有界 family 批次包括 OpenAI-compatible presets、OpenRouter、LiteLLM proxy-family、Together、Anthropic、Ollama、Google、Huawei Cloud MaaS、Vercel AI Gateway、AIHubMix、GitHub Models、PPIO、OVMS 与 xAI；
-   - 现在能容忍更宽的 wrapped catalog，例如 `provider_models`、`providerModels`、`publisherModels`、`registry`、`registries` 与 `services`；
-   - 现在会保留瞬时 discovered-model metadata，例如 label、owner/provider hint 与 max-output-token hint；
-   - 现在会对 `models/<id>` 与 `publishers/<owner>/models/<id>` 这类 resource-style 名称做保守归一化；
-   - 现在会把更宽目录优先过滤到 generation-relevant models，而不是把 embedding/reranker/speech 等条目一股脑暴露到设置选择器里。
-4. `src/openaiCompatibleEndpointFamily.ts` 与 `src/providerRequestHeaders.ts` 现在已经成为共享 control-plane seam：
-   - family detection 现在能把本地 OVMS 风格 `/v3` 端点与 LiteLLM 风格本地 proxy 分开；
-   - runtime 与 discovery 现在复用同一套 compatibility-header owner，包括 `Authorization`、`X-Api-Key`、OpenRouter/Requesty referer-title header、AIHubMix `APP-Code`、GitHub Models API version header 与 Cerebras integration header。
-5. model-aware token guidance 现在已变成显式状态，而不再只是启发式碰巧一致：
-   - `globalModelAwareMaxTokensTracking` 现在持久化手动改模型、reset/reload 与 runtime request ceiling 选择所共享的全局 auto-managed baseline；
-   - discovered-model apply 现在走独立的 provider-scoped lane（`discoveredModelMaxOutputTokensTracking`），而不是静默改写全局 token cap；
-   - generic/custom gateway 现在也可以在 registry 明确返回 owner/provider hint 时，对 bare model ID 有界复用上游 token-cap metadata；但任意 bare-model 猜测仍然不在边界内。
+1. `src/llmProviders.ts` Ya no solo transport/runtime metadata：
+   - Ahora alojado y compartido `settingFields` taxonomy（`core`、`contextual`、`advanced`、`developer`）；
+   - Ahora cargado provider de `modelDiscovery` metadata；
+   - Ahora compatible provider-specific/manual-first discovery disable reason；
+   - Ahora compatible canonical provider-name normalization con host-aware known-model token lookup。
+2. `src/ui/NotemdSettingTab.ts` Ya no depende principalmente de provider-name Para decidir la configuracion taxonomy：
+   - provider panel Ahora a traves de campos compartidos metadata Representacion；
+   - advanced disclosure El estado abierto y cerrado se extendera a lo largo de la sesion de configuracion actual. re-render mantener；
+   - Existente advanced/developer override Todavia obligado a ser visible cuando sea necesario；
+   - discovered-model selection Se actualizara ahora model Campo, dado apply feedback、Cerrar discovered-model panel，y entrar model-aware token Enlace de sincronizacion。
+3. `src/providerModelDiscovery.ts` Ya no son solo los mas pequenos first-batch helper：
+   - El soporte ahora es limitado family El lote incluye OpenAI-compatible presets、OpenRouter、LiteLLM proxy-family、Together、Anthropic、Ollama、Google、Huawei Cloud MaaS、Vercel AI Gateway、AIHubMix、GitHub Models、PPIO、OVMS con xAI；
+   - Ahora tolera mas wrapped catalog，Por ejemplo `provider_models`、`providerModels`、`publisherModels`、`registry`、`registries` con `services`；
+   - Ahora se conservan los instantes. discovered-model metadata，Por ejemplo label、owner/provider hint con max-output-token hint；
+   - Ahora lo hare `models/<id>` con `publishers/<owner>/models/<id>` Este tipo resource-style Normalizacion conservadora de nombres.；
+   - Ahora se filtraran primero los directorios mas amplios. generation-relevant models，En lugar de poner embedding/reranker/speech Espere a que los elementos queden expuestos en el selector de configuracion.。
+4. `src/openaiCompatibleEndpointFamily.ts` con `src/providerRequestHeaders.ts` Ahora compartido control-plane seam：
+   - family detection Ahora puedes poner local OVMS Estilo `/v3` Punto final y LiteLLM Estilo local proxy separar；
+   - runtime con discovery Ahora reutiliza el mismo conjunto. compatibility-header owner，Incluye `Authorization`、`X-Api-Key`、OpenRouter/Requesty referer-title header、AIHubMix `APP-Code`、GitHub Models API version header con Cerebras integration header。
+5. model-aware token guidance Ahora es explicito, no solo heuristicas que coinciden：
+   - `globalModelAwareMaxTokensTracking` Ahora persiste y cambia manualmente el modelo.、reset/reload con runtime request ceiling Seleccione el global compartido auto-managed baseline；
+   - discovered-model apply Vuelvete independiente ahora provider-scoped lane（`discoveredModelMaxOutputTokensTracking`），En lugar de reescribir silenciosamente la situacion general token cap；
+   - generic/custom gateway Ahora tu tambien puedes registry Retorno explicito owner/provider hint cuando, cierto bare model ID Reutilizacion limitada en sentido ascendente token-cap metadata；Pero cualquier bare-model La conjetura aun esta fuera de los limites.。
 
-正确解释：
+Explicacion correcta：
 
-1. 这条轨道已经跨过“先把架构 bootstrap 起步”的阶段；
-2. 现在进入的是 bounded breadth management 与 truth-maintenance 阶段。
+1. Esta pista ha cruzado el “primero la arquitectura” bootstrap La etapa “inicial”；
+2. A lo que estamos entrando ahora es bounded breadth management con truth-maintenance Etapa。
 
-### 2.5 Clean-state 收口现在已经重新证明，不再处于待完成状态
+### 2.5 Clean-state El cierre ya ha sido recertificado y ya no esta pendiente
 
-旧审计里把 clean-state 写成仍待完成，现已不再准确。
+Dentro de la antigua auditoria clean-state La escritura aun no se ha completado y ya no es exacta.。
 
-当前真值是：
+El valor verdadero actual es：
 
-1. provider-settings/model-discovery 这一轮收口工作已经真实提交到 `main`；
-2. 当前仓库已经回到 clean 的 `main...origin/main` 状态；
-3. 对这条轨道来说，clean-state 已不再是阻塞 next-direction 讨论的未解前置条件。
+1. provider-settings/model-discovery Esta ronda de trabajos de cierre ha sido sometida a `main`；
+2. El almacen actual ha regresado. clean de `main...origin/main` Estado；
+3. Para esta pista，clean-state No mas bloqueos next-direction Condiciones previas no resueltas discutidas。
 
-正确解释：
+Explicacion correcta：
 
-1. clean-state 仍然必须继续作为后续每个批次的 finish gate；
-2. 但本文不应再把它写成尚未完成的收尾欠账。
+1. clean-state Aun debe continuar como finish gate；
+2. Pero este articulo ya no deberia escribirse como una deuda final inconclusa.。
 
-### 2.6 `1.9.2` 对主线真值的影响更窄，但仍然重要
+### 2.6 `1.9.2` Efecto mas limitado, pero aun importante, sobre la verdad principal
 
-最新一轮发货增量并没有重开新的架构轨道，而是收紧了已经落地轨道上的真值。
+La ultima ronda de incrementos de envio no reabrio una nueva via de arquitectura, pero reforzo el valor real de la via ya implementada.。
 
-现在真实成立的是：
+Lo que ahora esta verdaderamente establecido es que：
 
-1. sidebar 可观测性布局回退已在发货主线上修复：
-   - `styles.css` 再次明确包含 footer scroll container 与有界 API-activity 区域样式；
-   - `src/ui/NotemdSidebarView.ts` 再次让日志输出与 API activity 处在同一个可滚动发货面中，不再让 activity 条目把日志顶出视野。
-2. 本地知识库 inspect 在不扩大 public runtime contract 的前提下变得更可诊断：
-   - `src/localKnowledgeBase.ts` 现在会暴露结构化 `queryDiagnostics`；
-   - inspect 结果现在可以更清楚地区分低信号 basename 推导与健康 retrieval 路径，并对 `index.*` 这类导航型笔记给出 caution。
-3. maintainer CLI 示例与文档更贴近真实运行时：
-   - 文档与 helper 示例现在一致采用 `--vault docs` 下的 vault-relative 路径；
-   - 这减少了 maintainer 示例与真实 retrieval / chapter-split 执行契约之间的漂移。
-4. chapter split 现在已更明确地进入发货文档面，而不只是 maintainer 文档面：
-   - chapter split + TOC 的独立聚焦文档与 showcase 资产已经进入 checked-in 的 release-facing documentation surface。
-5. release 维护链路真值再次收紧：
-   - chronicle refresh helper 现在会保留 maintainer 身份，而不是悄悄退回 bot-like identity。
-   - workflow-source checkout 与 chronicle-target branch 真值现在归 `scripts/lib/packaging-contract.js` 所有，并通过 workflow env 名与 helper/tests 保持 GitHub Actions bootstrap 值一致。
-   - release workflow 的 tag-trigger glob 真值现在也归 `scripts/lib/packaging-contract.js` 所有，`.github/workflows/release.yml` 只保留 GitHub Actions 在 checkout 前必须解析的 bootstrap 字面量。
-   - semantic verification 现在会区分 workflow-start trigger 真值与数字版 release 准入：`*.*.*` 只负责启动 workflow，`scripts/release/validate-release-tag.js` 仍负责执行纯数字 `x.x.x` 契约。
+1. sidebar Se ha solucionado el problema del diseno de observabilidad en la linea principal de envio.：
+   - `styles.css` Nuevamente incluya explicitamente footer scroll container Limitado API-activity Estilo de area；
+   - `src/ui/NotemdSidebarView.ts` Deje que la salida del registro coincida nuevamente. API activity En la misma superficie de envio desplazable, ya no permita activity Las entradas hacen que el registro desaparezca de la vista。
+2. Base de conocimientos locales inspect Sin expansion public runtime contract La premisa se vuelve mas diagnosticable.：
+   - `src/localKnowledgeBase.ts` La estructura ahora quedara expuesta. `queryDiagnostics`；
+   - inspect Los resultados ahora distinguen mas claramente las senales bajas basename Derivacion y salud retrieval camino, y a `index.*` Este tipo de nota de navegacion da caution。
+3. maintainer CLI Los ejemplos y la documentacion se acercan mas al tiempo de ejecucion real.：
+   - Documentacion y helper Los ejemplos ahora se utilizan constantemente. `--vault docs` bajado vault-relative Camino；
+   - Esto reduce maintainer Ejemplos y realidad retrieval / chapter-split Deriva entre contratos de ejecucion。
+4. chapter split Ahora hay un acceso mas explicito a la documentacion de envio, no solo maintainer Documentacion：
+   - chapter split + TOC Documentos enfocados independientemente con showcase Han entrado activos checked-in de release-facing documentation surface。
+5. release El valor de verdad del enlace de mantenimiento se vuelve a ajustar.：
+   - chronicle refresh helper Lo conservare ahora maintainer Identidad, no retirarse tranquilamente bot-like identity。
+   - workflow-source checkout con chronicle-target branch El valor de verdad regresa ahora `scripts/lib/packaging-contract.js` De principio a fin workflow env Nombre y helper/tests mantener GitHub Actions bootstrap Los valores son consistentes。
+   - release workflow de tag-trigger glob El valor de verdad tambien regresa ahora `scripts/lib/packaging-contract.js` todos，`.github/workflows/release.yml` Mantener solo GitHub Actions en checkout Debe analizarse antes. bootstrap Literales。
+   - semantic verification Ahora distingue entre workflow-start trigger Valor verdadero y version digital release Acceso：`*.*.*` Unico responsable de la puesta en marcha. workflow，`scripts/release/validate-release-tag.js` Sigue siendo responsable de hacer cumplir los numeros puros. `x.x.x` Contrato。
 
-正确解释：
+Explicacion correcta：
 
-1. `1.9.2` 不是“新增架构主线”的 release；
-2. `1.9.2` 之后的 release-contract 跟进仍在同一轨道内：减少 operator confusion、doc/runtime 漂移与 release-process 歧义，但不改变插件发货行为。
+1. `1.9.2` No se trata de “agregar una nueva linea principal de arquitectura” release；
+2. `1.9.2` Despues release-contract El seguimiento sigue por el mismo camino: disminucion operator confusion、doc/runtime Deriva vs. release-process Ambiguedad, pero no cambia el comportamiento de envio del complemento.。
 
-### 2.7 当前 `890b21b` Stage-B2/C/D 跟进基线
+### 2.7 Actual `890b21b` Stage-B2/C/D Seguimiento de las lineas de base
 
-本文更新前的执行基线是 `890b21b`（`docs(progress): align post-recovery packaging truth`），本地 `main`、`origin/main` 与工作区在本批次开始前保持一致且 clean。更早的 local-KB fixture 锚点仍是 `824d07e`（`test(local-kb): cover chapter split showcase retrieval`）。
+La linea base de ejecucion antes de que se actualizara este articulo era `890b21b`（`docs(progress): align post-recovery packaging truth`），locales `main`、`origin/main` Ser consistente con el espacio de trabajo previo al inicio de este lote y clean。Antes local-KB fixture El ancla permanece `824d07e`（`test(local-kb): cover chapter split showcase retrieval`）。
 
-这条 fixture lane 的价值在于，它把 Stage-C 证据从叙事层推进到可运行检查：`npm run verify:local-kb-fixtures` 现在会用当前线上 MiniSearch-backed retrieval 路径，跑 real-note-style 的 chapter-split docs-vault 示例，并覆盖 managed artifacts、guarded reruns、稳定 TOC block refs、跨文件夹 task-contract retrieval，以及 chapter-split showcase 之外的真实 note/query 多样性。
+Este articulo fixture lane El valor de Stage-C Avanzar la evidencia desde la capa narrativa hasta la inspeccion operativa.：`npm run verify:local-kb-fixtures` Ahora la corriente en linea MiniSearch-backed retrieval camino, correr real-note-style de chapter-split docs-vault Ejemplos y cobertura managed artifacts、guarded reruns、estable TOC block refs、Carpetas cruzadas task-contract retrieval，y chapter-split showcase La realidad exterior note/query Diversidad。
 
-当前 `7999a5f` 之后的跟进切片没有改 runtime retrieval algorithm，而是把已经通过 fixture 的真实 docs-vault 检索路径继续落到 maintainer operator surface：`local-knowledge.inspect` 的 helper help、双语 capability matrix 与文档对齐测试现在共同覆盖 explicit research query、跨文件夹 batch-title source path、diagram-source retrieval，以及有界 `topK` / `slidingWindowSize` override。这个切片的意义是减少“测试证明了，但维护者不知道怎么复现”的断层；它不改变 public CLI 边界，也不把 maintainer-only inspect seam 提升为用户 API。
+Actual `7999a5f` Los segmentos de seguimiento posteriores no han cambiado. runtime retrieval algorithm，En su lugar, pase el fixture la verdad docs-vault El camino de la busqueda sigue recayendo en maintainer operator surface：`local-knowledge.inspect` de helper help、Bilingue capability matrix Las pruebas de alineacion con la documentacion ahora tienen cobertura conjunta explicit research query、Carpetas cruzadas batch-title source path、diagram-source retrieval，Y acotado `topK` / `slidingWindowSize` override。El significado de este segmento es reducir la falla de "la prueba lo prueba, pero el mantenedor no sabe como reproducirlo"; no cambia public CLI Ni los limites ni la maintainer-only inspect seam Promocionar a usuario API。
 
-对照 `.trellis/tasks/05-19-local-kb-retrieval-chapter-split-stage-b2cd/prd.md`，当前逐项状态如下：
+Comparacion `.trellis/tasks/05-19-local-kb-retrieval-chapter-split-stage-b2cd/prd.md`，La situacion actual de cada articulo es la siguiente:：
 
-| PRD 要求 | 当前代码/文档真值 | 状态 | 下一步解释 |
+| PRD Requisitos | Codigo actual/Valor de verdad del documento | Estado | Siguiente explicacion |
 |---|---|---|---|
-| R1 local-KB 任务支持 | `从标题生成`、`从标题批量生成`、`研究与总结` 与 `生成图形` 在启用后已经进入 settings-driven retrieval 链路 | 已落地 | 不再把任务接线写成开放问题，后续投入质量深度 |
-| R2/R3 local-only 与 fallback 行为 | 当前运行时使用插件内 MiniSearch lexical retrieval；关闭 retrieval 或没有可用 context 时保留原任务路径 | 已落地 | 应写成轻量本地检索，不应写成完整 semantic RAG 平台 |
-| R4/R4a/R4b 设置与 source paths | 已支持混合 vault-relative 文件/文件夹知识库路径、默认列表、按任务覆盖，以及空覆盖回退默认列表 | 已落地 | 先提升示例与 inspect 易诊断性，再考虑更多任务类型 |
-| R5 对比研究 | active task 的 `research/` 目录下已有 local-RAG 与 TOC 对比材料 | 已作为决策支撑落地 | 后续比较必须落到 Notemd 当前任务契约，不能泛化成 RAG 口号 |
-| R6/R7 chapter split | command/sidebar/maintainer surface、确定性 TOC metadata、稳定 block refs、manifest-backed guarded reruns 与 managed artifact 结果已存在 | 已落地 | 随 result schema 演进，持续保持 showcase docs 与写入契约一致 |
-| R8 packaging / semantic truth | 当前发货边界仍是 `main.js` + inline `srcdoc`，没有宣称 dedicated runtime asset | 已作为约束落地 | packaging convergence 是下一条 P0 架构轨道，不是已完成项 |
-| R9/R10 tests、docs 与 CI 稳定性 | 现有集成测试与 `verify:local-kb-fixtures` 已覆盖 retrieval injection、fallback、inspect、chapter-split showcase 行为、跨文件夹 task-contract retrieval 与低信号导航源 diagnostics；当前 maintainer help/docs alignment 测试还锁住真实 docs-vault example payload | 持续 finish gate | 扩大表述前继续用测试锁住进度文案；helper 示例必须继续保持 vault-relative 且不越界进入 public CLI 叙述 |
+| R1 local-KB Apoyo a la mision | `Generar a partir del titulo`、`Generacion por lotes a partir de titulos.`、`Investigacion y resumen` con `Generar graficos` Ya ingresado despues de la activacion. settings-driven retrieval Enlace | Ya implementado | Ya no escriba el cableado de tareas como un problema abierto e invierta en calidad y profundidad mas adelante. |
+| R2/R3 local-only con fallback Comportamiento | Utilice el tiempo de ejecucion actual dentro del complemento. MiniSearch lexical retrieval；Cerrar retrieval O no disponible context Mantenga la ruta de la tarea original cuando | Ya implementado | Debe escribirse como una busqueda local ligera y no debe escribirse como una busqueda completa. semantic RAG Plataforma |
+| R4/R4a/R4b Configuracion y source paths | Se admite la mezcla vault-relative Documentacion/Ruta de la base de conocimientos de carpetas, lista predeterminada, anulacion por tarea y anulacion vacia para volver a la lista predeterminada | Ya implementado | Primero mejora el ejemplo y inspect Facilidad de diagnostico, considere mas tipos de tareas |
+| R5 Estudio comparativo | active task de `research/` Ya en el directorio local-RAG con TOC Materiales comparativos | Ya implementado como apoyo a la toma de decisiones. | Las comparaciones posteriores deben recaer en Notemd El contrato de tarea actual no se puede generalizar a RAG Lema |
+| R6/R7 chapter split | command/sidebar/maintainer surface、Certeza TOC metadata、estable block refs、manifest-backed guarded reruns con managed artifact El resultado ya existe | Ya implementado | seguir result schema Evolucionar, sostener showcase docs Consistente con el contrato escrito |
+| R8 packaging / semantic truth | La frontera maritima actual permanece `main.js` + inline `srcdoc`，Sin reclamaciones dedicated runtime asset | Implementado como una restriccion. | packaging convergence Es el siguiente P0 Pistas de arquitectura, elementos no completados. |
+| R9/R10 tests、docs con CI Estabilidad | Pruebas de integracion existentes y `verify:local-kb-fixtures` Cubierto retrieval injection、fallback、inspect、chapter-split showcase Comportamiento, carpeta cruzada task-contract retrieval Fuentes de navegacion con senal baja diagnostics；Actual maintainer help/docs alignment Las pruebas tambien se bloquean en la realidad. docs-vault example payload | Continuo finish gate | Continue utilizando pruebas para bloquear la redaccion publicitaria en progreso antes de expandir la descripcion.；helper El ejemplo debe continuar vault-relative No cruces la frontera y entra public CLI Narracion |
 
-架构解释：
+Explicacion de la arquitectura.：
 
-1. local-KB 是插件内 MiniSearch lexical retriever，加上 task-scoped prompt injection；不是已发货的外部 semantic RAG stack；
-2. `local-knowledge.inspect` 是 maintainer-only 诊断 seam，不是 public CLI 扩张；
-3. chapter split 是具备确定性 rerun 行为的 managed artifact 写入契约，不只是文本转换 helper；
-4. packaging 真值仍是单入口 `main.js` + inline `srcdoc`，所以 latent render-host source candidate 仍只是源码候选，除非未来同批修改 build、release、audit 与 docs。
+1. local-KB Esta dentro del complemento. MiniSearch lexical retriever，Mas task-scoped prompt injection；No enviado externo semantic RAG stack；
+2. `local-knowledge.inspect` Si maintainer-only Diagnostico seam，No public CLI Expansion；
+3. chapter split Asegurate rerun Comportamiento managed artifact Redaccion de contratos, no solo conversion de texto helper；
+4. packaging El verdadero valor sigue siendo una entrada unica `main.js` + inline `srcdoc`，entonces latent render-host source candidate Sigue siendo solo un candidato de codigo fuente, a menos que se modifique en el mismo lote en el futuro. build、release、audit con docs。
 
-## 3. 相对先前方案语言的深度对比
+## 3. Comparacion en profundidad con el lenguaje del programa anterior.
 
-### 3.1 2026-05-25 审计现在低估了什么
+### 3.1 2026-05-25 Que estan subestimando las auditorias ahora
 
-更早的 bounded-recovery 审计现在在一个关键点上已经滞后：
+Antes bounded-recovery Las auditorias ahora estan retrasadas en un punto critico.：
 
-1. 它仍把 provider 轨道描述成 current main 只完成了第一阶段有界收敛；
-2. 它仍保留了一些“metadata-driven settings 相对于硬编码 settings 仍待落地”的旧措辞；
-3. 它仍把 discovery 批次想象成更窄的 OpenAI-compatible/Ollama/Google surface。
+1. Todavia pone provider La orbita se describe como current main Solo se ha completado la primera etapa de convergencia acotada；
+2. Aun conserva algo“metadata-driven settings Frente a la codificacion rigida settings La antigua redaccion de "Aun por implementar"；
+3. Todavia pone discovery Piensa en los lotes como mas reducidos. OpenAI-compatible/Ollama/Google surface。
 
-当前代码已经直接推翻这些旧表述：
+El codigo actual anula directamente estas antiguas representaciones.：
 
-1. metadata-driven settings rendering 已落地；
-2. provider-specific discovery disable reason 已落地；
-3. bounded discovery 现在已明显超出最初三个 family 的 starter batch；
-4. runtime/discovery 的 header 与 endpoint-family 对齐已落地；
-5. discovered-model token metadata 现在会直接影响 settings 默认值。
+1. metadata-driven settings rendering Ya implementado；
+2. provider-specific discovery disable reason Ya implementado；
+3. bounded discovery Ahora mucho mas alla de los tres primeros family de starter batch；
+4. runtime/discovery de header con endpoint-family La alineacion ha aterrizado；
+5. discovered-model token metadata Ahora afectara directamente settings Valor predeterminado。
 
-正确解释：
+Explicacion correcta：
 
-1. 那份旧审计对 packaging 与 lane ordering 仍有用；
-2. 但它已经不再适合作为 provider 轨道的真值源。
+1. Esa vieja auditoria packaging con lane ordering Sigue siendo util；
+2. Pero ya no es adecuado como provider Fuentes de verdad para las orbitas.。
 
-### 3.2 2026-05-27 provider 专题文仍然正确的部分
+### 3.2 2026-05-27 provider Las partes del articulo principal que aun son correctas
 
-provider 专题文在以下几点上仍然正确，而且不应被放松：
+provider La monografia sigue siendo correcta en los siguientes puntos y no debe relajarse：
 
-1. 持久化结构必须保持简单；
-2. 手动 `model` 必须继续作为唯一持久化 provider-side 真值；
-3. 优先走共享 family 语义，而不是 provider-name 分支；
-4. Cherry Studio 只复用策略思想，不复用持久化 catalog 子系统；
-5. 文档必须诚实描述已支持与未支持边界。
+1. Las estructuras de persistencia deben mantenerse simples；
+2. manuales `model` Debe seguir siendo la unica persistencia provider-side Valor de verdad；
+3. Prioriza compartir family Semantica, no provider-name Sucursal；
+4. Cherry Studio Solo reutiliza las ideas estrategicas, no la perseverancia catalog Subsistema；
+5. La documentacion debe describir honestamente los limites admitidos y no admitidos.。
 
-这些仍应视为硬约束。
+Estas aun deberian considerarse limitaciones estrictas.。
 
-### 3.3 2026-05-27 provider 专题文现在低估了什么
+### 3.3 2026-05-27 provider ¿Cuales son las caracteristicas que se subestiman actualmente?
 
-该文档现在也在若干处低估了 current main：
+El documento ahora tambien esta subestimado en varios lugares. current main：
 
-1. 它在 Phase 3 的叙述里，仍偏向“首批 discovery helper”；
-2. 它还没有充分突出对 wrapped registries 与 resource-name normalization 的 parser 扩宽；
-3. 它没有把以下三类 token guidance 清晰区分：
-   - generic `OpenAI Compatible` 在 trusted host 上的 bare-model token 复用；
-   - generic gateway 上基于 registry owner hint 的 bare-model token 复用；
-   - gateway/provider-prefixed model 的 token 推断；
-   - 刻意保持更窄的 globally consistent fallback。
+1. Esta en Phase 3 La narrativa todavia favorece “el primer lote de discovery helper”；
+2. No destaca suficientemente la wrapped registries con resource-name normalization de parser ampliar；
+3. No clasifica las siguientes tres categorias token guidance Haz distinciones claras：
+   - generic `OpenAI Compatible` en trusted host en bare-model token Reutilizar；
+   - generic gateway Basado en registry owner hint de bare-model token Reutilizar；
+   - gateway/provider-prefixed model de token Inferencia；
+   - Mantenlo intencionalmente estrecho globally consistent fallback。
 
-正确解释：
+Explicacion correcta：
 
-1. 这份专题文现在更适合作为 control-plane contract 文档，而不是“未来实现草案”；
-2. 下一步工作是有界扩充与真值维护，而不是首轮交付。
+1. Esta monografia es ahora mas adecuada como control-plane contract Documentacion, no “borrador de implementacion futura””；
+2. El siguiente paso es la expansion limitada y el mantenimiento del valor de verdad, en lugar de la primera ronda de entrega.。
 
-### 3.4 当前统一矩阵必须继续防止的误判
+### 3.4 Juicios erroneos que la actual matriz unificada debe seguir evitando
 
-统一矩阵现在需要明确防住这些反复出现的误读：
+La Matriz Unificada ahora necesita protegerse explicitamente contra estas malas interpretaciones recurrentes.：
 
-1. 把当前更宽的 bounded discovery 误写成 all-provider discovery；
-2. 把 host-aware bare-model token lookup 误写成 arbitrary custom gateway 上也能自动推断 owner；
-3. 把已有共享 parser seam 误写成以后可以顺手持久化 remote catalog，而不需要新的显式架构决策。
-4. 把 `1.9.2` 中 sidebar / inspect / docs 的收口误写成 public CLI 已扩宽，或 packaging 契约已变化。
-5. 把 YAML 中的 `*.*.*` trigger 字面量误写成独立 release 规则，而不是受 shared release contract 锁定、且后续仍由数字 tag validator 准入的 bootstrap 值。
+1. Cambiar el ancho actual. bounded discovery Mal escrito como all-provider discovery；
+2. poner host-aware bare-model token lookup Mal escrito como arbitrary custom gateway Tambien se puede inferir automaticamente owner；
+3. Compartir existente parser seam Si se escribe por error, se puede persistir facilmente mas adelante. remote catalog，Sin requerir nuevas decisiones arquitectonicas explicitas。
+4. poner `1.9.2` medio sidebar / inspect / docs La terminacion de 23. esta incorrectamente escrita como public CLI Ampliado, o packaging El contrato ha cambiado。
+5. poner YAML en `*.*.*` trigger El valor literal se escribe erroneamente como independiente. release Reglas, no aceptacion shared release contract Bloqueado y seguido de numeros. tag validator Admisible bootstrap Valor。
 
-### 3.5 Packaging 与 CLI 规划文档目前仍然成立的部分
+### 3.5 Packaging con CLI Partes del documento de planificacion que aun son validas
 
-更早的 packaging 与 CLI 规划文档，在两个关键点上仍然是正确的：
+Antes packaging con CLI Documento de planificacion, todavia correcto en dos puntos clave：
 
-1. 当前真正发货的渲染器边界仍然是 `main.js` + inline `srcdoc`，而不是已发货 dedicated runtime asset；
-2. 当前 CLI 的正确边界仍然是“先保持宿主无关 core，再单独处理 host/file/UI follow-through”，而不是继续做更广 public command 数量扩张。
+1. El limite del renderizador actualmente enviado todavia esta `main.js` + inline `srcdoc`，En lugar de enviado dedicated runtime asset；
+2. Actual CLI El limite correcto sigue siendo "mantener primero la independencia del anfitrion" core，Tratelo por separado nuevamente. host/file/UI follow-through”，En lugar de seguir ampliandose public command Expansion cuantitativa。
 
-当前代码仍然支持这些早期决策：
+El codigo actual todavia respalda estas primeras decisiones.：
 
-1. `esbuild.config.mjs`、`scripts/audit-render-host-bundle.js` 与 maintainer 文档仍然共同锁定单入口发货边界；
-2. `src/operations/diagramGenerateOperation.ts`、`src/operations/diagramCommandExecution.ts`、`src/operations/diagramCommandHostAdapter.ts`、`src/operations/publicCliSurface.ts` 与 `src/maintainerCliBridge.ts` 仍然保持以下有界拆分：
+1. `esbuild.config.mjs`、`scripts/audit-render-host-bundle.js` con maintainer Los documentos aun estan cobloqueados en el limite de envio de entrada unica；
+2. `src/operations/diagramGenerateOperation.ts`、`src/operations/diagramCommandExecution.ts`、`src/operations/diagramCommandHostAdapter.ts`、`src/operations/publicCliSurface.ts` con `src/maintainerCliBridge.ts` Aun manteniendo la siguiente division acotada：
    - typed core operation；
-   - 有界 public-safe export command；
-   - 更宽但明确仅供 maintainer 使用的 path-based helper flow。
+   - delimitado public-safe export command；
+   - Mas amplio pero expresamente solo maintainer Usado path-based helper flow。
 
-正确解释：
+Explicacion correcta：
 
-1. provider 轨道的收口降低了一部分 control-plane 风险，但并没有取代 packaging 与 bounded CLI promotion discipline，成为新的架构主问题；
-2. next-level 规划现在应回到 packaging/semantic convergence 优先，其次才是 bounded CLI/public-surface 决策；provider 宽度扩充应降为持续维护轨道，而不是继续占据中心叙事。
+1. provider Se baja parcialmente el cierre de la pista control-plane Riesgo, pero no reemplazo packaging con bounded CLI promotion discipline，Convertirse en el nuevo maestro de la arquitectura；
+2. next-level La planificacion deberia volver ahora a packaging/semantic convergence Prioriza, luego ven bounded CLI/public-surface Toma de decisiones；provider La ampliacion de la amplitud deberia relegarse a una via de mantenimiento continuo en lugar de seguir ocupando la narrativa central。
 
-### 3.6 哪些旧进度表述现在会高估或错位
+### 3.6 ¿Que viejas declaraciones de progreso estan ahora sobreestimadas o fuera de lugar?
 
-现在有一类旧进度表述已经朝相反方向失真了：它们给 provider 轨道过多叙事权重，却低估了当前 Stage-C 真值维护的价值。
+Actualmente existe una clase de antiguas representaciones del progreso que han sido distorsionadas en la direccion opuesta: dan provider La pista da demasiado peso narrativo pero subestima el presente. Stage-C El valor del mantenimiento de la verdad.。
 
-具体来说：
+Especificamente：
 
-1. 当前主线不应再被写成 provider settings/model discovery 仍是唯一主要推进轨道；
-2. 当前主线不应再被写成 Stage-C local-KB / chapter-split 仍主要是在证明“功能是否存在”；
-3. 当前主线不应再被写成最新 release-facing truth 仍停留在 `1.9.0` 或 `1.9.1`。
+1. La linea principal actual ya no deberia escribirse como provider settings/model discovery Sigue siendo la unica via de propulsion principal.；
+2. La linea principal actual ya no deberia escribirse como Stage-C local-KB / chapter-split Todavia demostrando principalmente "si la funcion existe"”；
+3. La linea principal actual ya no debe escribirse como la ultima release-facing truth Todavia atrapado en `1.9.0` o `1.9.1`。
 
-正确解释：
+Explicacion correcta：
 
-1. provider 宽度现在属于维护轨道；
-2. Stage-C 质量/评测现在是更高价值的产品轨道；
-3. 在后续 release 出现前，`1.9.2` 就是当前公开真值边界。
+1. provider El ancho ahora pertenece a la pista de mantenimiento.；
+2. Stage-C Calidad/Las resenas son ahora una pista de productos de mayor valor.；
+3. En el seguimiento release Antes de aparecer，`1.9.2` Es el limite actual del valor de la verdad publica.。
 
-### 3.7 Stage-B2/C/D PRD 在当前主线上的真实含义
+### 3.7 Stage-B2/C/D PRD El verdadero significado de la linea principal actual.
 
-当前 active Stage-B2/C/D PRD 不应再被读成“功能是否存在”的 checklist。在当前主线上，R1 到 R7 已经是实现真值；R8 是防止夸大 packaging 的边界锁；R9 与 R10 是持续 finish gate。
+Actual active Stage-B2/C/D PRD ya no debe leerse como "si la funcion existe" checklist。En la linea principal actual，R1 llegar R7 Ya se da cuenta del valor de la verdad.；R8 Para evitar la exageracion packaging Bloqueo de fronteras；R9 con R10 es continuo finish gate。
 
-这会改变工程推进方向：
+Esto cambiara la direccion del avance del proyecto.：
 
-1. local-KB 的有效工作是更多真实 note/query 多样性与失败态 explainability，而不是重新接一遍任务入口；
-2. chapter split 的有效工作是 showcase/doc/result-schema 对齐，而不是重新恢复命令面；
-3. CLI 的有效工作是判断是否有有界 path-based operation 值得 public promotion，而不是把 maintainer diagnostics 变成隐含 public support；
-4. packaging 的有效工作是解决 latent runtime candidate 的 source/build 边界，而不是把候选源码写成已发货资产。
+1. local-KB El trabajo eficaz es mas autentico note/query Diversidad y estados de fracaso explainability，En lugar de volver a hacerse cargo de la entrada a la mision；
+2. chapter split Un trabajo eficaz es showcase/doc/result-schema Alinear en lugar de restaurar la superficie de comando；
+3. CLI El trabajo eficaz es determinar si existe un limite. path-based operation Vale la pena public promotion，En lugar de poner maintainer diagnostics volverse implicito public support；
+4. packaging Un trabajo eficaz es resolver latent runtime candidate de source/build Limites, en lugar de escribir codigo fuente candidato como activos enviados。
 
-## 4. 架构推进评估
+## 4. Evaluacion de la promocion de la arquitectura.
 
-### 4.1 真正推进了什么
+### 4.1 ¿Que fue realmente avanzado?
 
-1. provider control plane 现在可以通过共享 metadata 扩展，而不再只能靠手工堆 settings 分支。
-2. discovery 与 runtime 在 endpoint-family 和 header-owner 层已经更收敛。
-3. token guidance 不再只是 UI hint，而是已经进入持久化 settings 状态与 runtime ceiling 行为。
-4. discovery parser 相比最初落地 helper，已经对真实 registry 漂移、wrapped catalogs 与 resource-style names 更鲁棒。
-5. retrieval explainability 在 maintainer 轨道上更强了，因为弱 query 推导现在会被结构化诊断显式暴露，而不再只表现为不透明的空 context。
-6. shipped UI 的 operator feedback 再次可用了，因为日志输出与 API activity 现在共享有界滚动布局，而不是继续争抢固定空间。
-7. release workflow trigger 真值现在和 release assets、notes、tag validation、workflow-source branch、chronicle-target branch 一起进入 contract-backed 状态；这关闭了一处 YAML-local 漂移缝隙，同时没有假装 GitHub Actions 能在 checkout 前 import 仓库代码。
+1. provider control plane Ahora puedes compartir a traves de metadata Amplie, ya no dependa del amontonamiento manual settings Sucursal。
+2. discovery con runtime en endpoint-family y header-owner Las capas se han vuelto mas convergentes.。
+3. token guidance Ya no solo UI hint，En cambio, ha entrado en persistencia. settings Estado y runtime ceiling Comportamiento。
+4. discovery parser Comparado con el aterrizaje inicial. helper，Ya es cierto registry Deriva、wrapped catalogs con resource-style names Mas robusto。
+5. retrieval explainability en maintainer La pista es mas fuerte porque es mas debil query La derivacion ahora quedara expuesta explicitamente mediante diagnosticos estructurados en lugar de aparecer simplemente como un espacio vacio y opaco. context。
+6. shipped UI de operator feedback Esta disponible nuevamente porque la salida del registro es la misma que API activity Los disenos de desplazamiento limitado ahora se comparten en lugar de seguir luchando por un espacio fijo。
+7. release workflow trigger Valor de verdad ahora y release assets、notes、tag validation、workflow-source branch、chronicle-target branch Entrar juntos contract-backed Estado; esto cierra un lugar YAML-local Deriva la brecha sin fingir GitHub Actions Puede estar en checkout antes import Codigo de almacen。
 
-### 4.2 仍然存在的结构约束
+### 4.2 Restricciones estructurales que aun existen
 
-1. packaging 真值仍刻意比源码组织层更窄。
-2. discovery 仍按设计保持瞬时，不存在持久化 remote model catalog。
-3. 当前 bounded discovery family 批次已经足够宽，需要纪律，但还远没到可以宣称“通用 provider discovery”。
-4. generic `OpenAI Compatible` 对 owner 的推断仍必须保持保守；超出 trusted host、显式 registry owner hint 与显式 prefix 的部分，token ceiling 仍应保持 unresolved。
-5. 当前本机 host-side desktop verification 对 plugin reload/state inspection 更强，但对 settings-panel 的完整脚本化点击自动化仍较弱；这条 lane 目前仍依赖 Jest 去锁住 `Fetch model list -> Use` 的 notice/override 分支。
-6. maintainer inspect explainability 刻意比 public CLI 真值更丰富；除非未来有显式提升批次，否则它必须继续保持有界。
+1. packaging El valor de verdad sigue siendo deliberadamente mas limitado que la capa de organizacion del codigo fuente.。
+2. discovery Aun transitorio por diseno, sin persistencia remote model catalog。
+3. Actual bounded discovery family Los lotes son lo suficientemente amplios como para requerir disciplina, pero no lo suficientemente amplios como para afirmar que son "universales". provider discovery”。
+4. generic `OpenAI Compatible` Correcto owner Las extrapolaciones deben seguir siendo conservadoras; mas alla trusted host、Explicito registry owner hint Con explicito prefix parte de，token ceiling Aun debe mantenerse unresolved。
+5. Maquina local actual host-side desktop verification Correcto plugin reload/state inspection Mas fuerte, pero correcto settings-panel La automatizacion completa de los clics con secuencias de comandos aun es debil; esto lane Actualmente todavia depende de Jest Ir a bloquear `Fetch model list -> Use` de notice/override Sucursal。
+6. maintainer inspect explainability Comparar deliberadamente public CLI Los verdaderos valores son mas ricos; A menos que haya una promocion de lotes explicita en el futuro, debe continuar limitada.。
 
-### 4.3 如果这条线现在漂移，最大的风险是什么
+### 4.3 Si esta linea se desvia ahora, ¿cual es el mayor riesgo?
 
-现在最大的风险已经不是“没实现出来”，而是“边界纪律丢失”。
+El mayor riesgo ahora no es "no darse cuenta", sino "perdida de la disciplina de limites"”。
 
-最可能的失败方式：
+Forma mas probable de fracasar：
 
-1. ad hoc 的 provider-name special-case 又开始替代 family-based shared logic；
-2. 文档开始夸大与 Cherry Studio 的 parity；
-3. settings/discovery token guidance 与 runtime token-ceiling 逻辑再次漂移；
-4. 未来有人顺手“把抓到的模型列表存起来”，静默造出第二套 provider-state subsystem。
+1. ad hoc de provider-name special-case Comienza de nuevo la sustitucion family-based shared logic；
+2. La documentacion comienza a exagerar y Cherry Studio de parity；
+3. settings/discovery token guidance con runtime token-ceiling La logica vuelve a desviarse；
+4. En el futuro, alguien "guardara convenientemente la lista de modelos capturados" y creara silenciosamente un segundo conjunto. provider-state subsystem。
 
-### 4.4 当前主线真正的瓶颈已经移动到哪里
+### 4.4 ¿Adonde se ha movido el verdadero cuello de botella de la linea principal actual?
 
-在最新 provider 收口之后，当前最高杠杆、但尚未解决的瓶颈，已经移动到了相邻轨道：
+en la ultima provider Despues del cierre, el cuello de botella con mayor apalancamiento actual pero no resuelto se ha trasladado a la via adyacente.：
 
-1. packaging / semantic-verification 仍然承载着最核心的 source-vs-shipped 边界歧义，因为源码里已有可复用 runtime candidate，但真正发货契约仍是单入口；
-2. CLI / automation 仍然承载着刻意保持的 public-vs-maintainer 分层，任何 path-based operation 的提升都必须继续显式化；
-3. file-selection / local-KB / chapter-split 的 Stage C 现在需要的是更深的 mixed-corpus 评估覆盖、示例对齐与 explainability 收口，而不是再做一次“功能是否存在”的恢复性论证。
+1. packaging / semantic-verification Todavia lleva el nucleo de source-vs-shipped Ambiguedad de limites, porque ya es reutilizable en el codigo fuente. runtime candidate，Pero el contrato de entrega real sigue siendo de una sola entrada.；
+2. CLI / automation Aun llevando el mantenimiento deliberado de public-vs-maintainer Capas, cualquiera path-based operation Todas las mejoras deben seguir siendo explicitas.；
+3. file-selection / local-KB / chapter-split de Stage C Lo que se necesita ahora es mas profundo mixed-corpus Cobertura de la evaluacion, alineacion de ejemplos y explainability Deja de hablar en lugar de hacer otro argumento reconstituyente de "¿existe la funcion?"。
 
-## 5. 具体下一阶段方向
+## 5. Direcciones especificas para la siguiente etapa
 
-下一批有界执行方案：
+El proximo lote de planes de ejecucion acotados.：
 
-1. **P0 packaging 真值：** 在没有同批修改 build graph、release assets、audit 与 docs 之前，继续把 `main.js` + inline `srcdoc` 作为唯一发货边界。
-2. **P1 Stage-C 质量：** 在保留 exact-file/folder、exclusion、failure-state 与 task-scoped inspect 覆盖的前提下，把 `verify:local-kb-fixtures` 扩展到更多 chapter-split showcase 之外的真实 note/query 形态。
-3. **P1 chapter split 文档：** 让 showcase docs 与 generated-artifact 示例持续跟随确定性 TOC front matter、稳定 block refs 与 guarded rerun 语义。
-4. **P1 CLI 边界：** 除非另起 public-promotion 批次并同批补齐契约、help、测试与文档，否则 `local-knowledge.inspect` 继续保持 maintainer-only。
-5. **P1/P2 provider 维护：** provider/model-discovery 的新增支持继续走共享 family 与 response-shape seam，并且每次都明确 token-guidance 的影响范围。
+1. **P0 packaging Valor de verdad：** Cuando no hay modificacion en el mismo lote build graph、release assets、audit con docs Antes, continua `main.js` + inline `srcdoc` Como unica frontera de envio。
+2. **P1 Stage-C Calidad：** Con reserva exact-file/folder、exclusion、failure-state con task-scoped inspect Sobre la premisa de la cobertura, ponga `verify:local-kb-fixtures` Ampliar a mas chapter-split showcase La realidad exterior note/query Formulario。
+3. **P1 chapter split Documentacion：** deja showcase docs con generated-artifact Los ejemplos siguen a la certeza TOC front matter、estable block refs con guarded rerun Semantica。
+4. **P1 CLI Limites：** A menos que se indique lo contrario public-promotion Contrato de lote y finalizacion de lote、help、Probar y documentar, o sino `local-knowledge.inspect` Sigue asi maintainer-only。
+5. **P1/P2 provider Mantenimiento：** provider/model-discovery El nuevo soporte sigue siendo compartido. family con response-shape seam，Y se claro en todo momento token-guidance Ambito de influencia。
 
-### Batch A：优先完成 packaging / semantic-verification 收敛，再决定是否拓宽任何叙述
+### Batch A：Priorizar la finalizacion packaging / semantic-verification Convergencia antes de decidir si ampliar cualquier narrativa
 
-优先级：`P0`
+Prioridad：`P0`
 
-目标：
+Metas：
 
-1. 继续把当前 `main.js` + inline `srcdoc` 的发货真值保持为显式、可执行的边界；
-2. 让 release workflow trigger、tag validation、assets、notes、workflow-source 与 chronicle-target 真值继续处在同一份 shared contract 下；
-3. 在任何人拓宽 packaging 叙述之前，继续显式守住 latent render-host runtime candidate 的 candidate-only production-build guard。
+1. Continuar poniendo la corriente. `main.js` + inline `srcdoc` La verdad del envio sigue siendo un vinculo explicito y ejecutable.；
+2. deja release workflow trigger、tag validation、assets、notes、workflow-source con chronicle-target El valor de verdad permanece en el mismo shared contract Abajo；
+3. Ampliar en cualquiera packaging Antes de narrar, continua aferrandote explicitamente latent render-host runtime candidate de candidate-only production-build guard。
 
-硬规则：
+Reglas estrictas：
 
-1. 如果未来又要引入 dedicated runtime asset，那么 build graph、release assets、audit logic、maintainer docs 与 release docs 必须在同一批次里一起变更。
+1. Si se va a introducir en el futuro dedicated runtime asset，Entonces build graph、release assets、audit logic、maintainer docs con release docs Deben cambiarse juntos en el mismo lote.。
 
-### Batch B：继续把 bounded CLI / public-surface promotion 与 maintainer helper 显式分开
+### Batch B：Continuar con bounded CLI / public-surface promotion con maintainer helper Separacion explicita
 
-优先级：`P1`
+Prioridad：`P1`
 
-目标：
+Metas：
 
-1. 保持当前有界 public-safe export 与仅供 maintainer 使用的 path-based helper flow 的分层；
-2. 只有当某个 path-based operation 的 contract、automation level、context requirement、测试与文档都足以支撑更广暴露时，才考虑提升。
+1. Mantenga la corriente acotada public-safe export Solo con maintainer Usado path-based helper flow Estratificacion de；
+2. Solo cuando un determinado path-based operation de contract、automation level、context requirement、Considere la posibilidad de actualizar solo cuando las pruebas y la documentacion sean suficientes para respaldar una exposicion mas amplia.。
 
-可能的工作：
+Posibles trabajos：
 
-1. 持续保持 `cli.public-surface.export` 与当前 registry metadata 对齐；
-2. 持续保持 `npm run cli:help` 与 maintainer 文档对当前有界 helper surface 的描述一致；
-3. 避免把 maintainer-only mutation/introspection seam 误写成已有公共 CLI 支持。
+1. Sigue asi `cli.public-surface.export` Con el presente registry metadata Alineacion；
+2. Sigue asi `npm run cli:help` con maintainer El documento esta vinculado al actual. helper surface La descripcion es consistente con；
+3. Evita poner maintainer-only mutation/introspection seam Escrito erroneamente como ya publico CLI Apoyo。
 
-### Batch C：在不重开存在性问题的前提下，深化 file selection / local-KB / chapter split 的 Stage-C 质量
+### Batch C：Sin reabrir cuestiones existenciales, profundizar file selection / local-KB / chapter split de Stage-C Calidad
 
-优先级：`P1`
+Prioridad：`P1`
 
-目标：
+Metas：
 
-1. 把当前主线上的 retrieval 与 batch-input 能力当作已经落地的产品切片；
-2. 后续投入聚焦在更宽 corpus-quality 证据、maintainer 示例与回归深度，而不是继续做恢复性叙事。
+1. Pon la linea principal actual. retrieval con batch-input Las capacidades se tratan como porciones de productos que ya se han implementado.；
+2. Las inversiones de seguimiento se centran en objetivos mas amplios. corpus-quality Evidencia、maintainer Ejemplos y volver a la profundidad en lugar de continuar con narrativas restaurativas。
 
-可能的工作：
+Posibles trabajos：
 
-1. 在当前契约已经支持的前提下，继续扩 mixed file/folder、mixed query-shape 与 exclusion-behavior 的夹具覆盖；
-2. 持续保持 maintainer 示例与 retrieval inspect 指引和真实 task-scoped retrieval 链路一致；
-3. 在扩测试深度时，继续保住 deterministic managed-artifact 与 rerun-guard 语义。
-4. 只有在能严格落到 Notemd 当前任务契约时，才增加与外部参考项目的比较性评测；避免泛化成脱离当前产品面的 RAG 口号。
+1. Partiendo de la premisa de que el contrato actual ya es compatible, continue expandiendose mixed file/folder、mixed query-shape con exclusion-behavior Cobertura de accesorios；
+2. Sigue asi maintainer Ejemplos y retrieval inspect Orientacion y verdad task-scoped retrieval Coherencia de enlaces；
+3. Al ampliar la profundidad de las pruebas, continue manteniendo deterministic managed-artifact con rerun-guard Semantica。
+4. Solo si puedes caer estrictamente en Notemd Solo agregar evaluacion comparativa con proyectos de referencia externos cuando el contrato de tarea actual este vigente; Evite la generalizacion hacia algo que este divorciado del aspecto actual del producto. RAG Lema。
 
-当前主线在这一轮 Stage-C follow-through 中已经新增落地的差量：
+La linea principal actual esta en esta ronda. Stage-C follow-through La diferencia de aterrizaje se ha anadido en：
 
-1. 离线夹具现在还会回归锁定 task-scoped 的 `batchGenerateFromTitles` 与 `researchSummarize` retrieval case，而不再把 diagram generation 当成唯一的 maintainer inspect 证明路径；
-2. maintainer helper 的 help/示例现在已经把当前真实支持的三条 inspect query 派生路径一起暴露出来：`basename`、`explicit` 与 `diagram-source`；
-3. exact-file-vs-folder 的 configured knowledge-path 边界现在也在同一条离线夹具链路中被检查，进一步降低了文档/示例与真实 retrieval 行为漂移的风险；
-4. maintainer 侧 inspect 的失败态现在也被明确锁成 explainability 真值：`no-paths`、`no-candidate-files` 与 `no-retrievable-sections` 将继续保持可区分，而不会再被压成一个笼统的“没有 context”结果。
-5. 离线夹具现在还覆盖了 noisy mixed-corpus scope：重复/空白 override path、混合 file/folder entry、非 Markdown 干扰文件、无关文件夹与空 searchable section 候选都会进入同一条评估路径，用来证明当前 MiniSearch 路径仍能保持 scope 收敛，同时不扩任务数量或 public CLI 行为。
-6. 离线夹具与 maintainer helper 示例现在还覆盖 real-note-style chapter-split showcase query：它会围绕 managed artifacts、guarded reruns 与稳定 TOC block refs 检查检索效果，并且 runnable inspect 示例使用真实 docs vault 路径，而不是只存在于测试夹具中的路径。
-7. 离线夹具现在还覆盖了 chapter-split showcase 之外的真实 note/query 多样性：跨文件夹 project/reference 知识库路径、任务契约检索、RAG 质量评估笔记与 navigation-like source diagnostics 都被锁定，同时没有把 `local-knowledge.inspect` 提升成 public CLI contract。
-8. maintainer help、双语 capability matrix 与对应 Jest alignment 测试现在补上了同一批真实 docs-vault inspect 示例：explicit research query 使用 `brainstorms` + `maintainer` 跨文件夹知识路径，batch-title 示例直接指向 `brainstorms/2026-05-28-mainline-progress-audit-and-next-level-direction.md`，diagram-source 示例继续用 `index.zh-CN.md` 验证低信号来源诊断；这使 Batch C 的“示例对齐”从开放方向推进为已落地 guardrail。
+1. Los partidos sin conexion ahora volveran a bloquearse task-scoped de `batchGenerateFromTitles` con `researchSummarize` retrieval case，En lugar de diagram generation Se el unico maintainer inspect Camino de prueba；
+2. maintainer helper de help/El ejemplo ahora incluye los tres admitidos actualmente. inspect query Los caminos derivados se exponen juntos.：`basename`、`explicit` con `diagram-source`；
+3. exact-file-vs-folder de configured knowledge-path Los limites ahora tambien se verifican en el mismo enlace del dispositivo fuera de linea, lo que reduce aun mas la documentacion./Ejemplos y realidad retrieval Riesgo de deriva conductual；
+4. maintainer lado inspect El estado de falla de explainability Valor de verdad：`no-paths`、`no-candidate-files` con `no-retrievable-sections` seguira siendo distinguible y ya no sera reprimido en un "no" general context”Resultados。
+5. Los partidos fuera de linea ahora tambien estan cubiertos noisy mixed-corpus scope：Repetir/En blanco override path、mezclar file/folder entry、No Markdown Archivos que interfieren, carpetas irrelevantes y archivos vacios searchable section Todos los candidatos ingresaran al mismo camino de evaluacion para demostrar la actual MiniSearch El camino aun se puede mantener scope Convergencia sin ampliar el numero de tareas o public CLI Comportamiento。
+6. Partidos fuera de linea y maintainer helper El ejemplo abarca ahora tambien real-note-style chapter-split showcase query：Te rodeara managed artifacts、guarded reruns Y estabilidad TOC block refs Verifique los resultados de la busqueda y runnable inspect Ejemplos usando real docs vault Caminos distintos a los que solo existen en el dispositivo de prueba.。
+7. Los partidos fuera de linea ahora tambien estan cubiertos chapter-split showcase La realidad exterior note/query Diversidad: entre carpetas project/reference Ruta de la base de conocimientos y recuperacion del contrato de tareas、RAG Notas de evaluacion de calidad y navigation-like source diagnostics Todos estan cerrados, mientras que ninguno `local-knowledge.inspect` Promocionar a public CLI contract。
+8. maintainer help、Bilingue capability matrix corresponder a Jest alignment La prueba ahora esta llena con el mismo lote de real. docs-vault inspect Ejemplo：explicit research query uso `brainstorms` + `maintainer` Ruta de conocimiento entre carpetas，batch-title Los ejemplos apuntan directamente a `brainstorms/2026-05-28-mainline-progress-audit-and-next-level-direction.md`，diagram-source El ejemplo sigue usando `index.zh-CN.md` Verificar el diagnostico de fuente de senal baja; esto permite Batch C La "Alineacion de ejemplo" paso de abierta a implementada guardrail。
 
-这一批次接下来的有界方向：
+La siguiente direccion acotada de este lote.：
 
-1. 继续增加 chapter-split showcase 之外的真实 note/query 多样性时，优先补真实任务契约上的失败态、低信号 query 与 noisy-corpus 证据，而不是增加更多演示性路径；
-2. 随 result schema 演进，持续保持 chapter split 的 showcase/docs、maintainer examples 与真实写入契约、managed-artifact 语义一致；
-3. 让 maintainer inspect 足够适合诊断，但不要让它意外变成事实上的 public contract；若未来要提升任何 path-based operation，必须另起 public-promotion 批次并同批锁 schema、help、测试与文档。
+1. Continuar aumentando chapter-split showcase La realidad exterior note/query Cuando se trata de diversidad, se debe dar prioridad a compensar estados de falla y senales bajas en contratos de tareas reales. query con noisy-corpus Evidencias en lugar de anadir caminos mas demostrativos；
+2. seguir result schema Evolucionar, sostener chapter split de showcase/docs、maintainer examples Escribe un contrato con la verdad.、managed-artifact Consistencia semantica；
+3. deja maintainer inspect Suficientemente adecuado para el diagnostico, pero no permita que accidentalmente se convierta en un hecho. public contract；Si se deben realizar mejoras en el futuro path-based operation，Debe empezar de nuevo public-promotion Bloqueo por lotes y por el mismo lote schema、help、Pruebas y documentacion.。
 
-### Batch D：把 provider 轨道放回 bounded breadth-maintenance 模式
+### Batch D：poner provider Reemplazo de vias bounded breadth-maintenance Patron
 
-优先级：`P1/P2`
+Prioridad：`P1/P2`
 
-目标：
+Metas：
 
-1. 继续只通过共享 family 语义或 wrapped-catalog shape 支持来扩宽能力；
-2. 除非 transport 或 discovery 契约真的不同，否则拒绝退回 provider-name-only 分支。
+1. Continuar solo compartiendo family Semantica o wrapped-catalog shape Apoyo para ampliar capacidades；
+2. A menos que transport o discovery El contrato es realmente diferente, de lo contrario se rechazara su devolucion. provider-name-only Sucursal。
 
-硬规则：
+Reglas estrictas：
 
-1. 每个新的 provider/discovery 扩展，都必须在同一批次里明确 family mode、header owner、endpoint normalization、token-guidance 行为，以及测试/文档。
-2. 每次改 discovered-model token autofill 时，都必须显式写清它影响的是：
-   - 全局 `Max tokens`
+1. Cada nuevo provider/discovery Las extensiones deben especificarse en el mismo lote. family mode、header owner、endpoint normalization、token-guidance Comportamiento y pruebas./Documentacion。
+2. Cambia cada vez discovered-model token autofill Cuando , debe quedar claramente escrito que afecta：
+   - Panorama general `Max tokens`
    - provider output-token override
-   - 两者都影响
-   - 两者都不影响
+   - Ambos afectan
+   - Ninguno afecta
 
-当前真值：
+Valor de verdad actual：
 
-1. 当前实现只影响 provider output-token override；
-2. 手动 typed model change 仍是会推进全局 model-aware baseline 的那条路径，前提是用户没有偏离它。
+1. La implementacion actual solo afecta provider output-token override；
+2. manuales typed model change Seguira avanzando la situacion general model-aware baseline ese camino, suponiendo que el usuario no se desvie de el。
 
-### Batch E：把文档/测试与 clean-state 继续当作长期护栏
+### Batch E：Pon el documento/Pruebas y clean-state Continuar sirviendo como barrera de seguridad a largo plazo.
 
-优先级：`P0`
+Prioridad：`P0`
 
-目标：
+Metas：
 
-1. 防止后续会话再次把 current-main 真值降回过时措辞；
-2. 把 clean-state 证明维持为持续满足的收尾不变量，而不是重新积累成待清理债务。
+1. Evitar que se vuelvan a utilizar sesiones posteriores current-main El valor de verdad vuelve a caer en una redaccion obsoleta.；
+2. poner clean-state Demostrar que sigue siendo una invariante de cierre que continua satisfaciendo, en lugar de volver a acumularse en deuda por saldar.。
 
-当前审计现实：
+Realidades actuales de la auditoria：
 
-1. 仓库当前已经 clean，因此 clean-state 恢复已不再是本文中的开放动作项；
-2. 现在真正需要的是，在后续 packaging / CLI / Stage-C 批次落地时继续守住这套 finish discipline；
-3. 统一矩阵、专题文、README/change surface 与聚焦回归检查，仍然是最实际的 anti-drift 护栏。
+1. El almacen actualmente cuenta clean，Por lo tanto clean-state La recuperacion ya no es un elemento de accion abierto en este articulo.；
+2. Lo que realmente se necesita ahora es que en el seguimiento packaging / CLI / Stage-C Continue conservando este conjunto cuando llegue el lote. finish discipline；
+3. Matriz unificada, articulos tematicos.、README/change surface Verificar con regresion enfocada sigue siendo lo mas practico anti-drift Barandilla。
 
-必须跟进的动作：
+Acciones que deben ser seguidas：
 
-1. 只要 packaging、CLI surface 或 provider/discovery 边界发生变化，就重新检查当前真值文档；
-2. 持续把 `npm run build`、`npm test -- --runInBand`、`npm run audit:i18n-ui`、`npm run audit:render-host`、`git diff --check` 与 clean 的 `git status --short --branch` 作为最小收尾包。
+1. Mientras packaging、CLI surface o provider/discovery Cuando los limites cambien, vuelva a verificar el documento de verdad actual.；
+2. Continue `npm run build`、`npm test -- --runInBand`、`npm run audit:i18n-ui`、`npm run audit:render-host`、`git diff --check` con clean de `git status --short --branch` Como paquete de acabado minimo。
 
-## 6. 文档同步规则
+## 6. Reglas de sincronizacion de documentos.
 
-未来任何会更新 provider-settings/model-discovery 轨道真值的改动，至少都应同步检查：
+Cualquier actualizacion se realizara en el futuro. provider-settings/model-discovery Los cambios en el valor de verdad orbital deberian comprobarse al menos de forma sincronica：
 
 1. `change.md`
 2. `README.md`
 3. `README_zh.md`
 4. `docs/brainstorms/2026-05-20-unified-follow-through-matrix.*`
 5. `docs/brainstorms/2026-05-27-provider-settings-simplification-and-model-discovery-plan.*`
-6. 本文
+6. Este articulo
 
-## 7. 验证门禁
+## 7. Verificar el control de acceso
 
-任何会改变本文真值判断的更新，仍应以以下结果收尾：
+Cualquier actualizacion que cambie el juicio de valor de verdad de este articulo deberia terminar con los siguientes resultados.：
 
 1. `npm run build`
 2. `npm test -- --runInBand`
 3. `npm run audit:i18n-ui`
 4. `npm run audit:render-host`
 5. `git diff --check`
-6. clean 的 `git status --short --branch`
+6. clean de `git status --short --branch`
 
 ## 8. Bottom Line
 
-当前 `main` 已经不再需要再做一次“provider settings 这条线到底有没有落地”的论证。
+Actual `main` No hay necesidad de volver a hacerlo“provider settings ¿El argumento de si esta linea ha llegado al suelo o no?。
 
-现在真正的问题是：
+Ahora la verdadera pregunta es：
 
-1. packaging/source organization 与真正 shipped render-host truth 能否继续保持一致，而不夸大当前主线并未发货的 runtime topology；
-2. 当前 bounded CLI 分层能否继续显式保持，而未来任何 path-based promotion 都坚持 contract-first，而不是 convenience-first；
-3. Stage-C local-KB / file-selection / chapter-split 工作能否继续补强 mixed-corpus 质量证据，而不是反复重谈“功能是否存在”；
-4. 当前更宽的 bounded provider discovery surface 能否继续保持 shared-core、lightweight 且边界诚实，并作为维护轨道而不是更大架构声明的借口；
-5. 当前真值文档能否足够快地跟上真实发货分支边界，避免未来会话又退回到 `1.9.0/1.9.1` 时代的旧措辞。
+1. packaging/source organization con verdad shipped render-host truth ¿Podemos seguir manteniendo la coherencia sin exagerar el hecho de que la linea principal actual no se ha enviado? runtime topology；
+2. Actual bounded CLI ¿Se puede seguir manteniendo explicitamente la estratificacion sin ningun futuro? path-based promotion Todos insisten contract-first，en lugar de convenience-first；
+3. Stage-C local-KB / file-selection / chapter-split ¿Se puede seguir fortaleciendo el trabajo? mixed-corpus Evidencia de calidad en lugar de regurgitar "¿existe la funcion?"”；
+4. Actualmente mas amplio bounded provider discovery surface ¿Se puede mantener? shared-core、lightweight Y los limites son honestos y se usan como excusa para mantener huellas en lugar de declaraciones arquitectonicas mas amplias.；
+5. ¿Puede el documento de valor de verdad actual mantenerse al dia con los limites reales de la sucursal de envio lo suficientemente rapido como para evitar que sesiones futuras vuelvan a caer? `1.9.0/1.9.1` Redaccion antigua de la epoca.。

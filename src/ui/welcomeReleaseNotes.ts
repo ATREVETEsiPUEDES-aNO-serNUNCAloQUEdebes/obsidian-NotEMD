@@ -90,7 +90,7 @@ const ENTRIES_ZH_CN: WelcomeReleaseNoteEntry[] = [
         highlights: [
             '文件夹任务文件筛选已收敛到共享 selector 契约，覆盖处理/提取/翻译/修复路径，并保留 include-subfolders 兼容模式。',
             'operation 级文件夹覆盖参数（含“批量提取指定原文”）已打通 canonical host adapter，且回归锁定 base settings 不变性保障。',
-            'regex 预检语义已在设置页与运行时 matcher 之间共享，非法 pattern 可更早暴露，降低配置漂移风险。'
+            'regex 预检语义已在设置页与运行时 matcher 之间共享，非法 pattern 可更早暴露,降低配置漂移风险。'
         ]
     },
 ];
@@ -108,7 +108,7 @@ const ENTRIES_ZH_TW: WelcomeReleaseNoteEntry[] = [
         version: '1.9.1',
         highlights: [
             'Provider 設定現已採用更清晰的核心/進階分組：首次配置只暴露必要欄位，同時會保留並自動展開既有進階覆寫項。',
-            '「取得模型列表」現在覆蓋更多 provider catalog 形態，並將發現到的輸出 token 上限套用到目前 provider 的 override 通道，而不是靜默改寫全域「最大Token數」。',
+            '「取得模型列表」現在覆蓋更多 provider catalog 形態,並將發現到的輸出 token 上限套用到目前 provider 的 override 通道，而不是靜默改寫全域「最大Token數」。',
             '當模型發現無法解析可靠輸出 token 上限時，Notemd 會保留既有 provider 覆寫值；只有不存在有效覆寫值時才使用 fallback，並明確提示使用者人工複核。'
         ]
     },
@@ -123,7 +123,7 @@ const ENTRIES_ZH_TW: WelcomeReleaseNoteEntry[] = [
     {
         version: '1.8.8',
         highlights: [
-            'Sidebar API 可觀測性現已提供快捷 deep-debug 開關、緊湊 request activity 區域與 retry-aware 測活回饋，同時繼續保持 Log output 可見。',
+            'Sidebar API 可觀測性現已提供快捷 deep-debug 開關、緊湊 request activity 區域與 retry-aware 測活回饋, 同時繼續保持 Log output 可見。',
             '「預覽圖形」現在可直接開啟受支援的已儲存產物，包括 Mermaid Markdown、JSON Canvas、Vega-Lite Markdown/JSON 與 HTML 檔案，不再對已儲存圖形重新走生成鏈路。',
             'legacy Mermaid intent 處理不再把 `erDiagram` 這類相容 Mermaid 的顯式 intent 強制回退為 `mindmap`，降低已儲存圖形的預覽/再生成漂移風險。'
         ]
@@ -133,7 +133,7 @@ const ENTRIES_ZH_TW: WelcomeReleaseNoteEntry[] = [
         highlights: [
             '資料夾任務檔案篩選已收斂到共享 selector 契約，覆蓋處理/擷取/翻譯/修復路徑，並保留 include-subfolders 相容模式。',
             'operation 級資料夾覆蓋參數（含「批量提取指定原文」）已打通 canonical host adapter，且回歸鎖定 base settings 不變性保障。',
-            'regex 預檢語義已在設定頁與執行期 matcher 之間共享，非法 pattern 可更早暴露，降低設定漂移風險。'
+            'regex 預檢語義已在設定頁與執行期 matcher 之間共享，非法 pattern 可更早暴露,降低設定漂移風險。'
         ]
     },
 ];

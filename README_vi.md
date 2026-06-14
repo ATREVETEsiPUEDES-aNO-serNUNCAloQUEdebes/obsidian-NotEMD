@@ -5,7 +5,7 @@
 
 # Tiện ích Notemd cho Obsidian
 
-[English](./README.md) | [简体中文](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [繁體中文](./README_zh_Hant.md) | [日本語](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
+[English](./README.md) | [Chino simplificado](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [Chino tradicional](./README_zh_Hant.md) | [japones](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
 
 Đọc tài liệu bằng nhiều ngôn ngữ hơn tại: [Trung tâm ngôn ngữ](./docs/i18n/README.md)
 
@@ -377,7 +377,7 @@ Truy cập settings của tiện ích qua:
   - **Tắt**: giữ nguyên đầu ra Mermaid được tạo, trừ khi bạn tự chạy `Batch Mermaid Fix` hoặc thêm nó vào một custom workflow.
 - **Output Language**: mới. Chọn ngôn ngữ đầu ra mong muốn cho các tác vụ "Generate from Title" và "Batch Generate from Title".
   - **English (Default)**: prompt được xử lý và đầu ra được tạo bằng tiếng Anh.
-  - **Other Languages**: LLM được hướng dẫn suy luận bằng tiếng Anh nhưng trả tài liệu cuối cùng bằng ngôn ngữ bạn đã chọn, ví dụ Español, Français, 简体中文, 繁體中文, العربية, हिन्दी v.v.
+  - **Other Languages**: LLM được hướng dẫn suy luận bằng tiếng Anh nhưng trả tài liệu cuối cùng bằng ngôn ngữ bạn đã chọn, ví dụ Español, Français, Chino simplificado, Chino tradicional, العربية, हिन्दी v.v.
 - **Change Prompt Word**: mới.
   - **Change Prompt Word**: cho phép bạn thay đổi prompt word cho một tác vụ cụ thể.
   - **Custom Prompt Word**: nhập prompt word tùy chỉnh cho tác vụ đó.

@@ -65,8 +65,8 @@ describe('docs bilingual support contract', () => {
 
             expect(hasLanguagePair).toBe(true);
             expect(content.includes('## English Summary')).toBe(false);
-            expect(content.includes('## 中文摘要')).toBe(false);
-            expect(content.includes('## English') && content.includes('## 中文')).toBe(false);
+            expect(content.includes('## resumen chino')).toBe(false);
+            expect(content.includes('## English') && content.includes('## chino')).toBe(false);
         }
     );
 });

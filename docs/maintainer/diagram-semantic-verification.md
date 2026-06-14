@@ -1,6 +1,6 @@
 # Notemd Diagram Semantic Verification (Maintainers)
 
-Language: **English** | [简体中文](./diagram-semantic-verification.zh-CN.md)
+Language: **English** | [Chino simplificado](./diagram-semantic-verification.zh-CN.md)
 
 This document defines the maintainer-local semantic verification layer for diagram-related changes. It complements repo-enforced checks; it does not replace them.
 

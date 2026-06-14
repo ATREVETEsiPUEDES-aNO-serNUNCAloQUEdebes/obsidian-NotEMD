@@ -73,9 +73,9 @@ describe('repo-saga contributor normalization', () => {
     test('supports locale-specific punctuation used by repo-saga quarter lines', () => {
         const svg = [
             '<svg>',
-            '  <text x="800" y="142">2025 Q2 — 2026 Q2 · 577コミット · 3人の貢献者 · 43個のタグ</text>',
-            '  <text x="182" y="526">2025 Q2：77コミット、1人の貢献者、+37,089 / -14,982 行。</text>',
-            '  <text x="182" y="766">2025 Q3：57コミット、2人の貢献者、+15,137 / -14,179 行。</text>',
+            '  <text x="800" y="142">2025 Q2 — 2026 Q2 · 577コミット · 3personasのColaborador · 43piezasのタグ</text>',
+            '  <text x="182" y="526">2025 Q2：77コミット、1personasのColaborador、+37,089 / -14,982 Fila。</text>',
+            '  <text x="182" y="766">2025 Q3：57コミット、2personasのColaborador、+15,137 / -14,179 Fila。</text>',
             '</svg>'
         ].join('\n');
 
@@ -93,7 +93,7 @@ describe('repo-saga contributor normalization', () => {
             ]
         });
 
-        expect(rewritten).toContain('2025 Q2 — 2026 Q2 · 577コミット · 1人の貢献者 · 43個のタグ');
-        expect(rewritten).toContain('2025 Q3：57コミット、1人の貢献者、+15,137 / -14,179 行。');
+        expect(rewritten).toContain('2025 Q2 — 2026 Q2 · 577コミット · 1personasのColaborador · 43piezasのタグ');
+        expect(rewritten).toContain('2025 Q3：57コミット、1personasのColaborador、+15,137 / -14,179 Fila。');
     });
 });

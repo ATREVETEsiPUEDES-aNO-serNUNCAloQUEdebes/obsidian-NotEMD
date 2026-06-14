@@ -3,32 +3,32 @@ date: 2026-05-03
 topic: drawnix-feasibility-integration-direction
 ---
 
-# Drawnix 可行性与集成方向审计
+# Drawnix Auditoria de viabilidad y direccion de integracion.
 
-## 审计范围
+## Alcance de la auditoria
 
-- 上游项目：`plait-board/drawnix`
-- 核查基线：`develop@e28ba80`
-- 目标：判断 Drawnix 对 Notemd 的可复用价值，区分“值得吸收的能力边界”与“会冲撞 Obsidian 插件边界的宿主复杂度”
+- Proyectos upstream：`plait-board/drawnix`
+- Verificacion de lineas de base：`develop@e28ba80`
+- Objetivo: Juicio Drawnix si Notemd Valor reutilizable, distinga “limites de capacidad que vale la pena absorber” de “colision Obsidian Complejidad del alojamiento en el limite del complemento”
 
-## 仓库快照
+## Instantanea del almacen
 
-Drawnix 不是一个轻量 renderer，而是一个完整白板应用栈：
+Drawnix No es un peso ligero renderer，Pero una pila completa de aplicaciones de pizarra：
 
 - Nx monorepo
 - React 19 + Vite
 - `packages/drawnix`、`packages/react-board`、`packages/react-text`
-- Plait 全家桶：`@plait/core`、`@plait/draw`、`@plait/layouts`、`@plait/mind`、`@plait/text-plugins`
-- Slate 富文本栈
+- Plait Cubo familiar：`@plait/core`、`@plait/draw`、`@plait/layouts`、`@plait/mind`、`@plait/text-plugins`
+- Slate Pila de texto enriquecido
 - `browser-fs-access`、`localforage`、`mobile-detect`
 
-从定位上看，它更接近“浏览器中的产品级白板 SaaS”，不是“可直接塞进 Obsidian 插件主 bundle 的一个小功能库”。
+En terminos de posicionamiento, se acerca mas a una “pizarra a nivel de producto en el navegador” SaaS”，No “puede insertarse directamente en Obsidian Propietario del complemento bundle Una pequena biblioteca de funciones.”。
 
-## 已确认的强项
+## Fortalezas identificadas
 
-### 1. 数据边界清晰
+### 1. Borrar los limites de los datos
 
-`packages/drawnix/src/data/types.ts` 定义了稳定导出格式：
+`packages/drawnix/src/data/types.ts` Formato de exportacion estable definido：
 
 - `type: 'drawnix'`
 - `version`
@@ -37,36 +37,36 @@ Drawnix 不是一个轻量 renderer，而是一个完整白板应用栈：
 - `viewport`
 - `theme`
 
-这说明 Drawnix 的价值首先在**白板数据模型**，而不是某个 UI 组件。
+Esto muestra Drawnix El valor de**Modelo de datos de pizarra**，en lugar de un cierto UI Componentes。
 
-`packages/drawnix/src/data/json.ts` 也强化了这一点：JSON 路径是一等导入/导出边界，而不是随手附带的调试格式。
+`packages/drawnix/src/data/json.ts` tambien refuerza este punto：JSON Path es una importacion de primera clase/Exporte limites en lugar del formato de depuracion que viene con el.。
 
-`apps/web/src/app/app.tsx` 还表明它通过 `localforage` 持久化主画板状态，这进一步说明 Drawnix 默认依赖浏览器原生持久化层，而不是 Obsidian 插件的存储边界。
+`apps/web/src/app/app.tsx` Tambien demuestra que pasa `localforage` Persistir en el estado de la mesa de trabajo principal, que explica con mas detalle Drawnix Confie en la capa de persistencia nativa del navegador de forma predeterminada en lugar de Obsidian Limites de almacenamiento de complementos。
 
-### 2. 转换能力是惰性加载的独立模块
+### 2. Las capacidades de transformacion son modulos independientes con carga diferida.
 
-`markdown-to-drawnix.tsx` 与 `mermaid-to-drawnix.tsx` 都在运行时动态导入：
+`markdown-to-drawnix.tsx` con `mermaid-to-drawnix.tsx` Todos se importan dinamicamente en tiempo de ejecucion.：
 
 - `@plait-board/markdown-to-drawnix`
 - `@plait-board/mermaid-to-drawnix`
 
-这说明它们自己也把“转换能力”视作重模块，而不是默认常驻主路径。这一点对 Notemd 很重要：如果未来要借鉴，也应该沿用“隔离、按需加载”的思路。
+Esto muestra que ellos mismos consideran las "capacidades de conversion" como modulos pesados en lugar de la ruta principal residente predeterminada. eso es correcto Notemd Muy importante: si queremos aprender de ello en el futuro, tambien debemos seguir la idea de "aislamiento y carga bajo demanda".。
 
-同时，这些转换弹窗最后都会把结果插回 Drawnix 自己的交互式 board，也就是说它们默认服务的仍然是一个浏览器白板产品边界，而不是外部插件里的轻量后台 adapter。
+Al mismo tiempo, estas ventanas emergentes de conversion eventualmente volveran a insertar los resultados. Drawnix Interactivo propio board，En otras palabras, todavia ofrecen un limite de producto de pizarra de navegador de forma predeterminada, en lugar de un backend liviano en un complemento externo. adapter。
 
-### 3. 分层思路值得借鉴
+### 3. Vale la pena aprender de la idea en capas
 
-Drawnix 的 app shell、board、text renderer、转换弹窗是明确分层的。对 Notemd 来说，可借鉴的是：
+Drawnix de app shell、board、text renderer、Las ventanas emergentes de conversion estan explicitamente en capas. si Notemd De lo que podemos aprender es：
 
-- UI 宿主和转换逻辑分离
-- 数据格式和交互宿主分离
-- 重运行时能力按需引入
+- UI Separacion de la logica de conversion y alojamiento.
+- Separacion de formatos de datos y hosts interactivos.
+- Las capacidades de repeticion se introducen bajo demanda
 
-## 与 Notemd 的结构错位
+## con Notemd Dislocacion estructural de
 
-### 1. 宿主假设是浏览器应用，不是 Obsidian 插件
+### 1. Se supone que el host es una aplicacion de navegador, no Obsidian Complementos
 
-Drawnix 代码中大量直接依赖：
+Drawnix Una gran cantidad de dependencias directas en el codigo.：
 
 - `window`
 - `document`
@@ -74,110 +74,110 @@ Drawnix 代码中大量直接依赖：
 - `browser-fs-access`
 - `MobileDetect`
 
-具体证据：
+Pruebas concretas：
 
-- `packages/drawnix/src/drawnix.tsx` 直接搭建完整 React board shell，并使用 `window.navigator.userAgent` 做终端检测
-- `packages/drawnix/src/data/filesystem.ts` 直接依赖 `browser-fs-access`
-- `packages/drawnix/src/data/json.ts` 通过浏览器文件选择/保存流程处理 `.drawnix` 打开与导出
+- `packages/drawnix/src/drawnix.tsx` Construye directamente el completo. React board shell，y uso `window.navigator.userAgent` Realizar deteccion de terminales
+- `packages/drawnix/src/data/filesystem.ts` Dependencia directa `browser-fs-access`
+- `packages/drawnix/src/data/json.ts` Seleccion de archivos a traves del navegador/Guardar procesamiento de proceso `.drawnix` Abrir y exportar
 
-这意味着它默认运行在完整浏览器宿主中，具备文件系统选择器、DOM 覆盖层、浏览器存储和交互式菜单系统。Notemd 目前的可控边界是：
+Esto significa que se ejecuta en un host de navegador completo de forma predeterminada, con un selector de sistema de archivos.、DOM Superposiciones, almacenamiento en el navegador y sistemas de menus interactivos.。Notemd El limite controlable actual es：
 
-- Obsidian 插件主线程
-- 有限的 iframe / srcdoc 渲染宿主
-- 需要同时考虑桌面与移动端兼容性
+- Obsidian Hilo principal enchufable
+- limitado iframe / srcdoc Representar anfitrion
+- La compatibilidad con dispositivos moviles y de escritorio debe considerarse simultaneamente
 
-把 Drawnix 全宿主搬进来，会把当前可控的 preview/render boundary 迅速升级为一整套前端应用托管问题。
+poner Drawnix Cuando todo el anfitrion se muda, el control actualmente controlable preview/render boundary Escale rapidamente a un conjunto completo de problemas de alojamiento de aplicaciones front-end。
 
-### 2. Drawnix 的产品目标不是 Notemd 当前需求
+### 2. Drawnix El objetivo del producto no es Notemd Necesidades actuales
 
-Drawnix 的核心是交互式白板编辑：
+Drawnix En esencia, es la edicion de pizarra interactiva.：
 
-- 思维导图编辑
-- 流程图编辑
-- 自由绘制
-- 文件打开 / 保存
-- 图片导出
-- 工具栏、浮层、上下文菜单
+- Edicion de mapas mentales
+- Edicion de diagramas de flujo
+- dibujo gratis
+- Apertura de archivos / Guardar
+- Exportacion de imagenes
+- Barra de herramientas, capa flotante, menu contextual
 
-Notemd 当前主线是：
+Notemd La linea principal actual es：
 
-- 从笔记语义生成结构化图表
-- 保存为 Obsidian 友好的产物
-- 在插件内预览 / 导出
+- Genere diagramas estructurados a partir de la semantica de notas.
+- Guardar como Obsidian Productos amigables
+- Vista previa dentro del complemento / Exportar
 
-也就是说，Notemd 缺的不是“完整白板编辑器”，而是“更稳的 spec-first 生成、运行时边界、可持续验证门”。
+Es decir，Notemd Lo que falta no es un “editor de pizarra completo” sino un “editor mas estable spec-first Generacion, limites de tiempo de ejecucion, puertas de verificacion sostenibles”。
 
-### 3. 直接复用转换器也不能解决核心架构问题
+### 3. La reutilizacion directa de convertidores no puede resolver el problema arquitectonico central
 
-`mermaid-to-drawnix` 与 `markdown-to-drawnix` 确实有价值，但如果 Notemd 直接走：
+`mermaid-to-drawnix` con `markdown-to-drawnix` Es realmente valioso, pero si Notemd Ir directamente：
 
-`DiagramSpec -> Mermaid/Markdown 字符串 -> Drawnix converter -> PlaitElement[]`
+`DiagramSpec -> Mermaid/Markdown cuerda -> Drawnix converter -> PlaitElement[]`
 
-会出现两个问题：
+Surgiran dos problemas：
 
-1. 把已经建立起来的 `DiagramSpec` 语义层重新降级为字符串中间态
-2. 把转换正确性重新绑定到 Mermaid/Markdown 文本质量，而不是 spec 质量
+1. Toma lo establecido `DiagramSpec` La capa semantica se vuelve a degradar al estado intermedio de cadena.
+2. Vuelva a vincular la correccion de la conversion a Mermaid/Markdown Calidad del texto, no spec Calidad
 
-这会削弱 Notemd 现有路线图里最重要的一步：**先让 LLM 产出结构化语义，再做 target-specific adapter。**
+Esto debilitara Notemd El paso mas importante en la hoja de ruta existente：**Cede el paso primero LLM Produce semantica estructurada y hazlo de nuevo. target-specific adapter。**
 
-### 4. 鲁棒性不只取决于 schema，还取决于几何与布局归属
+### 4. La robustez depende no solo de schema，Tambien depende de la geometria y la propiedad del diseno.
 
-`.drawnix` 容器本身是清晰 JSON，但真正的兼容性还取决于谁来负责：
+`.drawnix` El contenedor en si es transparente. JSON，Pero la verdadera compatibilidad tambien depende de quien es el responsable：
 
-- Plait element 选型
-- point 生成与 board geometry
-- viewport 默认值
-- theme 翻译
+- Plait element Seleccion
+- point Generar vs. board geometry
+- viewport Valor predeterminado
+- theme Traduccion
 
-也就是说，“能写出 JSON”不等于“能稳定导出可用白板”。如果 Notemd 真要做这条线，必须由自己的 adapter 明确接管 semantic-to-board projection；只复用文件格式但不拥有投影逻辑，会得到脆弱且难排错的结果。
+En otras palabras, "puede escribir JSON”No significa "puede exportar de forma estable una pizarra utilizable". si Notemd Si realmente quieres hacer esta linea, debes hacerlo tu mismo adapter Adquisicion clara semantic-to-board projection；La reutilizacion de formatos de archivo sin logica de proyeccion dara como resultado resultados fragiles y dificiles de depurar.。
 
-## 可行性矩阵
+## Matriz de viabilidad
 
-| 方向 | 可行性 | 风险 | 结论 |
+| Direccion | Viabilidad | Riesgos | Conclusion |
 |---|---|---|---|
-| 整体嵌入 Drawnix 宿主/UI | 低 | 很高 | 不建议 |
-| 直接把 Drawnix 当作新的预览宿主 | 低 | 很高 | 不建议 |
-| 借鉴其 app/board/text 分层思想 | 高 | 低 | 建议吸收 |
-| 借鉴 `.drawnix` 数据格式作为未来导出目标 | 中 | 中 | 可作为后续候选 |
-| 在隔离路径中试验 `mermaid-to-drawnix` / `markdown-to-drawnix` | 中低 | 中高 | 仅限实验性原型 |
-| 基于 `DiagramSpec -> PlaitElement[]` 自建 adapter | 中 | 中 | 如果未来要 board export，这是更合理的方向 |
-| 直接输出 `DiagramSpec -> DrawnixExportedData` | 中 | 中 | 强于宿主嵌入，但仍需要自己负责 geometry/layout 决策 |
+| Integracion holistica Drawnix Anfitrion/UI | bajo | Muy alto | No recomendado |
+| Solo pon Drawnix Uselo como nuevo host de vista previa | bajo | Muy alto | No recomendado |
+| Aprende de ello app/board/text Pensamiento en capas | alto | bajo | Absorcion recomendada |
+| Aprende de `.drawnix` Formatos de datos como futuros objetivos de exportacion | Medio | Medio | Puede utilizarse como candidato de seguimiento. |
+| Experimenta en un camino aislado `mermaid-to-drawnix` / `markdown-to-drawnix` | Medio-bajo | Medio a alto | Solo prototipos experimentales. |
+| Basado en `DiagramSpec -> PlaitElement[]` Autoconstruccion adapter | Medio | Medio | Si en el futuro board export，Esta es una direccion mas razonable. |
+| Salida directa `DiagramSpec -> DrawnixExportedData` | Medio | Medio | Mejor que la integracion del host, pero aun asi debes ser responsable de ti mismo geometry/layout Toma de decisiones |
 
-## 对 Notemd 的建议结论
+## si Notemd Conclusiones sugeridas
 
-### 不应做的事
+### Cosas que no hacer
 
-1. 不要把 Drawnix 整个宿主、工具栏、文件系统交互、白板 UI 搬进 Notemd。
-2. 不要为了“支持更多图形类型”而把当前 renderer boundary 变成另一个前端应用托管层。
-3. 不要让 `DiagramSpec` 再退化回 Mermaid/Markdown 作为主中间态。
+1. No pongas Drawnix Host completo, barra de herramientas, interaccion del sistema de archivos, pizarra UI Mudate Notemd。
+2. No cambie la version actual para "admitir mas tipos de graficos" renderer boundary Conviertase en otra capa de alojamiento de aplicaciones front-end。
+3. No dejes `DiagramSpec` Espalda degenerada Mermaid/Markdown Como principal estado intermedio。
 
-### 值得做的事
+### Algo que vale la pena hacer
 
-1. 把 Drawnix 当作**外部参考项目**，不是直接依赖包集合。
-2. 若未来需要“可继续编辑的白板导出”，优先考虑：
+1. poner Drawnix como**Proyectos de referencia externa**，No depende directamente de las colecciones de paquetes.。
+2. Si necesita una "exportacion de pizarra editable continuamente" en el futuro, de prioridad a：
    `DiagramSpec -> DrawnixExportedData(.drawnix)`
-3. 若未来要试验 Drawnix converter，只能放在：
-   - 隔离的 experimental path
-   - 按需加载
-   - 不进入默认主链
+3. Si quieres experimentar en el futuro Drawnix converter，Solo se puede colocar en：
+   - aislado experimental path
+   - Carga bajo demanda
+   - No ingresar a la cadena principal predeterminada
 
-### 对下一批工作的范围控制
+### Control del alcance del proximo lote de trabajo.
 
-这份审计现在应被视为硬范围边界，而不只是背景研究：
+Esta auditoria ahora debe verse como un limite de alcance estricto, no solo como una investigacion de antecedentes.：
 
-- 当前路线图批次明确不做完整 Drawnix 宿主嵌入
-- 明确不做“用 Drawnix 替换 Notemd 当前预览宿主”
-- 明确不做把 Drawnix 的 board-editing UI 吸收到插件中
-- 近期能接受的最强实验，也只能是在命令/运行时稳定化之后，再做隔离的 export 或 adapter 边界试验，而不是提前推进
+- Es evidente que el lote actual de hojas de ruta no esta completo. Drawnix Incrustacion de host
+- Deja claro que no utilizar Drawnix Reemplazo Notemd Host de vista previa actual”
+- Deja claro que no debes hacer nada Drawnix de board-editing UI Integrar en complementos
+- El experimento mas fuerte que pueda aceptarse en un futuro proximo solo puede realizarse bajo el mando./Una vez estabilizado el tiempo de ejecucion, aislelo export o adapter Poner a prueba los limites en lugar de seguir adelante
 
-## 与当前主线优先级的关系
+## Relacion con la prioridad principal actual
 
-Drawnix 分析并没有推翻现有路线图，反而强化了当前优先级排序：
+Drawnix El analisis no anula la hoja de ruta existente, sino que refuerza la priorizacion actual：
 
-1. 命令表面收口
-2. 可持续 live verification runbook
-3. 重运行时打包隔离
-4. MermaidProcessor 拆分
-5. 再考虑新的导出目标或 board-style artifact
+1. Ordena a la superficie que se cierre
+2. Sostenible live verification runbook
+3. Aislamiento del embalaje durante la repeticion.
+4. MermaidProcessor dividir
+5. Considere un nuevo objetivo de exportacion o board-style artifact
 
-换句话说，Drawnix 不是“下一步立刻接入”的候选，而是**证明当前路线图方向是对的：要吸收数据边界和转换边界，而不是复制整套宿主复杂度。**
+En otras palabras，Drawnix No es candidato para “Proximo paso para conectarse de inmediato”, pero**Demostrar que la hoja de ruta actual va en la direccion correcta: absorber los limites de los datos y los limites de la transformacion en lugar de replicar toda la complejidad del host。**

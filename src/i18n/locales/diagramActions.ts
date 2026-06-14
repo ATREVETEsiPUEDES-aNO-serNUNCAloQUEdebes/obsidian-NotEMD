@@ -131,18 +131,18 @@ export const DIAGRAM_ACTION_LOCALE_EXTENSIONS: Record<string, DeepPartial<Notemd
     },
     ja: {
         commands: {
-            generateExperimentalDiagram: '図を生成',
-            previewExperimentalDiagram: '図をプレビュー'
+            generateExperimentalDiagram: 'Fig.をGeneracion',
+            previewExperimentalDiagram: 'Fig.をプレビュー'
         },
         sidebar: {
             actions: {
                 generateExperimentalDiagram: {
-                    label: '図を生成',
-                    tooltip: '現在のノートに対して図の生成物を作成して保存します。'
+                    label: 'Fig.をGeneracion',
+                    tooltip: 'ActualmenteのノートにversusしてFig.のProductoをCrearしてGuardarします。'
                 },
                 previewExperimentalDiagram: {
-                    label: '図をプレビュー',
-                    tooltip: '生成物を保存せずに図のプレビューを生成します。'
+                    label: 'Fig.をプレビュー',
+                    tooltip: 'ProductoをGuardarせずにFig.のプレビューをGeneracionします。'
                 }
             }
         }

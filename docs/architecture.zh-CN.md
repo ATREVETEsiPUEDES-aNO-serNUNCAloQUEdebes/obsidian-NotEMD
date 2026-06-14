@@ -1,42 +1,42 @@
-# Notemd 系统架构总览
+# Notemd Descripcion general de la arquitectura del sistema
 
-> 更新：2026-05-07
+> Actualizacion：2026-05-07
 
-## 系统架构
+## Arquitectura del sistema
 
 ```mermaid
 flowchart TB
-    subgraph User["Obsidian 用户界面"]
-        CMD["命令面板"]
-        SIDEBAR["Notemd 工作台"]
-        SETTINGS["设置标签页"]
+    subgraph User["Obsidian interfaz de usuario"]
+        CMD["Panel de comando"]
+        SIDEBAR["Notemd Banco de trabajo"]
+        SETTINGS["Configurar pestanas"]
     end
 
     subgraph Plugin["NotemdPlugin (src/main.ts)"]
         LOAD["loadSettings / saveSettings"]
-        DISPATCH["命令分发"]
-        BATCH["批量处理"]
+        DISPATCH["Distribucion de mando"]
+        BATCH["Procesamiento por lotes"]
     end
 
-    subgraph LLM["LLM 调用管道"]
-        PROV["提供商注册<br/>(src/llmProviders.ts)"]
-        TOKEN["令牌解析<br/>(resolveProviderTokenLimit)"]
-        CACHE["响应缓存<br/>(llmResponseCache)"]
-        TRANS["传输层<br/>5 个运行时"]
+    subgraph LLM["LLM Canalizacion de llamadas"]
+        PROV["Registro de proveedores<br/>(src/llmProviders.ts)"]
+        TOKEN["Analisis de tokens<br/>(resolveProviderTokenLimit)"]
+        CACHE["Almacenamiento en cache de respuestas<br/>(llmResponseCache)"]
+        TRANS["Capa de transporte<br/>5 tiempos de ejecucion"]
     end
 
-    subgraph Diagram["图表平台"]
-        PROMPT["规格提示<br/>(diagramSpecPrompt)"]
-        GEN["生成服务<br/>(generateDiagramArtifact)"]
-        PARSE["规格解析<br/>(parseDiagramSpecResponse)"]
-        RENDER["渲染服务<br/>(RendererRegistry)"]
-        HOST["预览宿主<br/>(IframeRenderHost)"]
+    subgraph Diagram["Plataforma de graficos"]
+        PROMPT["Consejos sobre especificaciones<br/>(diagramSpecPrompt)"]
+        GEN["Generar servicios<br/>(generateDiagramArtifact)"]
+        PARSE["Analisis de especificaciones<br/>(parseDiagramSpecResponse)"]
+        RENDER["Prestacion de servicio<br/>(RendererRegistry)"]
+        HOST["Vista previa del anfitrion<br/>(IframeRenderHost)"]
     end
 
-    subgraph Output["输出"]
-        VAULT["Vault 文件<br/>(.md, .canvas, .json)"]
-        PREVIEW["图表预览弹窗"]
-        EXPORT["SVG / PNG 导出"]
+    subgraph Output["Salida"]
+        VAULT["Vault Documentacion<br/>(.md, .canvas, .json)"]
+        PREVIEW["Ventana emergente de vista previa del grafico"]
+        EXPORT["SVG / PNG Exportar"]
     end
 
     CMD --> DISPATCH
@@ -60,104 +60,104 @@ flowchart TB
     BATCH --> VAULT
 ```
 
-## LLM 调用管道
+## LLM Canalizacion de llamadas
 
 ```mermaid
 sequenceDiagram
-    participant User as 用户
+    participant User as Usuario
     participant Plugin as NotemdPlugin
-    participant Provider as 提供商注册
-    participant Token as 令牌解析
-    participant Cache as 响应缓存
-    participant Transport as 传输层
+    participant Provider as Registro de proveedores
+    participant Token as Analisis de tokens
+    participant Cache as Almacenamiento en cache de respuestas
+    participant Transport as Capa de transporte
     participant API as LLM API
 
-    User->>Plugin: 执行操作（处理、翻译、生成）
+    User->>Plugin: Realizar operaciones (procesar, traducir, generar）
     Plugin->>Provider: getLLMProviderDefinition(name)
-    Provider-->>Plugin: LLMProviderDefinition（传输协议、API 密钥模式等）
+    Provider-->>Plugin: LLMProviderDefinition（Protocolo de transporte、API Modo clave, etc.）
     Plugin->>Token: resolveProviderTokenLimit(provider, model, maxTokens)
-    Token->>Token: KNOWN_MODEL_MAX_OUTPUT_TOKENS 查表
-    Token-->>Plugin: 令牌上限 (number | undefined)
+    Token->>Token: KNOWN_MODEL_MAX_OUTPUT_TOKENS Busca la tabla
+    Token-->>Plugin: Limite de tokens (number | undefined)
     Plugin->>Cache: buildCacheKey(provider, model, prompt, content)
     Plugin->>Cache: getCachedResponse(cacheKey)
     
-    alt 缓存命中
-        Cache-->>Plugin: 缓存响应
-        Plugin-->>User: 结果
-    else 缓存未命中
+    alt acierto de cache
+        Cache-->>Plugin: Almacenamiento en cache de respuestas
+        Plugin-->>User: Resultados
+    else Error de cache
         Plugin->>Transport: callLLM(provider, prompt, content, settings)
-        Note over Transport: 分发至 5 个运行时之一<br/>openai-compatible | anthropic | google<br/>azure-openai | ollama
-        Transport->>API: HTTP 请求（含重试逻辑）
-        API-->>Transport: 响应
-        Transport-->>Plugin: 结果
+        Note over Transport: Distribucion a 5 uno de los tiempos de ejecucion<br/>openai-compatible | anthropic | google<br/>azure-openai | ollama
+        Transport->>API: HTTP Solicitud (incluida la logica de reintento)）
+        API-->>Transport: Respuesta
+        Transport-->>Plugin: Resultados
         Plugin->>Cache: setCachedResponse(cacheKey, result)
-        Plugin-->>User: 结果
+        Plugin-->>User: Resultados
     end
 ```
 
-### 令牌解析逻辑
+### Logica de analisis de tokens
 
 ```
-用户配置 (maxTokens, provider.maxOutputTokens)
+Configuracion de usuario (maxTokens, provider.maxOutputTokens)
   → resolveProviderTokenLimit()
-    → 连接测试？ → 返回 1
-    → 提供商 maxOutputTokens 覆盖已设置？
-      → 已知模型？ → min(覆盖值, 已知上限)
-      → 未知模型？ → 覆盖值（直接使用）
-    → 全局 maxTokens 已设置？
-      → 已知模型？
-        → maxTokens === DEFAULT？ → 已知模型上限（自动）
-        → 否则 → min(maxTokens, 已知上限)
-      → 未知模型？
-        → maxTokens === DEFAULT？ → undefined（API 自行决定，Cline 对齐）
-        → 否则 → maxTokens（用户值）
-    → 否则 → 已知上限 ?? undefined
+    → Prueba de conexion？ → Regresar 1
+    → Proveedor maxOutputTokens Se establece la anulacion？
+      → Modelos conocidos？ → min(Anular valor, Limite superior conocido)
+      → Modelo desconocido？ → Anular valor (usar directamente）
+    → Panorama general maxTokens Ya configurado？
+      → Modelos conocidos？
+        → maxTokens === DEFAULT？ → Limite superior del modelo conocido (automatico).）
+        → De lo contrario → min(maxTokens, Limite superior conocido)
+      → Modelo desconocido？
+        → maxTokens === DEFAULT？ → undefined（API A tu propia discrecion，Cline Alineacion）
+        → De lo contrario → maxTokens（Valores del usuario）
+    → De lo contrario → Limite superior conocido ?? undefined
 ```
 
-### 支持的传输协议
+### Protocolos de transporte soportados
 
-| 传输协议 | 提供商数量 | 协议 |
+| Protocolo de transporte | Numero de proveedores | Acuerdo |
 |---|---|---|
-| `openai-compatible` | 22 个提供商 | OpenAI Chat Completions API |
-| `anthropic` | 1 个 | Anthropic Messages API |
-| `google` | 1 个 | Google Gemini API |
-| `azure-openai` | 1 个 | Azure OpenAI Deployment API |
-| `ollama` | 1 个 | Ollama Native API |
+| `openai-compatible` | 22 proveedores | OpenAI Chat Completions API |
+| `anthropic` | 1  | Anthropic Messages API |
+| `google` | 1  | Google Gemini API |
+| `azure-openai` | 1  | Azure OpenAI Deployment API |
+| `ollama` | 1  | Ollama Native API |
 
-## 图表渲染平台
+## Plataforma de representacion de graficos
 
 ```mermaid
 flowchart LR
-    subgraph Input["输入"]
-        MD["Markdown 内容"]
-        INTENT["首选意图<br/>（可选）"]
+    subgraph Input["Entrada"]
+        MD["Markdown Contenido"]
+        INTENT["Intencion preferida<br/>（Opcional）"]
     end
 
-    subgraph Spec["规格层"]
-        PLAN["DiagramPlan<br/>（意图推断）"]
-        PROMPT2["DiagramSpec 提示"]
-        LLM["LLM 调用"]
-        PARSE2["规格解析器"]
-        VALIDATE["规格验证器"]
+    subgraph Spec["Capa de especificacion"]
+        PLAN["DiagramPlan<br/>（Inferencia de intencion）"]
+        PROMPT2["DiagramSpec Consejos"]
+        LLM["LLM Llamar"]
+        PARSE2["Analizador de especificaciones"]
+        VALIDATE["Verificador de especificaciones"]
     end
 
-    subgraph Render["渲染层"]
-        REGISTRY["RendererRegistry<br/>7 个渲染器"]
+    subgraph Render["Capa de renderizado"]
+        REGISTRY["RendererRegistry<br/>7 renderizadores"]
         SERVICE["RendererService"]
         CACHE2["RenderCache"]
     end
 
-    subgraph Target["输出目标"]
-        MERMAID["Mermaid<br/>（流程图、时序、类、ER、状态、思维导图）"]
-        CANVAS["JSON Canvas<br/>（画布图）"]
-        VEGA["Vega-Lite<br/>（数据图表）"]
-        HTML["HTML 回退"]
+    subgraph Target["Objetivo de salida"]
+        MERMAID["Mermaid<br/>（Diagrama de flujo, tiempos, clase.、ER、Estado, mapa mental）"]
+        CANVAS["JSON Canvas<br/>（Dibujo en lienzo）"]
+        VEGA["Vega-Lite<br/>（Graficos de datos）"]
+        HTML["HTML Revertir"]
     end
 
-    subgraph Host["预览层"]
+    subgraph Host["Vista previa de capa"]
         IFRAME["IframeRenderHost"]
         MODAL["DiagramPreviewModal"]
-        EXPORT2["SVG / PNG 导出"]
+        EXPORT2["SVG / PNG Exportar"]
     end
 
     MD --> PLAN
@@ -179,96 +179,96 @@ flowchart LR
     MODAL --> EXPORT2
 ```
 
-### 支持的图表意图
+### Intenciones de graficos admitidas
 
-| 意图 | 渲染目标 | 渲染器 | 预览 | 导出 |
+| Intencion | Renderizar objetivo | Renderizador | Vista previa | Exportar |
 |---|---|---|---|---|
-| `mindmap` | mermaid | MermaidRenderer | 弹窗/iframe | SVG、PNG |
-| `flowchart` | mermaid | MermaidRenderer | 弹窗/iframe | SVG、PNG |
-| `sequence` | mermaid | MermaidRenderer | 弹窗/iframe | SVG、PNG |
-| `classDiagram` | mermaid | MermaidRenderer | 弹窗/iframe | SVG、PNG |
-| `erDiagram` | mermaid | MermaidRenderer | 弹窗/iframe | SVG、PNG |
-| `stateDiagram` | mermaid | MermaidRenderer | 弹窗/iframe | SVG、PNG |
-| `canvasMap` | json-canvas | JsonCanvasRenderer | 弹窗/iframe | SVG、源文件 |
-| `dataChart` | vega-lite | VegaLiteRenderer | 弹窗/iframe（沙盒） | SVG、源文件 |
+| `mindmap` | mermaid | MermaidRenderer | Ventanas emergentes/iframe | SVG、PNG |
+| `flowchart` | mermaid | MermaidRenderer | Ventanas emergentes/iframe | SVG、PNG |
+| `sequence` | mermaid | MermaidRenderer | Ventanas emergentes/iframe | SVG、PNG |
+| `classDiagram` | mermaid | MermaidRenderer | Ventanas emergentes/iframe | SVG、PNG |
+| `erDiagram` | mermaid | MermaidRenderer | Ventanas emergentes/iframe | SVG、PNG |
+| `stateDiagram` | mermaid | MermaidRenderer | Ventanas emergentes/iframe | SVG、PNG |
+| `canvasMap` | json-canvas | JsonCanvasRenderer | Ventanas emergentes/iframe | SVG、Archivos fuente |
+| `dataChart` | vega-lite | VegaLiteRenderer | Ventanas emergentes/iframe（Caja de arena） | SVG、Archivos fuente |
 
-## 模块地图
+## Mapa del modulo
 
-| 模块 | 职责 |
+| Modulos | Responsabilidades |
 |---|---|
-| `src/main.ts` | 插件入口、命令注册、流程编排 |
-| `src/llmProviders.ts` | 26 个提供商定义、元数据、KNOWN_MODEL 表 |
-| `src/llmUtils.ts` | 传输分发、令牌解析、重试、响应缓存 |
-| `src/fileUtils.ts` | 文件处理、Mermaid 修复、概念提取 |
-| `src/searchUtils.ts` | 网络搜索、Tavily/DuckDuckGo 集成 |
-| `src/translate.ts` | 翻译管道（含分块） |
-| `src/promptUtils.ts` | 任务提示词（旧版 + spec-first） |
-| `src/diagram/` | 图表领域模型、适配器、渲染器 |
-| `src/rendering/` | 渲染宿主、预览、导出、主题 |
-| `src/ui/` | 设置标签页、侧边栏、弹窗、欢迎页 |
-| `src/i18n/` | 22 种语言、任务语言策略 |
-| `src/operations/` | operation registry、host adapter、capability/contract 导出、可复用命令编排 |
-| `src/batchProgressStore.ts` | 中断恢复批量状态持久化 |
-| `src/providerDiagnostics.ts` | LLM 提供商连接诊断 |
+| `src/main.ts` | Entrada de complementos, registro de comandos, orquestacion de procesos |
+| `src/llmProviders.ts` | 26 Definiciones de proveedores, metadatos、KNOWN_MODEL mesa |
+| `src/llmUtils.ts` | Distribucion de transporte, analisis de tokens, reintento, almacenamiento en cache de respuestas |
+| `src/fileUtils.ts` | Procesamiento de documentos、Mermaid Reparacion, extraccion de conceptos. |
+| `src/searchUtils.ts` | Busqueda en Internet、Tavily/DuckDuckGo Integracion |
+| `src/translate.ts` | Proceso de traduccion (incluida la fragmentacion)） |
+| `src/promptUtils.ts` | Palabras de indicacion de tarea (version anterior + spec-first） |
+| `src/diagram/` | Modelo de dominio de grafico, adaptador y renderizador. |
+| `src/rendering/` | Renderizar host, vista previa, exportar, tema |
+| `src/ui/` | Configure pestanas, barras laterales, ventanas emergentes y paginas de bienvenida. |
+| `src/i18n/` | 22 Lenguaje, estrategia linguistica de tareas. |
+| `src/operations/` | operation registry、host adapter、capability/contract Disposicion de comando de exportacion y reutilizable. |
+| `src/batchProgressStore.ts` | Recuperacion de interrupciones y persistencia del estado del lote. |
+| `src/providerDiagnostics.ts` | LLM Diagnostico de conexion del proveedor |
 
-## CLI 边界现实
+## CLI Realidad fronteriza
 
-当前宿主事实必须明确写清：
+Los hechos actuales del anfitrion deben expresarse claramente.：
 
-- 本机上的稳定包装器 `obsidian-cli` 暴露的是 `help`、`version`、`vaults`、`vault`、`doctor`、`native`、`gui`、`debug` 等桌面/调试入口
-- 底层官方 `obsidian` CLI 实际已经支持 `commands` 与 `command id=<command-id>`，并且可以列出/执行插件注册命令
-- 但这仍然只是**命令触发表面**，不是成熟的插件集成协议：它还缺少类型化参数、返回结果契约、能力元数据和稳定自动化语义
+- Envoltorio estable en nativo `obsidian-cli` Lo que se expone es `help`、`version`、`vaults`、`vault`、`doctor`、`native`、`gui`、`debug` Espere al escritorio/Entrada de depuracion
+- Oficial inferior `obsidian` CLI Realmente apoyado `commands` Con `command id=<command-id>`，y se puede enumerar/Ejecute el comando de registro del complemento.
+- Pero esto sigue siendo solo**Superficie de disparo de comando**，No es un protocolo de integracion de complementos maduro: tambien carece de parametros escritos, contratos de resultados de retorno, metadatos de capacidad y semantica de automatizacion estable.
 
-因此，Notemd 的未来 CLI 路线仍不能停留在“把 sidebar 按钮搬到终端”。真正值得抽取的是已经开始具备独立形态的低层能力：
+Por lo tanto，Notemd El futuro de CLI La ruta aun no puede detenerse en "poner sidebar Mueva el boton al terminal”. Lo que realmente vale la pena extraer son las capacidades de bajo nivel que han comenzado a adoptar una forma independiente.：
 
 - `src/providerDiagnostics.ts`
 - `src/diagram/diagramGenerationService.ts`
 - `src/workflowButtons.ts`
 - `src/batchProgressStore.ts`
-- `LLMProviderConfig.localOnly` 这类 config/profile 语义
+- `LLMProviderConfig.localOnly` Este tipo config/profile Semantica
 
-当前架构缺口在于：`src/main.ts` 仍持有过多 orchestration、UI 生命周期和 Obsidian runtime 耦合。在形成宿主无关 operation 层之前，插件 command IDs 虽然已经可以被官方 CLI 触发，但它们仍然只是产品表面，不应被当成稳定工程 API。
+La brecha en la arquitectura actual radica en：`src/main.ts` Todavia aguanto demasiado orchestration、UI Ciclo de vida y Obsidian runtime Acoplamiento. irrelevante en la formacion del anfitrion operation Antes de capas, complementos command IDs Aunque puede ser oficialmente CLI Disparadores, pero siguen siendo solo la superficie del producto y no deben considerarse como un proyecto de estabilizacion. API。
 
-不过这个缺口已经比之前更小了：
+Pero la brecha es menor que antes：
 
-- `src/operations/diagramGenerateOperation.ts` 现在承接命令层之下可复用的 diagram 执行逻辑
-- `src/operations/providerDiagnosticCommand.ts` 现在承接命令层之下的 provider diagnostic command orchestration
-- `src/operations/diagramCommandHostAdapter.ts` 现在承接 Mermaid/artifact 保存收尾、直接 Vega-Lite 预览编排，以及公共 diagram command wrapper（`runGenerateDiagramCommandWithHost`、`runPreviewExperimentalDiagramCommandWithHost`）
-- `src/operations/configProfileCommands.ts` 现在承接 provider profile 导入导出与 CLI capability/contract 导出编排
-- `src/operations/providerDiagnosticReportPersistence.ts` 现在承接带冲突规避的 provider diagnostic report 文件创建逻辑
-- `src/operations/providerDiagnosticCommandHostAdapter.ts` 现在承接开发者诊断命令的宿主装载、报告落盘接线与 notice 整形逻辑
-- `src/operations/configProfileCommandHostAdapter.ts` 现在承接 config/profile 状态持久化、CLI 导出 notice 整形与导入导出错误映射逻辑
-- `src/operations/providerConnectionTestCommandHostAdapter.ts` 现在承接共享 provider 连接测试的 settings 装载，以及底层测试 runner 与交互式 busy/reporter wrapper，并已被命令路径与设置页共同复用
-- `src/operations/noteProcessingCommandHostAdapter.ts` 现在不仅承接 `process-current-add-links`、`process-folder-add-links`、`batch-generate-from-titles`、`generate-from-title` 与 `research-and-summarize`，还继续承接 `translate-current-file`、`batch-translate-folder`、`extract-concepts-current`、`extract-concepts-folder`、`extract-original-text` 与 `extract-concepts-and-generate-titles` 的 busy-guard、reporter 生命周期、notice/error-log 编排逻辑
-- `src/operations/utilityCommandHostAdapter.ts` 现在也已承接当前文件 duplicate check、duplicate cleanup、batch Mermaid fix 与 single/batch formula fix 的 command orchestration；`check-for-duplicates` 已不再内联写在命令注册里
-- `src/operations/utilityCommandHostAdapter.ts` 现在也已承接 duplicate cleanup 与 batch Mermaid fix 的删除确认、无文件 notice 与成功 notice 语义，这些用户侧效果已不再从 `src/fileUtils.ts` 泄漏出来
-- `src/operations/registry.ts` 现在也已覆盖剩余 selection/export 邻接自动化表面：`editor.create-link-and-generate`、`provider.profile.export`、`provider.profile.import`、`cli.capability-manifest.export` 与 `cli.invocation-contract.export` 已进入与前几批相同的 registry/capability/contract 表面
-- 第一批 `src/fileUtils.ts` 子切片也已经完成 write-heavy contract enrichment 验证：`processFile()` 现在返回 `ProcessFileResult`，`generateContentForTitle()` 返回 `GenerateContentForTitleResult`，`batchGenerateContentForTitles()` 返回 `BatchGenerateContentForTitlesResult`，`runProcessFolderWithNotemdCommandWithHost()` 现在也会返回带 `savedCount`、`fileResults`、`errors` 与 `cancelled` 的 `BatchProcessFolderResult`
-- `src/fileUtils.ts` 现在不再自行决定“无可处理 Markdown 文件”的用户侧批量生成结果；它只返回结构化 batch state，这一 no-file notice 语义改由 `src/operations/noteProcessingCommandHostAdapter.ts` 承接
-- `src/fileUtils.ts` 的剩余尾部现在也已落地：`batchFixMermaidSyntaxInFolder()` 返回 `BatchMermaidFixResult`，`checkAndRemoveDuplicateConceptNotes()` 返回 `ConceptDedupeResult`，破坏性确认由 host adapter 注入，batch Mermaid 的无文件处理也已从 utility-owned 改为 host-owned
-- `src/operations/registry.ts` 现在也直接建模了 `file.process-add-links`、`file.process-folder-add-links`、`content.generate-from-title`、`content.batch-generate-from-titles`、`mermaid.batch-fix`、`concept.dedupe`、`translate.*` 与 `formula.*` 的 richer result schema，因此 capability export 与 invocation-contract export 不再把这些流程压平成仅路径或仅计数语义
-- `src/fileUtils.ts` 与 `src/extractOriginalText.ts` 现在已经接受更窄的 runtime context，而不是直接依赖具体 `NotemdPlugin` 类，这说明边界正在从 wrapper 抽离继续推进到 utility 对宿主类型耦合的削弱
-- `src/main.ts` 现在主要保留命令注册、host 构造，以及更深一层的 diagram 执行 helper；先前最高价值的公共 direct command surface 现在已经改为通过 host adapter 代理，不再内联 busy/reporter/preview 生命周期逻辑
-- 新落地的 direct-surface wrapper 批次已经覆盖 `testLlmConnectionCommand`、`generateDiagramCommand` 与 `previewExperimentalDiagramCommand`；这些表面现在都具备结构化 result 边界，而不是 fire-and-forget 的 UI glue
-- 最新一层细化是：`diagram.generate` 应被理解为“宿主无关 generation contract”，而不是对当前 active-file 命令的另一种命名。它在 operation-level 上的 `safe` / `read-only` 元数据描述的是显式的 `sourceMarkdown -> DiagramGenerationResult` core；映射过去的 command binding 仍然要如实保留 `requires-active-file` / `write-file` 语义。
-- 当前真正剩余的缺口因此已经不是公共 command entrypoint 本身：`diagram.preview` 与 `provider.connection.test` 现已具备 typed contract，save/artifact 的实质执行路径也已进入 `src/operations/diagramCommandExecution.ts`，而 `diagram.generate` 现在也会返回显式的 follow-through 细节（`kind`、`outputPath`、`previewOpened`、`autoFixAttempted`、`artifactTarget`），同时继续保留向后兼容的顶层 `outputPath` / `previewOpened` 字段。
-- 维护者本地语义核验层现在也不再只是文字说明：`npm run verify:diagram-semantics` 已能生成无 secrets 的 Markdown 检查模板，其中包含仓库硬门、vault 感知的 CLI 检查命令，以及 Mermaid / JSON Canvas / Vega-Lite 的证据区块，不依赖仓库中跟踪的 vault 路径或 live 凭据。
-- 下一阶段顺序已经明确：先把 `diagram.generate` 保持为宿主无关 core，把这批已落地的 typed follow-through 视作其下的 command-completion 层，再做 packaging / semantic verification 的后续收敛，最后才重开更强 public CLI 声明或更大规模的结构重排。
+- `src/operations/diagramGenerateOperation.ts` Ahora se puede reutilizar bajo la capa de comando. diagram Logica de ejecucion
+- `src/operations/providerDiagnosticCommand.ts` Ahora toma el control de la capa de comando. provider diagnostic command orchestration
+- `src/operations/diagramCommandHostAdapter.ts` Tomalo ahora Mermaid/artifact Guarda el final, directo Vega-Lite Vista previa del acuerdo y publico. diagram command wrapper（`runGenerateDiagramCommandWithHost`、`runPreviewExperimentalDiagramCommandWithHost`）
+- `src/operations/configProfileCommands.ts` Tomalo ahora provider profile Importar, exportar y CLI capability/contract Acuerdo de exportacion
+- `src/operations/providerDiagnosticReportPersistence.ts` Actualmente aceptando proyectos con evitacion de conflictos. provider diagnostic report Logica de creacion de archivos
+- `src/operations/providerDiagnosticCommandHostAdapter.ts` Ahora realiza la carga del host, el cableado de descarga de informes y los comandos de diagnostico del desarrollador. notice Dar forma a la logica
+- `src/operations/configProfileCommandHostAdapter.ts` Tomalo ahora config/profile Persistencia del Estado、CLI Exportar notice Dar forma e importar y exportar la logica de mapeo de errores
+- `src/operations/providerConnectionTestCommandHostAdapter.ts` Ahora emprende el compartir provider Prueba de conexion settings Carga y pruebas subyacentes runner Interactivo con busy/reporter wrapper，Y ha sido reutilizado por la ruta de comando y la pagina de configuracion.
+- `src/operations/noteProcessingCommandHostAdapter.ts` Ahora no solo emprendemos `process-current-add-links`、`process-folder-add-links`、`batch-generate-from-titles`、`generate-from-title` Con `research-and-summarize`，Aun asi seguir emprendiendo `translate-current-file`、`batch-translate-folder`、`extract-concepts-current`、`extract-concepts-folder`、`extract-original-text` Con `extract-concepts-and-generate-titles` de busy-guard、reporter ciclo de vida、notice/error-log Organizar la logica
+- `src/operations/utilityCommandHostAdapter.ts` El expediente actual ahora tambien se acepta. duplicate check、duplicate cleanup、batch Mermaid fix Con single/batch formula fix de command orchestration；`check-for-duplicates` Ya no esta escrito en linea en el registro de comandos
+- `src/operations/utilityCommandHostAdapter.ts` Ahora tambien aceptado duplicate cleanup Con batch Mermaid fix Eliminar confirmacion, sin archivo. notice Con exito notice Semantica, estos efectos secundarios del usuario ya no son `src/fileUtils.ts` Fuga
+- `src/operations/registry.ts` El resto ahora tambien esta cubierto. selection/export Superficies de automatizacion adyacentes：`editor.create-link-and-generate`、`provider.profile.export`、`provider.profile.import`、`cli.capability-manifest.export` Con `cli.invocation-contract.export` Ya ingrese al mismo lote que los lotes anteriores. registry/capability/contract Superficie
+- El primer lote `src/fileUtils.ts` La subseccion tambien se completa. write-heavy contract enrichment Verificacion：`processFile()` Regresa ahora `ProcessFileResult`，`generateContentForTitle()` Regresar `GenerateContentForTitleResult`，`batchGenerateContentForTitles()` Regresar `BatchGenerateContentForTitlesResult`，`runProcessFolderWithNotemdCommandWithHost()` Ahora tambien regresa la banda `savedCount`、`fileResults`、`errors` Con `cancelled` de `BatchProcessFolderResult`
+- `src/fileUtils.ts` Ahora ya no decidas por tu cuenta que “no se puede hacer nada” Markdown Resultados de la generacion por lotes del lado del usuario para "Archivo"; solo regresa estructurado batch state，Este no-file notice Cambios semanticos `src/operations/noteProcessingCommandHostAdapter.ts` Emprender
+- `src/fileUtils.ts` La cola restante del：`batchFixMermaidSyntaxInFolder()` Regresar `BatchMermaidFixResult`，`checkAndRemoveDuplicateConceptNotes()` Regresar `ConceptDedupeResult`，Confirmacion destructiva por host adapter Inyeccion，batch Mermaid El manejo sin archivos tambien se ha eliminado de utility-owned Cambiar a host-owned
+- `src/operations/registry.ts` Ahora tambien se modela directamente `file.process-add-links`、`file.process-folder-add-links`、`content.generate-from-title`、`content.batch-generate-from-titles`、`mermaid.batch-fix`、`concept.dedupe`、`translate.*` Con `formula.*` de richer result schema，Por lo tanto capability export Con invocation-contract export No mas aplanamiento de estos flujos en una semantica de solo ruta o de solo conteo
+- `src/fileUtils.ts` Con `src/extractOriginalText.ts` Ahora se aceptan mas estrechos runtime context，En lugar de depender directamente del concreto `NotemdPlugin` clase, que indica que el limite esta cambiando de wrapper El destacamento continua avanzando hacia utility Debilitamiento del acoplamiento tipo anfitrion.
+- `src/main.ts` Ahora mantenga principalmente el registro de comandos.、host Estructura y mas diagram Ejecucion helper；Publico anterior de mayor valor direct command surface Ahora cambiado a Aprobado host adapter Proxy, ya no en linea busy/reporter/preview Logica del ciclo de vida
+- Recien lanzado direct-surface wrapper El lote ha sido cubierto. `testLlmConnectionCommand`、`generateDiagramCommand` Con `previewExperimentalDiagramCommand`；Estas superficies ahora estan estructuradas. result Limites, no fire-and-forget de UI glue
+- El ultimo nivel de refinamiento es：`diagram.generate` Debe entenderse como “independiente del anfitrion”. generation contract”，En lugar de mirar el presente active-file Otro nombre para el comando. esta en operation-level en `safe` / `read-only` Los metadatos describen explicitamente `sourceMarkdown -> DiagramGenerationResult` core；Mapeando el pasado command binding Aun mantenlo con sinceridad `requires-active-file` / `write-file` Semantica。
+- Por lo tanto, la actual brecha real restante ya no es publica. command entrypoint mismo：`diagram.preview` Con `provider.connection.test` Ya disponible typed contract，save/artifact Tambien se ha ingresado la ruta de ejecucion real. `src/operations/diagramCommandExecution.ts`，y `diagram.generate` Ahora tambien devuelve explicito follow-through Detalles（`kind`、`outputPath`、`previewOpened`、`autoFixAttempted`、`artifactTarget`），Sin dejar de conservar la capa superior compatible con versiones anteriores `outputPath` / `previewOpened` Campo。
+- La capa de verificacion semantica local del mantenedor ya no es solo una descripcion de texto.：`npm run verify:diagram-semantics` No se puede generar ninguno secrets de Markdown Consulte la plantilla, que contiene puertas duras de almacen.、vault Percibido CLI Verifique el comando y Mermaid / JSON Canvas / Vega-Lite El bloque de pruebas no depende del seguimiento en el almacen. vault Camino o live Credenciales。
+- Se ha aclarado el orden de la siguiente etapa: primero `diagram.generate` Sea independiente del host core，Pon estos aterrizados typed follow-through Tratado como debajo command-completion Capa, hazlo de nuevo packaging / semantic verification La convergencia posterior, y finalmente reabierta con mas fuerza public CLI Declaracion o reordenamiento estructural mayor。
 
-## 关键设计决策
+## Decisiones clave de diseno
 
-1. **规格优先图表生成**：LLM 输出结构化 `DiagramSpec` JSON，而非原始 Mermaid 语法。解耦意图与渲染器。
-2. **传输驱动分发**：OpenAI-compatible 提供商共享一个运行时。无逐提供商代码路径。
-3. **Cline 对齐令牌解析**：未知模型由 API 提供商自行决定。已知模型使用元数据表。
-4. **operation-core 与 command-binding 分层**：registry 中的 operation 元数据可以描述可复用的宿主无关 core，而当前出货命令本身仍保留 active-file、write-file 或 preview-bound 的真实产品语义。`diagram.generate` 是当前最明确的证明案例。
-5. **Iframe 宿主预览**：Vega-Lite 和 HTML 在沙盒 iframe 中渲染。Mermaid 内联渲染。
-6. **本地存储提供商配置**：API 密钥可设备本地保留，工作流设置可同步。
-7. **响应缓存**：5 分钟 TTL 内相同 LLM 调用返回缓存结果。
+1. **Especificacion: primera generacion de graficos**：LLM Estructuracion de la produccion `DiagramSpec` JSON，Mas que original Mermaid Gramatica. Intentos de desacoplamiento y renderizadores。
+2. **Distribucion de conductores de transporte.**：OpenAI-compatible Los proveedores comparten un tiempo de ejecucion. Sin ruta de codigo por proveedor。
+3. **Cline Analisis del token de alineacion**：El modelo desconocido viene dado por API A exclusivo criterio del proveedor. Tabla de metadatos de uso de modelo conocido。
+4. **operation-core Con command-binding Capas**：registry en operation Los metadatos pueden describir reutilizables independientemente del host. core，La orden de envio actual permanece active-file、write-file o preview-bound Semantica del producto real de。`diagram.generate` Es la prueba mas clara en la actualidad.。
+5. **Iframe Vista previa del anfitrion**：Vega-Lite y HTML En la caja de arena iframe Representacion media。Mermaid Representacion en linea。
+6. **Configuracion del proveedor de almacenamiento local**：API La clave se puede conservar localmente en el dispositivo y la configuracion del flujo de trabajo se puede sincronizar.。
+7. **Almacenamiento en cache de respuestas**：5 minutos TTL Lo mismo dentro de 0. LLM La llamada devuelve resultados almacenados en cache。
 
-## 验证
+## Verificacion
 
-- `npm run build` — TypeScript 编译 + esbuild 打包
-- `npm test -- --runInBand` — 完整 Jest 矩阵当前为 137 套件、871 项测试；若在 `/.worktrees/` checkout 中验证，请改用 `npx jest --runInBand --config /tmp/notemd-worktree-jest.cjs`，因为仓库默认 Jest ignore 规则会排除 worktree 路径
-- `npm run audit:i18n-ui` — 无硬编码 UI 字符串
-- `npm run audit:render-host` — 渲染宿主自包含于 main.js
-- `git diff --check` — 空白符卫生
+- `npm run build` — TypeScript compilar + esbuild Embalaje
+- `npm test -- --runInBand` — completo Jest La matriz es actualmente 137 Equipos、871 prueba; si en `/.worktrees/` checkout Validacion, utilice en su lugar `npx jest --runInBand --config /tmp/notemd-worktree-jest.cjs`，Porque el almacen esta por defecto Jest ignore Las reglas excluiran worktree Camino
+- `npm run audit:i18n-ui` — Sin codificacion estricta UI cuerda
+- `npm run audit:render-host` — El host de renderizado es autonomo en main.js
+- `git diff --check` — Higiene de los espacios en blanco

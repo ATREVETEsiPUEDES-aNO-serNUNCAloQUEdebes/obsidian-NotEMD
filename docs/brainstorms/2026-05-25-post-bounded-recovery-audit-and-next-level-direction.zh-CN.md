@@ -5,22 +5,22 @@ topic: post-bounded-recovery-audit-and-next-level-direction
 canonical: true
 ---
 
-# Bounded Recovery 之后的主线审计与 Next-Level 方向
+# Bounded Recovery Auditoria de linea principal posterior y Next-Level Direccion
 
-## 1. 为什么需要这份文档
+## 1. ¿Por que se necesita este documento?
 
-仓库当前已经不再处于以下两个解释断点中的任意一个：
+El almacen ya no se encuentra en ninguno de los dos puntos de interrupcion de interpretacion siguientes:：
 
-1. 2026-05-13 的 `1.8.9` 发布边界审计；
-2. 2026-05-24 的 force-rewrite 基线审计。
+1. 2026-05-13 de `1.8.9` Auditoria de limites de liberacion；
+2. 2026-05-24 de force-rewrite Auditoria de referencia。
 
-在那之后，当前 `main` 已重新拿回一部分有界但实质性的 backup-branch 能力宽度，并已发货到 `1.9.2` 边界，同时继续把 local-KB / chapter-split 的 Stage C 收口往前推进。因此，当前真正需要回答的问题又变了：
+Despues de eso, actualmente `main` Una parte limitada pero sustancial de la backup-branch Ancho de capacidad y enviado a `1.9.2` Limites, sin dejar de poner local-KB / chapter-split de Stage C Cierra la boca y empuja hacia adelante. Por tanto, la verdadera pregunta que hay que responder ahora ha cambiado.：
 
-- 不再是“recovery 到底有没有发生”；
-- 也不再只是“bounded product slice 有没有重新落回主线”；
-- 而是“哪些架构通道现在已经实质收敛、哪些仍然结构性落后，以及 bounded recovery 之后真正的 next-level control-plane 工作是什么”。
+- No mas“recovery ¿Sucedio?”；
+- Ya no es solo“bounded product slice ¿Ha vuelto a la linea principal?”；
+- Pero “¿Que canales arquitectonicos ahora han convergido sustancialmente, cuales todavia estan estructuralmente rezagados y cuales bounded recovery Entonces lo real next-level control-plane ¿Que es el trabajo?”。
 
-主要对比来源：
+Fuentes primarias de comparacion.：
 
 1. `docs/brainstorms/2026-05-24-mainline-force-rewrite-audit-and-next-direction.zh-CN.md`
 2. `docs/brainstorms/2026-05-20-unified-follow-through-matrix.zh-CN.md`
@@ -28,85 +28,85 @@ canonical: true
 4. `docs/superpowers/plans/2026-05-03-mainline-stabilization-next-batch.zh-CN.md`
 5. `.trellis/tasks/05-19-local-kb-retrieval-chapter-split-stage-b2cd/prd.md`
 6. `.trellis/tasks/05-27-provider-settings-model-discovery/prd.md`
-7. `1.9.2` release 边界与后续 post-release contract/evidence follow-through 之后的 live `main`
+7. `1.9.2` release Limites y seguimiento post-release contract/evidence follow-through despues live `main`
 
-当前阅读说明：
+Instrucciones de lectura actuales：
 
-1. 本文仍是 post-bounded-recovery checkpoint；
-2. 更新的 current-main 真值来源是 `docs/brainstorms/2026-05-28-mainline-progress-audit-and-next-level-direction.zh-CN.md`；
-3. 统一执行矩阵仍是 `docs/brainstorms/2026-05-20-unified-follow-through-matrix.zh-CN.md`。
+1. Este articulo permanece post-bounded-recovery checkpoint；
+2. Actualizado current-main La fuente de la verdad es `docs/brainstorms/2026-05-28-mainline-progress-audit-and-next-level-direction.zh-CN.md`；
+3. La matriz de ejecucion unificada todavia esta `docs/brainstorms/2026-05-20-unified-follow-through-matrix.zh-CN.md`。
 
-## 2. Recovery 之后的当前代码真值
+## 2. Recovery El valor de verdad del codigo actual despues
 
-### 2.1 Packaging / runtime 真值
+### 2.1 Packaging / runtime Valor de verdad
 
-当前发货真值仍然比源码树表面看起来更窄：
+La verdad del envio actual es aun mas limitada de lo que el arbol de origen parece en la superficie.：
 
-1. `esbuild.config.mjs` 仍只构建单个 `main.js` 输出。
-2. `scripts/audit-render-host-bundle.js` 仍在强制执行 `main.js` + inline `srcdoc` 的 host 契约，并拒绝独立 render-host 输出文件。
-3. 源码里仍保留 runtime 候选文件，例如：
+1. `esbuild.config.mjs` Todavia solo construyo uno `main.js` Salida。
+2. `scripts/audit-render-host-bundle.js` Todavia aplicado `main.js` + inline `srcdoc` de host Contrato y rechazo a la independencia render-host Archivos de salida。
+3. Aun retenido en el codigo fuente. runtime Documentos del candidato, p.：
    - `src/rendering/runtime/renderHostEntry.ts`
    - `src/rendering/preview/renderHostRuntimeClient.ts`
-   - 一组共享的 Mermaid / Vega-Lite preview runtime helper
-4. 这意味着这些文件目前只是 **潜在实现通道**，而不是已发货的构建边界。
-5. 当前执行链已显式把这条通道保持为 dormant：
-   - 默认 Mermaid / Vega-Lite preview loading 仍走 package runtime
-   - `audit:render-host` 会拒绝当前主线中残留的 `render-host.mjs` 资产与构建产物引用
-   - `resolveBundledRenderHostRuntimeModuleSpecifier()` 除非显式配置 runtime module specifier，否则继续 fail-closed
-   - `createRenderHostBundleBuildOptions()` 会保持 candidate-only，并留在 production `esbuild.config.mjs` 路径之外，除非 build、release assets、audit 与 docs 同批前进
+   - Un conjunto compartido de Mermaid / Vega-Lite preview runtime helper
+4. Esto significa que estos archivos actualmente solo estan **Posibles canales de implementacion**，En lugar de limites de construccion enviados。
+5. La actual cadena de ejecucion ha mantenido explicitamente este canal como dormant：
+   - Predeterminado Mermaid / Vega-Lite preview loading Sigo caminando package runtime
+   - `audit:render-host` Los elementos restantes en la linea principal actual seran rechazados. `render-host.mjs` Activos y referencias de productos de construccion
+   - `resolveBundledRenderHostRuntimeModuleSpecifier()` A menos que se configure explicitamente runtime module specifier，De lo contrario continua fail-closed
+   - `createRenderHostBundleBuildOptions()` Mantendra candidate-only，y quedate production `esbuild.config.mjs` Camino exterior a menos que build、release assets、audit con docs Avanzar en el mismo lote
 
-正确解释：
+Explicacion correcta：
 
-- 架构在源码组织层面继续推进了；
-- 但在 release-asset 边界上 **还没有** 推进成已发货事实。
-- source/build split 现在已经由可执行检查守住，而不只是计划文案。
+- La arquitectura sigue avanzando a nivel de organizacion del codigo fuente.；
+- Pero en release-asset En la frontera **Todavia no** Promocione el hecho de que ha sido enviado.。
+- source/build split Ahora protegido por comprobaciones ejecutables, no solo por la copia del plan.。
 
-### 2.2 CLI / automation 真值
+### 2.2 CLI / automation Valor de verdad
 
-当前 CLI 叙述已经明确分成两层：
+actual CLI La narrativa se ha dividido claramente en dos niveles：
 
-1. public-safe export slice 仍然是刻意收窄的；
-2. repo-local maintainer helper 更宽，但仍是有边界、显式输入的维护者工具。
+1. public-safe export slice Todavia deliberadamente estrecho；
+2. repo-local maintainer helper Herramienta de mantenimiento de entradas explicita, mas amplia, pero aun limitada。
 
-当前代码真值：
+Valor de verdad del codigo actual：
 
-1. `npm run cli:help` 现在明确列出：
+1. `npm run cli:help` Ahora enumere claramente：
    - `content.batch-generate-from-titles`
    - `content.split-note-by-chapters`
    - `research.summarize-topic`
    - `diagram.generate`
    - `local-knowledge.inspect`
-   - 以及 export 相关操作
-2. `src/maintainerCliBridge.ts` 已实现这些 path-based maintainer operations，并要求显式 JSON / 文件 payload。
-3. maintainer-only 的 `local-knowledge.inspect` seam 现已可以暴露 effective path resolution、显式或自动派生的 query、candidate file paths、原始格式化 context、结构化 `contextBlocks` 证据、结构化 retrieval 摘要，以及临时 `knowledgePaths` override 数组，用于 task-scoped local-KB 调试，而不会扩大 public-safe slice。
-4. `content.split-note-by-chapters` 现在也已进入 `src/operations/registry.ts` / `src/cliContracts.ts` 的类型化主干，但仍明确不属于当前 public-safe slice。
-5. `content.split-note-by-chapters` 的 maintainer 调用现已支持可选 `splitHeadingLevel` override，不再只依赖当前 settings 快照。
-6. `content.split-note-by-chapters` 的类型化结果现在还会直接暴露 managed artifact contract（`requestedSplitHeadingLevel`、`chapterNotePaths`、`managedArtifactPaths`、`removedStalePaths`），不再逼调用方靠命名规则反推。
-7. `scripts/lib/maintainer-cli-operation-help.js` 已成为这层 helper surface 的共享帮助真值。
-8. public-safe export slice 仍然刻意比 maintainer helper 更窄。
+   - y export Operaciones relacionadas
+2. `src/maintainerCliBridge.ts` Estos se han logrado path-based maintainer operations，Y requieren explicitos JSON / Documentacion payload。
+3. maintainer-only de `local-knowledge.inspect` seam Ahora disponible para exposicion. effective path resolution、Derivado explicito o automatico query、candidate file paths、Formato sin formato context、Estructura `contextBlocks` Evidencia, estructuracion retrieval Resumen y provisional `knowledgePaths` override Matriz, utilizada para task-scoped local-KB Depurar sin escalar public-safe slice。
+4. `content.split-note-by-chapters` Ahora tambien entro `src/operations/registry.ts` / `src/cliContracts.ts` columna vertebral escrita, pero todavia claramente no pertenece a la corriente public-safe slice。
+5. `content.split-note-by-chapters` de maintainer Llamar ahora admite opcional `splitHeadingLevel` override，Ya no depender unicamente de la actualidad settings Instantanea。
+6. `content.split-note-by-chapters` Los resultados escritos ahora tambien se exponen directamente managed artifact contract（`requestedSplitHeadingLevel`、`chapterNotePaths`、`managedArtifactPaths`、`removedStalePaths`），Ya no se obliga a la persona que llama a confiar en las reglas de nomenclatura para inferir。
+7. `scripts/lib/maintainer-cli-operation-help.js` Se ha convertido en esta capa. helper surface El valor de verdad de la ayuda compartida de。
+8. public-safe export slice Todavia comparando deliberadamente maintainer helper Mas estrecho。
 
-正确解释：
+Explicacion correcta：
 
-- 当前 main 已不再是“只支持 export-only 的 maintainer helper”；
-- 但它依然不是宽口径 public CLI API。
+- actual main Ya no se trata “solo de apoyar export-only de maintainer helper”；
+- Pero todavia no tiene un diametro amplio public CLI API。
 
-### 2.3 产品面真值
+### 2.3 Valor nominal del producto
 
-此前恢复回来的产品切片，现在已经是 current-main 事实，而不再只是 backup-branch evidence：
+Las porciones de producto que antes se restauraban ahora estan current-main Hechos, no solo backup-branch evidence：
 
-1. local knowledge retrieval 已接入：
-   - `从标题生成`
-   - `从标题批量生成`
-   - `研究与总结`
-   - `生成图形`
-2. local knowledge retrieval 设置现已支持混合的 Vault 相对文件/文件夹路径列表，并可为各任务单独覆盖；任务级覆盖留空时会回退到默认路径列表。
-3. chapter split 已落地，具备 TOC/manifest 输出、确定性的 TOC front-matter metadata、面向重复 nested heading 的稳定 block ref、manifest-backed 的 guarded rerun overwrite 语义，以及陈旧生成文件清理。
-4. preview history 与 saved-artifact-aware reopening 已进入可复用 preview shell。
-5. settings reset、concept-note prerequisite guidance、concept synonym suppression 与 folder file-selection profiles 都已回到当前主线。
-6. 面向 retrieval 的 note-processing 结果现在也已为标题生成与研究总结暴露 machine-readable 的 `localKnowledgeRetrieval` 摘要，包含 matched/returned counts、source paths、请求的 `topK`、sliding-window size、current-file exclusion telemetry、index/query timing 与 context-char count。
-7. 现在也已有专用的离线 retrieval-quality maintainer fixture：`npm run verify:local-kb-fixtures`。它直接对当前线上 MiniSearch retriever 跑一组更宽的 mixed-note/query 回归语料、task-scoped inspect case，以及 chapter-split showcase 之外的真实 note/query 多样性，而不是再造一条评测专用检索路径。
+1. local knowledge retrieval conectado：
+   - `Generar a partir del titulo`
+   - `Generacion por lotes a partir de titulos.`
+   - `Investigacion y resumen`
+   - `Generar graficos`
+2. local knowledge retrieval La configuracion ahora admite mezclas Vault Archivos relativos/Lista de rutas de carpetas y se puede anular individualmente para cada tarea; cuando la cobertura a nivel de tarea se deja en blanco, volvera a la lista de rutas predeterminada。
+3. chapter split Ya implementado y equipado TOC/manifest Salida, determinista TOC front-matter metadata、Orientado a la repeticion nested heading Estabilidad block ref、manifest-backed de guarded rerun overwrite Semantica y limpieza de archivos obsoletos generados。
+4. preview history con saved-artifact-aware reopening Ya disponible para su reutilizacion preview shell。
+5. settings reset、concept-note prerequisite guidance、concept synonym suppression con folder file-selection profiles Todos han vuelto a la linea principal actual。
+6. Orientado retrieval de note-processing Los resultados ahora tambien se exponen para la generacion de titulos y resumenes de investigacion. machine-readable de `localKnowledgeRetrieval` Resumen, incluido matched/returned counts、source paths、Solicitado `topK`、sliding-window size、current-file exclusion telemetry、index/query timing con context-char count。
+7. Ahora tambien hay un offline dedicado retrieval-quality maintainer fixture：`npm run verify:local-kb-fixtures`。Responde directamente a la linea actual. MiniSearch retriever Ejecute un conjunto mas amplio mixed-note/query Corpus de regresion、task-scoped inspect case，y chapter-split showcase La realidad mas alla note/query Diversidad en lugar de reinventar una ruta de busqueda especifica de resenas。
 
-代码证据包括：
+La evidencia del codigo incluye：
 
 1. `src/localKnowledgeBase.ts`
 2. `src/chapterSplit.ts`
@@ -115,274 +115,274 @@ canonical: true
 5. `src/tests/chapterSplit.test.ts`
 6. `src/tests/diagramPreviewModal.test.ts`
 
-### 2.4 Release / version / chronicle 真值
+### 2.4 Release / version / chronicle Valor de verdad
 
-release-facing 真值已重新对齐到当前主线：
+release-facing Los valores verdaderos se han realineado a la linea principal actual.：
 
-1. `package.json`、`manifest.json`、`versions.json` 现在处于 `1.9.2`；
-2. `src/ui/welcomeReleaseNotes.ts` 现在承载 `1.9.2` 欢迎弹窗摘要；
-3. root `README*.md` 家族现在也同步了 `1.9.2` 的版本 / badge / footer 状态；
-4. `docs/releases/1.9.2.md` 与 `docs/releases/1.9.2.zh-CN.md` 已进入当前发货真值面；
-5. `scripts/release/commit-chronicle-refresh.js` 与 `scripts/lib/repo-saga-contributor-normalization.js` 已重新回到当前主线；
-6. repo-saga 串行安全仍由执行锁与文档共同强制；
-7. release workflow assets、tag trigger、workflow-source branch 与 chronicle-target branch 真值现在都由 `scripts/lib/packaging-contract.js` 共享持有，而不再只是 YAML-local 假设。
+1. `package.json`、`manifest.json`、`versions.json` Actualmente en `1.9.2`；
+2. `src/ui/welcomeReleaseNotes.ts` Ahora oso `1.9.2` Resumen emergente de bienvenida；
+3. root `README*.md` La familia ahora esta sincronizada. `1.9.2` version / badge / footer Estado；
+4. `docs/releases/1.9.2.md` con `docs/releases/1.9.2.zh-CN.md` Ingreso el lado del valor real del envio actual；
+5. `scripts/release/commit-chronicle-refresh.js` con `scripts/lib/repo-saga-contributor-normalization.js` Regresado a la linea principal actual.；
+6. repo-saga La seguridad en serie todavia se aplica mediante bloqueos de ejecucion y documentacion.；
+7. release workflow assets、tag trigger、workflow-source branch con chronicle-target branch El valor de verdad ahora esta determinado por `scripts/lib/packaging-contract.js` Participaciones compartidas, no solo YAML-local Suposiciones。
 
-### 2.5 Provider settings / model-discovery 真值
+### 2.5 Provider settings / model-discovery Valor de verdad
 
-这条通道已经从 planning/bootstrap 进入 bounded breadth maintenance：
+Este canal ha sido planning/bootstrap Entra bounded breadth maintenance：
 
-1. `src/llmProviders.ts` 现在承载共享的 provider-field taxonomy metadata，覆盖 `core`、`contextual`、`advanced` 与 `developer` 字段。
-2. `src/ui/NotemdSettingTab.ts` 现在从这些 metadata 渲染 provider settings，而不是把 provider-name 分支当成字段 taxonomy 的主要 owner。
-3. 面板仍保持扁平的 `LLMProviderConfig` 形态，从而保留 import/export 与既有 `data.json` 兼容性，并让 `model` 继续作为持久化 source-of-truth 字符串。
-4. advanced disclosure 现在由 metadata 与持久化 override 共同派生，因此既有显式 advanced 值仍会保持可见，不会被简化 UI 隐藏。
-5. 当前主线已包含有界的 settings 内模型发现能力，并使用瞬时 helper，而不是持久化 remote model catalog。
-6. discovery/runtime 现在会为当前已验证的 provider family 共享 endpoint-family 与 header ownership seam。
-7. discovered-model token metadata 可以引导 provider-scoped output-token autofill，但 arbitrary generic gateway owner inference 仍然刻意保持 out of bounds。
-8. 对 Cherry Studio 的分析已经给出明确对照方向：
-   - strategy-registry 与 parser/fallback 分层值得复用
-   - 持久化 `provider.models[]` 生命周期和更重的 provider-domain 状态，对 Notemd 当前架构来说过重
-9. 当前剩余边界已经转成产品边界，而不是实现边界：
-   - 没有持久化 `provider.models[]` catalog
-   - 没有 model CRUD 子系统
-   - 不宣称已覆盖 verified bounded family batch 之外的 broad all-provider discovery
+1. `src/llmProviders.ts` Ahora hosting compartido provider-field taxonomy metadata，Cobertura `core`、`contextual`、`advanced` con `developer` Campos。
+2. `src/ui/NotemdSettingTab.ts` Ahora de estos metadata Representacion provider settings，En lugar de poner provider-name Trate las ramas como campos. taxonomy El principal owner。
+3. El panel permanece plano. `LLMProviderConfig` Forma, conservando asi import/export Con existente `data.json` Compatibilidad y Let `model` Continuar como persistencia source-of-truth cuerda。
+4. advanced disclosure Ahora por metadata Y perseverancia override Derivado comun, por lo que ambos explicitos advanced Los valores permaneceran visibles y no se simplificaran UI Ocultar。
+5. La linea principal actual ya contiene limites settings Capacidades de descubrimiento en el modelo y uso de instantaneas. helper，En lugar de perseverancia remote model catalog。
+6. discovery/runtime Ahora sera el actual verificado. provider family Compartir endpoint-family con header ownership seam。
+7. discovered-model token metadata Puede arrancar provider-scoped output-token autofill，Pero arbitrary generic gateway owner inference Todavia mantengo deliberadamente out of bounds。
+8. Derecha Cherry Studio El analisis ha dado una clara direccion de comparacion.：
+   - strategy-registry con parser/fallback Vale la pena reutilizar las capas
+   - Persistencia `provider.models[]` Ciclo de vida y mas pesado. provider-domain Estado, si Notemd Demasiado pesado para la arquitectura actual
+9. El limite restante actual se ha convertido en un limite de producto en lugar de un limite de realizacion.：
+   - Sin perseverancia `provider.models[]` catalog
+   - No model CRUD Subsistema
+   - No reclamar cobertura verified bounded family batch Aparte de broad all-provider discovery
 
-正确解释：
+Explicacion correcta：
 
-- provider settings/model discovery 已不再是未落地的 UX architecture gap；
-- 下一阶段真正该做的不是 first delivery，而是 bounded breadth maintenance 与 truth discipline；
-- 这条线已经不再只是规划或隔离实现话题；有界的 provider-settings control-plane convergence 已经落到 current main。
+- provider settings/model discovery Ya no esta inactivo UX architecture gap；
+- Lo que realmente deberia hacerse en la siguiente etapa no es first delivery，En lugar bounded breadth maintenance con truth discipline；
+- Esta linea ya no se trata solo de planificar o aislar temas de implementacion; esta limitado provider-settings control-plane convergence ha caido current main。
 
-## 3. 相对先前方案要求的深度对比
+## 3. Comparacion en profundidad con los requisitos del programa anterior.
 
-### 3.1 相对 `mainline-stabilization-next-batch`
+### 3.1 relativo `mainline-stabilization-next-batch`
 
-当时方案要求的是：
+El plan en ese momento requeria que：
 
-1. 先做边界收敛，再扩范围；
-2. 让 semantic verification 从“口头经验”变成可维护的制度；
-3. packaging 语言必须严格服从真实构建边界；
-4. Drawnix 继续作为 reference boundary，而不是 scope creep。
+1. Primero haga converger los limites, luego expanda el rango；
+2. deja semantic verification De la “experiencia verbal” al sistema mantenible；
+3. packaging El lenguaje debe obedecer estrictamente a los limites de la construccion real；
+4. Drawnix Continuar como reference boundary，En lugar de scope creep。
 
-当前代码已经证明：
+El codigo actual esta probado.：
 
-1. command/help/preview follow-through 的收敛程度已经超过当时最小目标；
-2. semantic helper / runbook 真值已真实落地并检入；
-3. Drawnix 仍未被误写成下一批 active scope；
-4. packaging 文案现在已由可执行 guardrails 支撑，但真正的 multi-entry runtime 发货仍未解决；
-5. provider/runtime 宽度与 provider-settings metadata 现在已共享一条有界 control plane，因此剩余风险是边界漂移，而不是首轮实现。
+1. command/help/preview follow-through El grado de convergencia ha superado el objetivo minimo en aquel momento；
+2. semantic helper / runbook El verdadero valor ha sido implementado y comprobado.；
+3. Drawnix Aun no se ha escrito por error en el siguiente lote. active scope；
+4. packaging Copiar ahora tiene ejecutable guardrails Apoyo, pero de verdad multi-entry runtime Envio aun sin resolver；
+5. provider/runtime Ancho vs. provider-settings metadata Ahora se comparte un camino delimitado. control plane，Por lo tanto, el riesgo restante es la desviacion de los limites, no la realizacion en primera ronda.。
 
-仍然未解决的点：
+Puntos que quedan sin resolver：
 
-1. 下一阶段的第一个瓶颈，依然是“latent runtime lane 是继续 dormant，还是提升成真实 packaged boundary”；
-2. 第二个瓶颈，则是“让 provider discovery 的扩宽继续走共享 family/shape seam，而不是演变成持久化 catalog 或 all-provider 宣称”。
+1. El primer obstaculo en la siguiente etapa sigue siendo“latent runtime lane Si continuar dormant，O mejorarlo a la realidad packaged boundary”；
+2. El segundo obstaculo es “dejar que provider discovery La expansion sigue siendo compartida family/shape seam，En lugar de evolucionar hacia la persistencia catalog o all-provider Reclamacion”。
 
-### 3.2 相对 local-KB / chapter-split Stage-B2CD PRD
+### 3.2 relativo local-KB / chapter-split Stage-B2CD PRD
 
-当前 `main` 上，PRD requirement 状态如下：
+actual `main` en，PRD requirement El estado es el siguiente.：
 
-| Requirement | 状态 | 说明 |
+| Requirement | Estado | Descripcion |
 |---|---|---|
-| R1 local KB retrieval for targeted tasks | 已落地 | 通过 `src/localKnowledgeBase.ts` 与任务级接入路径实现，现已覆盖 `从标题生成` |
-| R2 local-only / no cloud / no daemon / no GPU | 已落地 | 当前实现基于插件内 MiniSearch 索引 |
-| R3 retrieval disabled 时不回归旧行为 | 已落地 | 由可选设置和 integration tests 保护 |
-| R4 settings-driven / conservative defaults | 已落地 | 当前设置路径可见且默认保守，并支持默认文件/文件夹源路径与任务级覆盖 |
-| R5 候选 OSS 对比研究 | 已落地 | 研究结果已记录在 `.trellis/tasks/05-19-local-kb-retrieval-chapter-split-stage-b2cd/research/` |
-| R6 新增 `章节拆分` 动作 | 已落地 | command/sidebar wiring 已存在于 current main |
-| R7 按标题拆分并生成 TOC 工件 | 已落地 | `src/chapterSplit.ts` 与对应测试已证明 |
-| R8 不回归 packaging / semantic 真值 | 已落地 | build/audit 仍只证明 `main.js` 单资产发货 |
-| R9 tests/docs/progress artifacts 对齐先前方案 | 已落地，且已进一步收紧 | 本文、矩阵更新以及 `verify:local-kb-fixtures` 现在同时覆盖了叙述层进度对齐与有界离线 retrieval-quality 回归检查 |
-| R10 keep CI green and stability bar intact | 当前检查点已落地 | 已由当前 repo gates 重新验证 |
+| R1 local KB retrieval for targeted tasks | Ya implementado | Pase `src/localKnowledgeBase.ts` Implementado con ruta de acceso a nivel de tarea, ahora cubierto `Generar a partir del titulo` |
+| R2 local-only / no cloud / no daemon / no GPU | Ya implementado | La implementacion actual se basa en complementos. MiniSearch Indice |
+| R3 retrieval disabled Nunca vuelvas a caer en viejos comportamientos | Ya implementado | Por configuraciones opcionales y integration tests Proteccion |
+| R4 settings-driven / conservative defaults | Ya implementado | La ruta de configuracion actual es visible y conservadora de forma predeterminada y admite archivos predeterminados./Ruta de origen de la carpeta y cobertura a nivel de tarea |
+| R5 Candidato OSS Estudio comparativo | Ya implementado | Los resultados del estudio han sido documentados en `.trellis/tasks/05-19-local-kb-retrieval-chapter-split-stage-b2cd/research/` |
+| R6 nuevo `Division de capitulos` Accion | Ya implementado | command/sidebar wiring ya existe en current main |
+| R7 Dividir por titulo y generar TOC Artefactos | Ya implementado | `src/chapterSplit.ts` Las pruebas correspondientes han demostrado |
+| R8 Sin retorno packaging / semantic Valor de verdad | Ya implementado | build/audit Todavia solo prueba `main.js` Entrega de un solo activo |
+| R9 tests/docs/progress artifacts Alinearse con soluciones anteriores | Ya implementado y reforzado | Este articulo, actualizacion de la matriz y `verify:local-kb-fixtures` Ahora se cubren tanto la alineacion del progreso de la capa narrativa como el limite sin conexion. retrieval-quality Comprobacion de regresion |
+| R10 keep CI green and stability bar intact | Se ha completado el punto de control actual. | Ha sido sustituido por el actual. repo gates Revalidacion |
 
-正确解释：
+Explicacion correcta：
 
-- 这份 Stage-B2CD PRD 在 current main 上已经功能性落地；
-- 后续工作应转入质量/深度跟进，而不是继续证明“这些能力存不存在”。
+- Este Stage-B2CD PRD en current main Ha sido implementado funcionalmente.；
+- El trabajo de seguimiento debe trasladarse a la calidad./Haga un seguimiento en profundidad en lugar de seguir demostrando “si estas capacidades existen””。
 
-### 3.3 相对 provider-settings simplification / model-discovery PRD
+### 3.3 relativo provider-settings simplification / model-discovery PRD
 
-当前 requirement 状态如下：
+actual requirement El estado es el siguiente.：
 
-| Requirement | 状态 | 说明 |
+| Requirement | Estado | Descripcion |
 |---|---|---|
-| R1 provider settings 需要区分 required/core 与 advanced 字段 | 已落地 | 当前 main 已通过共享的 core/contextual/advanced/developer 字段分组元数据来渲染 provider settings |
-| R2 这一区分必须来自共享 provider metadata | 已落地 | `LLMProviderDefinition` 现已承载 `settingFields` 元数据，并被设置面板直接使用 |
-| R3 保持 runtime 行为与 import/export 兼容 | 当前数据模型已天然有利于此 | 扁平 provider config 让未来重构的兼容性压力较低 |
-| R4 支持 Azure 专属 required 字段而不污染其他 provider | 已落地 | `apiVersion` 可见性现在通过 provider metadata 表达，同时不改变扁平持久化结构 |
-| R5 常见配置流程需要更快更聚焦 | 已以有界形态落地 | 当前 main 现已默认展示 core-first provider controls，并将次级调优项收进显式 advanced disclosure |
-| R6 深度分析 Cherry Studio 模型获取链路 | 研究已落地 | `.trellis/tasks/05-27-provider-settings-model-discovery/research/cherry-studio-model-discovery.md` |
-| R7 发现失败时必须平滑回退到手动 model 输入 | 已落地 | discovery 是 additive/transient 的；手动 `model` 输入仍是持久化真值路径，且在 discovery 不可用或失败时仍完整可用 |
-| R8 `model` 必须保持 core/default-visible | 当前行为已满足 | `model` 现在就是一等可见字段 |
-| R9 若已有持久化 advanced 值则默认展开 advanced | 已落地 | 当前 main 现已根据持久化 provider override 派生 advanced 展开状态 |
-| R10 Cherry 方案只做 selective reuse，不整体照搬 | 已以有界形态落地 | 当前 main 使用的是 transient discovery metadata/service，而不是持久化 `provider.models[]` 子系统 |
+| R1 provider settings Necesidad de distinguir required/core con advanced Campos | Ya implementado | actual main Compartido por core/contextual/advanced/developer Metadatos de agrupacion de campos para renderizado. provider settings |
+| R2 Esta distincion debe surgir de compartir provider metadata | Ya implementado | `LLMProviderDefinition` Ahora alojado `settingFields` Metadatos y utilizados directamente por el panel de configuracion. |
+| R3 mantener runtime Comportamiento y import/export Compatibilidad | Los modelos de datos actuales ya son naturalmente propicios para esto. | Piso provider config Reducir la presion de compatibilidad para futuras refactorizaciones. |
+| R4 Apoyo Azure Exclusivo required Campos sin contaminar a otros provider | Ya implementado | `apiVersion` La visibilidad ahora pasa provider metadata Expresion sin cambiar la estructura de persistencia plana. |
+| R5 Los procesos de configuracion comunes deben ser mas rapidos y centrados | Se ha implementado de forma acotada. | actual main Ahora se muestra de forma predeterminada core-first provider controls，E incluir elementos de ajuste secundarios en explicitos advanced disclosure |
+| R6 Analisis en profundidad Cherry Studio Enlace de adquisicion del modelo | Se han implementado investigaciones. | `.trellis/tasks/05-27-provider-settings-model-discovery/research/cherry-studio-model-discovery.md` |
+| R7 Cuando se detecta una falla, es necesario recurrir sin problemas a la operacion manual. model Entrada | Ya implementado | discovery si additive/transient de; manuales `model` La entrada sigue siendo un camino de verdad persistente, y en discovery Totalmente disponible incluso cuando no esta disponible o falla |
+| R8 `model` debe mantenerse core/default-visible | Se satisface el comportamiento actual. | `model` Ahora es un campo visible de primera |
+| R9 Si hay perseverancia advanced El valor se expande por defecto. advanced | Ya implementado | actual main Ahora a base de perseverancia provider override Derivado advanced Estado ampliado |
+| R10 Cherry El plan es solo hacer selective reuse，No copiar todo | Se ha implementado de forma acotada. | actual main Usado transient discovery metadata/service，En lugar de perseverancia `provider.models[]` Subsistema |
 
-正确解释：
+Explicacion correcta：
 
-1. 首轮 provider-settings/model-discovery 实现已经落到 current main；
-2. 这份方案现在应被读作 control-plane contract 与 maintenance boundary；
-3. 剩余工作是有界 provider-family 扩展、parser/header/token-guidance 纪律，以及文档真值维护。
+1. Primera ronda provider-settings/model-discovery La aplicacion ha recaido en current main；
+2. Esta propuesta deberia leerse ahora como control-plane contract con maintenance boundary；
+3. El trabajo restante esta limitado. provider-family Extension、parser/header/token-guidance Disciplina y mantenimiento de la verdad documental.。
 
-### 3.4 相对 2026-05-20 统一矩阵
+### 3.4 relativo 2026-05-20 Matriz unificada
 
-相对那份矩阵，当前有三处关键变化：
+En comparacion con esa matriz, actualmente hay tres cambios clave：
 
-1. lane C 应明确带上 `1.9.2` release-facing version truth，而不再停留在 `1.8.9`、`1.9.0` 或 `1.9.1`；
-2. 矩阵中需要显式保留 provider-settings / model-discovery 轨道，因为这条已落地的有界 surface 已足够影响后续优先级，不能被“泛化 settings 叙述”掩盖；
-3. lane D 应继续保持“质量/深度 next”定位，而不是回退到“先证明功能存在”的表述。
+1. lane C Asegurate de traer `1.9.2` release-facing version truth，En lugar de quedarse en `1.8.9`、`1.9.0` o `1.9.1`；
+2. Se requiere retencion explicita en la matriz. provider-settings / model-discovery Pista, porque esta pista que ha aterrizado esta acotada. surface Basta con afectar prioridades posteriores y no se puede "generalizar" settings Encubrimiento “narrativo”；
+3. lane D Debe seguir manteniendo la “calidad/Profundidad next”Posicionamiento, en lugar de recurrir a la afirmacion de "demostrar que la funcion existe primero"。
 
-## 4. 架构推进评估
+## 4. Evaluacion del avance de la arquitectura.
 
-### 4.1 真正推进了什么
+### 4.1 Lo que realmente avanza
 
-1. **Transport-driven provider runtime 更成熟了**
-   provider 宽度、test mode、known-model token metadata 与 connection-test 语义都比早期 provider-expansion 方案更完整。
-2. **Bounded product slice 在不扩大 packaging claim 的前提下重新落地**
-   local-KB、chapter split、preview history 与 saved-artifact reopening 的回归，没有逼着文档去假装 packaged runtime isolation 已经完成。
-3. **Cherry Studio 对照研究消除了大的规划盲区**
-   仓库现在已经明确知道该复用什么、不该复用什么，以及原因是什么。
-4. **Provider-settings 轨道已经成为 current-main 已落地能力**
-   先前的架构模糊已经转化为一个有界且已发货的实现，而不再只是规划话题或隔离执行探针。
-5. **Release truth 在这个 checkpoint 之后再次前进**
-   `1.9.2` 与后续 post-release contract follow-through 已把 sidebar observability、inspect explainability 与 release workflow contract ownership 变成 current-main 真值。
+1. **Transport-driven provider runtime Mas maduro**
+   provider Ancho、test mode、known-model token metadata con connection-test La semantica es mas avanzada que la de epocas anteriores. provider-expansion El plan es mas completo。
+2. **Bounded product slice Sin expansion packaging claim Relanzado bajo la premisa de**
+   local-KB、chapter split、preview history con saved-artifact reopening La devolucion del documento, sin obligarlo a pretender packaged runtime isolation Completado。
+3. **Cherry Studio Los estudios controlados eliminan grandes puntos ciegos en la planificacion**
+   El almacen ahora sabe exactamente que reutilizar, que no reutilizar y por que.。
+4. **Provider-settings Orbital se ha convertido current-main Capacidades implementadas**
+   La ambiguedad arquitectonica anterior se ha transformado en una implementacion limitada y enviada, en lugar de solo temas de planificacion o pruebas de ejecucion aisladas.。
+5. **Release truth En este checkpoint Luego avanza de nuevo**
+   `1.9.2` y seguimiento post-release contract follow-through Ya sidebar observability、inspect explainability con release workflow contract ownership convertirse current-main Valor de verdad。
 
-### 4.2 当前最大的结构性张力
+### 4.2 La mayor tension estructural en la actualidad
 
-1. **Source/build 真值不再完全一致**
-   源码里已有 render-host runtime candidates；但 build 和 audit 仍证明没有发货独立 runtime asset。
-2. **Provider discovery 宽度现在需要 maintenance discipline**
-   control plane 可以通过共享 metadata 扩展，但前提是新增 provider 继续走 family/shape/header seam，而不是回到临时 provider-name 分支。
-3. **朴素的 model-discovery 功能很容易过度扩 scope**
-   如果整体照搬 Cherry Studio，就会平白引入第二套 provider-state subsystem。
-4. **扁平配置结构既是优势也是约束**
-   它保住了 import/export 与 `data.json` 兼容性，但不能被拉伸成隐藏的持久化 remote catalog。
-5. **当前下一个 blocker 已经变成 scope discipline，而不是实现 bootstrap**
-   首批 helper 已经落地，风险从“这条线能不能收敛”转向“随着 provider 宽度继续扩张，能否继续保持 discovery 边界轻量且诚实”。
+1. **Source/build Los valores de verdad ya no son del todo consistentes**
+   Ya en el codigo fuente render-host runtime candidates；Pero build y audit Todavia se demuestra que no existe un envio independiente. runtime asset。
+2. **Provider discovery Ahora se requiere ancho maintenance discipline**
+   control plane Se puede compartir a traves de metadata Ampliacion, pero solo si es nueva. provider Sigue caminando family/shape/header seam，En lugar de volver a lo temporal provider-name Sucursal。
+3. **llano model-discovery La funcionalidad se extiende demasiado facilmente scope**
+   Si se copia en su totalidad Cherry Studio，El segundo set se introducira por nada. provider-state subsystem。
+4. **La estructura de configuracion plana es a la vez una ventaja y una limitacion.**
+   Se salvo import/export con `data.json` Compatibilidad, pero no puede ampliarse a una persistencia oculta. remote catalog。
+5. **Actual Siguiente blocker se ha convertido scope discipline，En lugar de implementar bootstrap**
+   Primer lote helper se ha implementado, y el riesgo ha pasado de "¿puede converger esta linea" a "a medida que provider ¿Seguira ampliandose y manteniendose el ancho? discovery Mantenga los limites ligeros y honestos”。
 
-### 4.3 正确解释
+### 4.3 Explicacion correcta
 
-当前 main 最准确的定位应是：
+actual main El posicionamiento mas preciso debe ser：
 
-1. 已经跨过“bounded product slice 是否恢复存在”的阶段；
-2. 但还没有进入真正的 Stage-C packaged runtime convergence；
-3. 已经跨过 current main 上第一阶段有界 provider-settings control-plane convergence 的里程碑，但仍刻意没有进入重型 provider-model catalog 子系统；
-4. 更没有进入宽口径 public CLI promotion。
+1. Ya cruzado“bounded product slice Etapa "Restaurar a la Existencia"；
+2. Pero aun no en la realidad Stage-C packaged runtime convergence；
+3. Ya cruzado current main La primera etapa esta acotada provider-settings control-plane convergence hito, pero aun asi deliberadamente no entro en el pesado provider-model catalog Subsistema；
+4. No hay gran apertura. public CLI promotion。
 
-## 5. 具体 next-level 方案
+## 5. Sea especifico next-level Planificar
 
-### Batch A：Packaging source/build 收敛决策
+### Batch A：Packaging source/build Decision de convergencia
 
-优先级：`P0`
+Prioridad：`P0`
 
-目标：
+Metas：
 
-1. 明确决定 runtime-candidate 源码是否继续保持显式 non-shipped 状态，或
-2. 同批推进为真实的 packaged multi-entry boundary。
+1. Deja clara tu decision runtime-candidate Si el codigo fuente permanece explicito non-shipped Estado, o
+2. Mismo avance de lote que real packaged multi-entry boundary。
 
-强约束：
+Fuertes limitaciones：
 
-- 不要让“源码像是有 `render-host.mjs`，但 build/release 事实仍在否认它”这种暧昧中间态长期存在。
+- No dejes que el "codigo fuente parezca tener `render-host.mjs`，Pero build/release El ambiguo estado intermedio de "los hechos aun lo niegan" existe desde hace mucho tiempo.。
 
-验收：
+Aceptacion：
 
-1. `esbuild.config.mjs`、`audit:render-host`、release-asset 文档与测试结论一致；
-2. README / maintainer docs 不再传递混合信号；
-3. 本机验证后 `git status` 仍 clean。
+1. `esbuild.config.mjs`、`audit:render-host`、release-asset Los documentos son consistentes con las conclusiones de las pruebas.；
+2. README / maintainer docs No mas enviar senales contradictorias；
+3. Despues de la verificacion local `git status` todavia clean。
 
-当前在 `main` 上做出的决策是：
+Actualmente en `main` La decision adoptada sobre：
 
-- 先明确保持 render-host lane 为 source-only，利用运行时加载逻辑与审计覆盖共同锁定该真值，而不是半恢复一个未闭环的 shipped multi-entry 契约。
+- Dejalo claro primero render-host lane para source-only，Utilice la logica de carga en tiempo de ejecucion y la cobertura de auditoria para bloquear el valor real en lugar de recuperar a medias un bucle no cerrado. shipped multi-entry Contrato。
 
-### Batch B：有界 public-CLI promotion 评审
+### Batch B：Limitado public-CLI promotion Revision
 
-优先级：`P1`
+Prioridad：`P1`
 
-目标：
+Metas：
 
-1. 评估是否有现存 path-based maintainer operation 已经准备好做有界 public 提升；
-2. 对尚未准备好的 operation，继续有意保持 maintainer-only。
+1. Evaluar si existen path-based maintainer operation Este preparado para estar limitado public Mejora；
+2. Para los que aun no estan preparados operation，Continue siendo intencional maintainer-only。
 
-评审规则：
+Reglas de evaluacion：
 
-只有当以下条件都满足时才允许提升：
+Solo se permite la promocion cuando se cumplen las siguientes condiciones：
 
-1. 输入显式；
-2. 副作用已文档化；
-3. 输出对自动化足够 machine-readable；
-4. 失败 / 进度语义是确定性的。
+1. Ingrese explicito；
+2. Los efectos secundarios estan documentados.；
+3. La produccion es suficiente para la automatizacion. machine-readable；
+4. Fracaso / La semantica del progreso es determinista.。
 
-### Batch C：local-KB / chapter-split 质量跟进
+### Batch C：local-KB / chapter-split Seguimiento de calidad
 
-优先级：`P1`
+Prioridad：`P1`
 
-目标：
+Metas：
 
-1. 在不改变 local-only 架构的前提下提升 explainability 与 operator control；
-2. 除非未来证明有更好的 local-only 方案，否则继续保持当前 lightweight retriever 形态。
+1. Sin cambiar local-only Mejora basada en la arquitectura explainability con operator control；
+2. A menos que el futuro demuestre que hay algo mejor local-only Esquema; de lo contrario, mantengase actualizado. lightweight retriever Formulario。
 
-可能的切入点：
+Posibles puntos de entrada：
 
-1. 在标题生成、研究总结与 artifact-mode 图形生成已经落地 retrieval 摘要与 timing telemetry，且 chapter split 已补上确定性的 TOC front-matter metadata 与 repeated-heading-safe TOC block ref 之后，继续把 richer result/evidence framing 推进到剩余的 chapter-split helper/example 路径；
-2. shared maintainer helper 现已为依赖 retrieval 的路径补上简洁 payload 示例，而当前 `main` 也新增了有界的 `local-knowledge.inspect` seam 用于检查 effective path/query/context，并支持临时 override-path 调参；下一步重点是让这些 maintainer 示例与 inspect 输出持续跟随 result schema 演进；
-3. 继续完善 sliding-window、snippet shaping 与 folder-scope 预期等调优文档；对 offline fixture 则应把它视为已覆盖 exact/prefix/current-file-exclusion 类别以及 mixed file/folder task-scoped inspect case 的更宽基线，而 chapter-split 的剩余缺口应转向更深的 corpus 扩充，而不是重复证明“需要有这条夹具”。
+1. En la generacion de titulos, resumen de investigacion y artifact-mode Se ha implementado la generacion grafica. retrieval Resumen y resumen timing telemetry，y chapter split Se ha anadido la certeza TOC front-matter metadata con repeated-heading-safe TOC block ref Despues de eso, continua richer result/evidence framing Avanza al resto. chapter-split helper/example Camino；
+2. shared maintainer helper Ahora una dependencia retrieval Complementa el camino de forma concisa payload Ejemplo, mientras que actualmente `main` Tambien se agregan los acotados. `local-knowledge.inspect` seam Para inspeccion effective path/query/context，Y apoyo temporal override-path Ajustar parametros; el siguiente paso es hacer estos maintainer Ejemplos y inspect La produccion continua result schema Evolucion；
+3. Continuar mejorando sliding-window、snippet shaping con folder-scope Anticipacion y otros documentos de sintonizacion; si offline fixture entonces debe considerarse cubierto exact/prefix/current-file-exclusion Categorias y mixed file/folder task-scoped inspect case tiene una linea de base mas amplia, mientras que chapter-split La brecha restante deberia pasar a ser mas profunda corpus Ampliar en lugar de repetir la prueba de que “este accesorio es necesario””。
 
 ### Batch D：provider-settings simplification + lightweight model discovery
 
-优先级：`P1`
+Prioridad：`P1`
 
-目标：
+Metas：
 
-1. 继续保持默认 provider panel 为 core-first 且 metadata-driven；
-2. 保持 `model` 在 core/default-visible surface；
-3. 继续将非核心调优项放在显式 advanced disclosure 后，同时保留已有 persisted override 的可见性；
-4. 继续让模型发现保持 lightweight transient helper，而不是第二套持久化 provider-state system；
-5. 只有当 endpoint semantics、header ownership、token-guidance behavior、tests 与 docs 同批对齐时，才继续扩宽支持面。
+1. Continuar por defecto provider panel para core-first y metadata-driven；
+2. mantener `model` en core/default-visible surface；
+3. Continue colocando elementos de ajuste no basicos en forma explicita advanced disclosure Posteriormente, manteniendo la existente persisted override Visibilidad；
+4. Continuar manteniendo los hallazgos del modelo. lightweight transient helper，En lugar de una segunda serie de perseverancia provider-state system；
+5. Solo si endpoint semantics、header ownership、token-guidance behavior、tests con docs Continue ampliando la superficie de soporte solo cuando el mismo lote este alineado.。
 
-实现形态：
+Formulario de realizacion：
 
-1. 继续让 `LLMProviderDefinition` 成为 shared field/discovery metadata owner；
-2. 继续保持 `src/ui/NotemdSettingTab.ts` 的 metadata-driven provider-field rendering，不要把 taxonomy 决策退回 provider-name 分支；
-3. 保持 `LLMProviderConfig.model` 作为持久化 source-of-truth 字符串；
-4. 继续让 discovery services 与 runtime/base-URL/header 语义保持一致；
-5. 未来 discovery 扩展应继续通过共享 family/shape support 保持有界，而不是宣称 broad all-provider support；
-6. **不要** 把远程 model catalog 持久化进 `data.json`；
-7. 即使有 discovery，手动 model 输入也必须始终可用；
-8. 重大扩宽批次仍应使用隔离 worktree/branch，只有在 docs/tests/verification 对齐后再合回。
+1. Sigue dejando `LLMProviderDefinition` convertirse shared field/discovery metadata owner；
+2. Sigue asi `src/ui/NotemdSettingTab.ts` de metadata-driven provider-field rendering，No pongas taxonomy Regreso de decision provider-name Sucursal；
+3. mantener `LLMProviderConfig.model` Como persistencia source-of-truth cuerda；
+4. Sigue dejando discovery services con runtime/base-URL/header Mantenga la semantica coherente；
+5. Futuro discovery Las extensiones deben seguir compartiendose a traves de family/shape support Mantente acotado, no reclames broad all-provider support；
+6. **No lo hagas** Pon el control remoto model catalog Persistencia `data.json`；
+7. Incluso si hay discovery，manuales model La entrada tambien debe estar disponible en todo momento.；
+8. La cuarentena aun debe usarse para los lotes de expansion importantes. worktree/branch，Solo si docs/tests/verification Alinear y luego cerrar。
 
-验收：
+Aceptacion：
 
-1. provider definition 持续表达 core/contextual/advanced/developer 字段分组；
-2. 当前已有 advanced 持久化值的用户不会丢失对实际行为的可见性；
-3. model-discovery 失败不会阻断手动配置；
-4. 测试覆盖 metadata-driven rendering、backward compatibility、discovery fallback、parser shapes、header ownership，以及本批触及的 token-guidance behavior；
-5. 文档明确写出能力边界，不要高估 Cherry Studio parity。
+1. provider definition Expresion continua core/contextual/advanced/developer Agrupacion de campos；
+2. Actualmente disponible advanced Los usuarios de valores persistentes no pierden visibilidad del comportamiento real.；
+3. model-discovery La falla no bloqueara la configuracion manual；
+4. Cobertura de prueba metadata-driven rendering、backward compatibility、discovery fallback、parser shapes、header ownership，Ademas de las materias objeto de este lote token-guidance behavior；
+5. El documento establece claramente los limites de las capacidades. No sobreestimes. Cherry Studio parity。
 
-## 6. Task 与文档收口规则
+## 6. Task Reglas para cerrar documentos.
 
-下一批工作应保持以下产物持续对齐：
+El proximo lote de trabajo debe mantener los siguientes productos continuamente alineados：
 
 1. task-local Trellis artifact（`.trellis/tasks/...`）
-2. 当前 canonical progress matrix
-3. 本审计文档
-4. 独立的 provider-settings/model-discovery 专题方案文档
-5. 若涉及 automation 或 packaging 文案变化，则同步维护 maintainer control docs
+2. actual canonical progress matrix
+3. Este documento de auditoria
+4. Independiente provider-settings/model-discovery Documento del plan tematico
+5. Si se trata de automation o packaging Si la redaccion cambia, se mantendra simultaneamente. maintainer control docs
 
-## 7. 验证门禁
+## 7. Verificar el control de acceso
 
-下一层级批次仍应继续要求：
+El lote del siguiente nivel aun deberia seguir requiriendo：
 
 1. `npm run build`
 2. `npm test -- --runInBand`
 3. `npm run audit:i18n-ui`
 4. `npm run audit:render-host`
 5. `git diff --check`
-6. 最终 clean 的 `git status --short --branch`
+6. Eventualmente clean de `git status --short --branch`
 
 ## 8. Bottom Line
 
-当前主线已经不再主要缺失 bounded recovery slice。
+Ya no falta la linea principal actual. bounded recovery slice。
 
-当前主线现在主要承载着两个 next-level 架构问题：
+La linea principal actual ahora transporta principalmente dos next-level Problemas de arquitectura：
 
-1. 是继续让 latent runtime lane 明确保持 dormant / non-shipped，还是把它推进成 build、audit、docs、release truth 全部一致的真实 packaged boundary；
-2. 是让已落地的 provider settings/model-discovery control plane 在扩宽时继续保持 shared-core、lightweight，还是让 provider-specific exception 与 catalog-like state 再次渗回系统。
+1. es seguir dejando latent runtime lane Mantenlo claro dormant / non-shipped，O empujelo hacia build、audit、docs、release truth Toda verdad consistente packaged boundary；
+2. Es dejar lo que ha aterrizado provider settings/model-discovery control plane Continue sosteniendo mientras ensancha shared-core、lightweight，Rindamos provider-specific exception con catalog-like state Infiltrarse nuevamente en el sistema.。
 
-这两件事，才是现在真正的 next-level move。
+Estas dos cosas son reales ahora. next-level move。

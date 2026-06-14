@@ -17,12 +17,12 @@ describe('i18n fallback and cache', () => {
 
     test('supports zh locale alias resolution', () => {
         const zh = getResolvedStrings('zh');
-        expect(zh.common.cancel).toBe('取消');
+        expect(zh.common.cancel).toBe('Cancelar');
     });
 
     test('fills missing localized keys from English base catalog', () => {
         const zhTw = getResolvedStrings('zh-TW');
-        expect(zhTw.notices.notemdBusy).toBe('Notemd 忙碌中。');
+        expect(zhTw.notices.notemdBusy).toBe('Notemd Ocupado。');
         // This key exists in English and should always be available even if future locales omit it.
         expect(zhTw.common.unknownError).toBeDefined();
     });
@@ -36,13 +36,13 @@ describe('i18n fallback and cache', () => {
     test('resolves strings using Obsidian language when uiLocale is auto', () => {
         (getLanguage as jest.Mock).mockReturnValue('zh-cn');
         const resolved = getI18nStrings({ uiLocale: 'auto' });
-        expect(resolved.common.language).toBe('语言');
+        expect(resolved.common.language).toBe('Idioma');
     });
 
     test('manual ui locale override has priority over Obsidian language', () => {
         (getLanguage as jest.Mock).mockReturnValue('en');
         const resolved = getI18nStrings({ uiLocale: 'zh-TW' });
-        expect(resolved.common.language).toBe('語言');
+        expect(resolved.common.language).toBe('Idioma');
     });
 
     test('supports notebook-navigator parity locales via Obsidian auto detection', () => {

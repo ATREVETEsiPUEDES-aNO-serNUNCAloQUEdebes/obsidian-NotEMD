@@ -324,14 +324,14 @@ describe('NotemdSidebarView DOM button wiring', () => {
         plugin.settings.uiLocale = 'auto';
         plugin.settings.availableLanguages = [
             { code: 'en', name: 'English' },
-            { code: 'zh-CN', name: '简体中文' }
+            { code: 'zh-CN', name: 'Chino simplificado' }
         ];
         (getLanguage as jest.Mock).mockReturnValue('zh-cn');
 
         await sidebar.onOpen();
 
-        expect(contentContainer.findButton('处理文件（添加链接）')).not.toBeNull();
-        expect(contentContainer.findButton('翻译当前文件')).not.toBeNull();
+        expect(contentContainer.findButton('Procesar archivos (agregar enlaces）')).not.toBeNull();
+        expect(contentContainer.findButton('Traducir el archivo actual')).not.toBeNull();
     });
 
     test('clicking default One-Click Extract workflow triggers chained commands', async () => {

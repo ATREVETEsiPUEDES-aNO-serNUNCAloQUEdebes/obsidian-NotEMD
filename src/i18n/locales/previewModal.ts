@@ -434,13 +434,13 @@ export const PREVIEW_MODAL_LOCALE_EXTENSIONS: Record<string, DeepPartial<NotemdE
             exportPng: '匯出 PNG',
             exportingPng: '正在匯出 PNG…',
             copySuccessNotice: '圖形原始碼已複製到剪貼簿！',
-            copyFailedNotice: '複製圖形原始碼失敗，請查看主控台。',
+            copyFailedNotice: '複製圖形原始碼失 敗，請查看主控台。',
             saveSourceSuccessNotice: '圖形原始碼已儲存到 {path}',
-            saveSourceFailedNotice: '儲存圖形原始碼失敗：{message}',
+            saveSourceFailedNotice: '儲存圖形原始碼失 敗：{message}',
             exportSuccessNotice: '圖形預覽已匯出到 {path}',
-            exportFailedNotice: '匯出圖形預覽失敗：{message}',
+            exportFailedNotice: '匯出圖形預覽失 敗：{message}',
             exportPngSuccessNotice: '圖形 PNG 已匯出到 {path}',
-            exportPngFailedNotice: '匯出圖形 PNG 失敗：{message}',
+            exportPngFailedNotice: '匯出圖形 PNG 失 敗：{message}',
             sourceFile: '已儲存檔案：{path}'
         }
     }

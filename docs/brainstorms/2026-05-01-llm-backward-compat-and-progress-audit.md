@@ -497,7 +497,7 @@ Remaining: service layer + DI (architectural), architecture overview doc (docume
 Created bilingual architecture docs (notebook-navigator pattern #5):
 
 - `docs/architecture.md` — English
-- `docs/architecture.zh-CN.md` — 简体中文
+- `docs/architecture.zh-CN.md` — Chino simplificado
 - System architecture flowchart (Mermaid)
 - LLM calling pipeline sequence diagram (Mermaid)
 - Diagram rendering platform flowchart (Mermaid)

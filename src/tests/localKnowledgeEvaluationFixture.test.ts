@@ -489,7 +489,7 @@ describe('local knowledge offline evaluation fixture', () => {
 
         expect(documentationSurfaces.some(documentation => documentation.includes('real-note/query diversity beyond the chapter-split showcase')))
             .toBe(true);
-        expect(documentationSurfaces.some(documentation => documentation.includes('chapter-split showcase 之外的真实 note/query 多样性')))
+        expect(documentationSurfaces.some(documentation => documentation.includes('chapter-split showcase Realidad mas alla note/query Diversidad')))
             .toBe(true);
     });
 

@@ -3,102 +3,102 @@ date: 2026-05-04
 topic: obsidian-cli-extensibility-and-notemd-capability-extraction
 ---
 
-# Obsidian CLI 扩展性与 Notemd 能力抽取
+# Obsidian CLI Escalabilidad y Notemd Extraccion de habilidades
 
-## 问题框架
+## Encuadre del problema
 
-Notemd 现在已经有一批能力，实际规模明显超过“某个 Obsidian UI 按钮”：
+Notemd Ya existe un conjunto de capacidades, cuya escala real es significativamente mayor que “un cierto Obsidian UI Boton”：
 
-- 可复现运行模式的 provider diagnostic
+- Modo de funcionamiento reproducible provider diagnostic
 - spec-first diagram generation
-- batch progress 持久化
-- 结构化 workflow action ID 与可序列化 workflow 定义
-- provider 级 `localOnly` 本地存储语义
+- batch progress Persistencia
+- Estructura workflow action ID Con serializable workflow Definicion
+- provider nivel `localOnly` Semantica del almacenamiento local.
 
-但宿主现实比产品想象更窄。本机上的本地 `obsidian-cli` 包装器当前只是稳定的桌面/调试入口，暴露的是 `help`、`version`、`vaults`、`vault`、`doctor`、`native`、`gui`、`debug` 等子命令。底层官方 `obsidian` CLI 已经可以列出并触发插件命令，但它仍然没有给第三方插件开放稳定、类型化的扩展协议。
+Pero la realidad del anfitrion es mas limitada que la imaginacion del producto. local en esta maquina `obsidian-cli` Actualmente, Wrapper solo es un escritorio estable./La entrada de depuracion esta expuesta. `help`、`version`、`vaults`、`vault`、`doctor`、`native`、`gui`、`debug` Espere el subcomando. Oficial inferior `obsidian` CLI Ya puede enumerar y activar comandos de complementos, pero aun no abre un protocolo de extension estable y escrito para complementos de terceros.。
 
-这意味着下一步最有价值的动作，不是直接“给 `obsidian-cli` 塞几个 Notemd 命令”，而是先明确三件事：
+Esto significa que el siguiente paso mas valioso no es directamente “dar `obsidian-cli` Rellena algunas Notemd Orden”, pero aclarar tres cosas primero：
 
-1. Notemd 里哪些能力值得抽成宿主无关 operation
-2. 哪些设置与执行契约可以脱离插件 UI 单独存在
-3. `obsidian-cli` 真要承接这些能力，还缺哪些调用边界
+1. Notemd No tiene nada que ver con que habilidades vale la pena extraer del anfitrion. operation
+2. ¿Que configuraciones y contratos de ejecucion se pueden separar de los complementos? UI Existir solo
+3. `obsidian-cli` Si realmente queremos hacernos cargo de estas capacidades, ¿que limites faltan aun?
 
-如果不先做这层边界工作，CLI 化诉求最终只会退化成继续把逻辑堆在 `src/main.ts`，并且被 UI 假设和机器特定包装器拖死。
+Si no haces esta capa de trabajo de limites primero，CLI El llamado a la transformacion eventualmente degenerara en seguir acumulando logica sobre `src/main.ts`，y ser UI Suposiciones y estancamiento de envoltorios especificos de la maquina。
 
-## 需求
+## Demanda
 
-**能力分类**
-- R1. 仓库必须明确区分：哪些 Notemd 能力是宿主无关、适合未来 CLI 化的；哪些能力仍然绑定 Obsidian UI/runtime 表面。
-- R2. 分类必须基于当前代码事实，而不是愿景。凡是声称“适合 CLI 化”的能力，都必须先核对它是否仍直接依赖 `App`、`Editor`、`MarkdownView`、`Notice`、modal 流程或插件自己的文件选择 UX。
-- R3. 进度文档与架构文档必须明确区分本机 `obsidian-cli` 包装器和底层官方 `obsidian` CLI：后者已经具备插件命令触发能力，但仍缺少稳健自动化所需的类型化集成表面。
+**Clasificacion de habilidades**
+- R1. El almacen debe distinguir claramente: cual Notemd La capacidad es independiente del anfitrion y adecuada para el futuro. CLI izado; que capacidades todavia estan limitadas Obsidian UI/runtime Superficie。
+- R2. La clasificacion debe basarse en los hechos del codigo actual, no en la vision. Cualquiera que diga ser "adecuado" CLI Para cualquier capacidad de “quimicalizar”, primero hay que comprobar si todavia depende directamente de ella. `App`、`Editor`、`MarkdownView`、`Notice`、modal Procesar o complementar la seleccion de archivos propios UX。
+- R3. Los documentos de progreso y los documentos de arquitectura deben distinguirse claramente entre nativos. `obsidian-cli` Envoltorio y oficial subyacente `obsidian` CLI：Este ultimo ya tiene la capacidad de activar comandos de complemento, pero aun carece de la superficie de integracion escrita necesaria para una automatizacion solida.。
 
-**适合 CLI 抽取的能力目标**
-- R4. 下一条架构 seam 应优先围绕以下能力抽取可复用 operation：
+**Adecuado CLI Objetivos de habilidad extraidos**
+- R4. Proxima arquitectura seam Se debe dar prioridad a la extraccion de productos reutilizables en torno a las siguientes capacidades: operation：
   - provider diagnostics
   - diagram generation core
-  - workflow / action registry 元数据
-  - batch progress persistence 与 resumability metadata
-  - `localOnly` 一类 provider/settings 序列化规则
-- R5. 被抽取的能力必须优先形成稳定输入/输出契约，而不是把“模拟 sidebar 按钮点击”当成 CLI 集成方式。
-- R6. 凡是仍然依赖编辑器原位修改、modal 交互、文件选择器或预览窗口的候选能力，在形成宿主无关 operation 之前，必须继续标记为延后 CLI 化目标。
+  - workflow / action registry Metadatos
+  - batch progress persistence con resumability metadata
+  - `localOnly` Clase I provider/settings Reglas de serializacion
+- R5. Se debe dar prioridad a las capacidades extraidas para formar una entrada estable./Exportar el contrato en lugar de poner "mock" sidebar Clic en el boton” como CLI Metodo de integracion。
+- R6. Todo todavia depende de que el editor se modifique en su lugar.、modal Las capacidades candidatas para interacciones, selectores de archivos o ventanas de vista previa son independientes del host. operation Antes, debe seguir marcando como pospuesto CLI Objetivo。
 
-**Obsidian CLI 集成方向**
-- R7. 仓库必须把 `obsidian-cli` 集成写成一个分阶段扩展计划：
-  - 阶段 1：抽取宿主无关的 Notemd operations
-  - 阶段 2：定义 `obsidian-cli` 可调用的插件/operation invocation contract
-  - 阶段 3：把少量 operation 暴露为稳定 CLI 命令或子命令
-- R8. 仓库必须明确避免把“今天已经能触发插件命令”误判为“集成已经足够完善”。命令触发能力已经存在，但参数契约、能力发现、输出语义和自动化稳定性仍需单独设计。
-- R9. 第一批面向 CLI 的集成目标必须优先选择非交互、可留证据、易自动化的能力：诊断、产物生成、配置检查/导出、dry-run 风格能力报告，而不是先做会直接改编辑器内容的流程。
+**Obsidian CLI Direccion de integracion**
+- R7. El almacen debe almacenar `obsidian-cli` Integrar y redactar un plan de expansion por fases.：
+  - Etapa 1：Extraer independiente del host Notemd operations
+  - Etapa 2：Definicion `obsidian-cli` Complementos invocables/operation invocation contract
+  - Etapa 3：Pon una pequena cantidad operation Exposicion a la estabilidad CLI Comando o subcomando
+- R8. El almacen claramente debe evitar juzgar erroneamente que "el comando del complemento se puede activar hoy" como "la integracion es lo suficientemente completa". Las capacidades de activacion de comandos ya existen, pero los contratos de parametros, el descubrimiento de capacidades, la semantica de salida y la estabilidad de la automatizacion aun deben disenarse por separado.。
+- R9. El primer lote de orientados. CLI Los objetivos de integracion deben dar prioridad a capacidades que no sean interactivas, que puedan retener evidencia y sean faciles de automatizar: diagnostico, generacion de productos y verificacion de configuraciones./Exportar、dry-run Informe sobre las capacidades de estilo en lugar de realizar primero el proceso que cambia directamente el contenido del editor.。
 
-**设置与扩展模型**
-- R10. 仓库必须识别哪些 Notemd 设置值得未来 CLI 复用，哪些仍然属于插件本地 UI 设置。至少要覆盖：
-  - provider 选择与 model 选择
+**Configurar y ampliar el modelo.**
+- R10. ¿Que debe identificar el almacen? Notemd Establecer un futuro digno CLI Reutilizar, que partes aun son locales del complemento UI Configuracion. Al menos cubrir：
+  - provider Elige y model Seleccione
   - `preferredDiagramIntent`
-  - `localOnly` provider 持久化语义
-  - workflow DSL 与 action IDs
-  - developer diagnostic mode / timeout / stability-run 设置
-- R11. 下一阶段架构必须朝“可复用 operation/config 层”推进，让插件 UI、未来 CLI 入口和维护者工具共享同一套边界，而不是继续把 orchestration 复制黏贴在 `src/main.ts` 里。
+  - `localOnly` provider Semantica de persistencia
+  - workflow DSL con action IDs
+  - developer diagnostic mode / timeout / stability-run Configuracion
+- R11. La siguiente etapa de la arquitectura debe avanzar hacia la “reutilizacion”. operation/config Empuje Layer”, deje que el complemento UI、Futuro CLI Los portales y las herramientas de mantenimiento comparten el mismo conjunto de limites en lugar de continuar orchestration Copiar y pegar `src/main.ts` Li。
 
-**文档与进度控制**
-- R12. 当前进度文档必须逐段更新，明确说明：命令表面稳定化不再是唯一的边界加固主题；CLI 能力抽取现在已经是并行架构方向，但它的前提仍然是先建立宿主无关 operation seam。
-- R13. roadmap 与 architecture overview 必须把 CLI 扩展性表述成“服务/边界加固的延伸”，而不是试图绕开这一步的捷径。
+**Documentacion y control de progreso**
+- R12. El documento de progreso actual debe actualizarse seccion por seccion para indicar claramente que la estabilizacion de la superficie de mando ya no es el unico tema del refuerzo de los limites.；CLI La extraccion de capacidades es ahora la direccion de la arquitectura paralela, pero su premisa sigue siendo establecer primero la independencia del host. operation seam。
+- R13. roadmap con architecture overview Debe poner CLI La extensibilidad se expresa como “servicio/Una extension del refuerzo fronterizo” en lugar de intentar tomar un atajo para evitar este paso。
 
-## 成功标准
+## Criterios de exito
 
-- 维护者可以直接指向一份能力矩阵，解释哪些 Notemd 功能适合未来 CLI 暴露、哪些被插件宿主耦合阻塞、以及阻塞原因。
-- 文档必须准确区分“官方 CLI 已可触发插件命令”和“项目仍缺少成熟插件自动化契约”这两层事实。
-- 下一轮规划可以直接拆解一批具体 operation-extraction 工作，而不需要从头发明 CLI 范围和产品行为。
-- 仓库继续把“本地机器 wrapper”“插件命令表面”“未来 CLI 扩展性”维持为三层边界，而不是塌成一个不稳定接口。
+- Los mantenedores pueden senalar directamente una matriz de competencias que explique que Notemd Funciones preparadas para el futuro CLI Exposicion, que bloquea el acoplamiento del host del complemento y motivos del bloqueo。
+- La documentacion debe distinguir con precision entre “oficiales CLI Se pueden activar comandos de complementos” y “el proyecto aun carece de un contrato de automatizacion de complementos maduro”.。
+- La proxima ronda de planificacion puede desmantelar directamente un lote de proyectos especificos. operation-extraction Trabajar sin reinventar la rueda CLI Alcance y comportamiento del producto。
+- El almacen sigue poniendo la "maquina local" wrapper”“Superficie de comando del complemento "futuro" CLI La "extensibilidad" se mantiene como un limite de tres capas en lugar de colapsar en una interfaz inestable。
 
-## 范围边界
+## Limites del alcance
 
-- 本次 requirements 不实现新的 `obsidian-cli` 子命令。
-- 本次 requirements 不修改这台机器上的 `/usr/local/sbin/obsidian-cli` 系统包装脚本。
-- 本次 requirements 不立即把 `src/main.ts` 重构成服务层。
-- 本次 requirements 不宣布当前所有 Notemd 命令都已经 CLI-ready。
-- 本次 requirements 不把 sidebar actions 或 workflow DSL 行本身当成稳定公共 CLI API。
+- Esta vez requirements No implementar nuevos `obsidian-cli` Subcomandos。
+- Esta vez requirements No modifique la configuracion de esta maquina. `/usr/local/sbin/obsidian-cli` Script de empaquetado del sistema。
+- Esta vez requirements No inmediatamente `src/main.ts` Reestructurar en capa de servicio。
+- Esta vez requirements No anunciar todas las novedades Notemd Las ordenes han sido dadas CLI-ready。
+- Esta vez requirements No sidebar actions o workflow DSL Tratar al propio banco como un publico estable CLI API。
 
-## 关键决策
+## Decisiones clave
 
-- 把当前官方 CLI 的命令触发能力视作可用底座，而不是把它误读为“Notemd 的能力已经天然适合自动化 CLI 暴露”。
-- 先抽 operation，再暴露 command。否则项目只会在插件 UI 和 CLI 两边重复 orchestration 逻辑。
-- 第一批 CLI 适配优先选择非交互、可确定、可产出文件/证据的能力。
-- 编辑器绑定、预览绑定、modal 绑定的流程，在形成明确宿主无关契约前继续留在插件宿主里。
+- Hacer oficial la actual CLI Trata la habilidad de activacion del comando como una base disponible, en lugar de malinterpretarla como“Notemd Las capacidades ya se adaptan naturalmente a la automatizacion. CLI Exposicion”。
+- Dibujar primero operation，Reexposicion command。De lo contrario, el proyecto solo estara en el complemento. UI y CLI Repetir en ambos lados. orchestration Logica。
+- Primer lote CLI La adaptacion da prioridad a archivos no interactivos, determinables y generables./Capacidad de prueba。
+- Encuadernacion del editor, encuadernacion de vista previa、modal El proceso de vinculacion permanecera en el host del complemento hasta que se forme un contrato claro e independiente del host.。
 
-## 依赖与假设
+## Dependencias y supuestos
 
-- 当前宿主证据来自 `obsidian-cli help`、`obsidian-cli doctor`、`obsidian --help`、`obsidian commands filter=notemd`，以及本机包装脚本 `/usr/local/sbin/obsidian-cli` 与 `/usr/local/libexec/obsidian-launch`。
-- 当前代码证据表明 `src/main.ts` 仍掌握命令注册、busy-state orchestration、reporter 生命周期，以及大量依赖 `App` / `Editor` / `MarkdownView` 的流程。
-- 可复用的低层 building block 已经部分存在于 `src/providerDiagnostics.ts`、`src/diagram/diagramGenerationService.ts`、`src/workflowButtons.ts`、`src/batchProgressStore.ts` 和部分 `src/llmUtils.ts` 中，但它们还没有被组织成真正的宿主无关 operation 层。
+- La evidencia actual del huesped proviene de `obsidian-cli help`、`obsidian-cli doctor`、`obsidian --help`、`obsidian commands filter=notemd`，Y scripts contenedores nativos `/usr/local/sbin/obsidian-cli` con `/usr/local/libexec/obsidian-launch`。
+- La evidencia del codigo actual muestra `src/main.ts` Todavia domino el registro de comandos.、busy-state orchestration、reporter Ciclo de vida y gran cantidad de dependencias. `App` / `Editor` / `MarkdownView` Proceso。
+- Capa inferior reutilizable building block Ya existe parcialmente en `src/providerDiagnostics.ts`、`src/diagram/diagramGenerationService.ts`、`src/workflowButtons.ts`、`src/batchProgressStore.ts` Y partes `src/llmUtils.ts` , pero aun no se han organizado en verdaderamente independientes del anfitrion. operation Capas。
 
-## 未决问题
+## Cuestiones abiertas
 
-### 延后到规划阶段
-- [影响 R4][Technical] 从 `src/main.ts` 中优先抽哪一类 operation：diagnostics、diagram generation，还是 workflow execution？
-- [影响 R5][Technical] 最小的宿主无关 operation 接口应该长什么样，才能表达输入、输出、进度和失败，同时不依赖 Obsidian UI 类？
-- [影响 R7][Needs research] 未来 `obsidian-cli` 集成应走 plugin-discovered、manifest-declared，还是 CLI 侧显式 adapter 的方式？
-- [影响 R10][Technical] 哪些设置应继续保持 vault/plugin-owned state，哪些值得未来支持 CLI profile 的导入导出？
+### Aplazar la etapa de planificacion
+- [Impacto R4][Technical] de `src/main.ts` ¿Que categoria se sorteara primero? operation：diagnostics、diagram generation，Todavia workflow execution？
+- [Impacto R5][Technical] Minima independencia del anfitrion operation ¿Como deberia verse la interfaz para que pueda expresar entradas, salidas, progresos y fracasos sin depender de ellos? Obsidian UI clase？
+- [Impacto R7][Needs research] Futuro `obsidian-cli` La integracion deberia desaparecer plugin-discovered、manifest-declared，Todavia CLI Pantalla lateral adapter camino？
+- [Impacto R10][Technical] ¿Que ajustes deben conservarse? vault/plugin-owned state，¿Cuales merecen apoyo futuro? CLI profile Importar y exportar？
 
-## 下一步
+## Siguiente paso
 
--> /ce:plan 拆解一批具体的 operation 抽取与 CLI 扩展实现工作
+-> /ce:plan Desglose un lote especifico de operation Extraccion y CLI Trabajo de implementacion de extension.

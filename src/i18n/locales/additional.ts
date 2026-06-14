@@ -821,115 +821,115 @@ language: {
 };
 
 export const STRINGS_JA: LocaleStrings = {
-    common: { language: '言語', cancel: 'キャンセル', close: '閉じる', copy: 'コピー', ready: '準備完了', standby: '待機中', unknownError: '不明なエラー' },
-    plugin: { viewName: 'Notemd ワークベンチ', ribbonTooltip: 'Notemd サイドバーを開く' },
-    folderPicker: { title: 'フォルダーを選択', vaultRoot: '(Vault ルート)', selectAction: '選択' },
+    common: { language: 'Idioma', cancel: 'キャンセル', close: 'Cerrarじる', copy: 'コピー', ready: 'Listo', standby: 'Esperando', unknownError: 'Desconocidoなエラー' },
+    plugin: { viewName: 'Notemd ワークベンチ', ribbonTooltip: 'Notemd サイドバーをabiertoく' },
+    folderPicker: { title: 'フォルダーをSeleccion', vaultRoot: '(Vault ルート)', selectAction: 'Seleccion' },
     settings: {
 
         welcome: {
             title: 'Notemdへようこそ',
-            introText: 'NotemdはLLM駆動の処理でObsidianのワークフローを強化します：ウィキリンクの生成、概念の抽出、ノートの翻訳、図の作成など。',
-            setupHint: '開始するには、設定でLLMプロバイダーを構成してください。DeepSeek、OpenAI、Anthropic、Googleなど多数対応。',
-            sponsorText: 'Notemdは無料のオープンソースです。お役に立てましたら、開発支援をご検討ください。',
-            configureButton: 'LLMを設定',
+            introText: 'NotemdはLLMConducirのProcesamientoでObsidianのワークフローをMejoraします：ウィキリンクのGeneracion, conceptoのExtraccion、ノートのTraduccion, ilustracion.のCrearなど。',
+            setupHint: 'empezarするには、ConfiguracionでLLMプロバイダーをConfiguracionしてください。DeepSeek、OpenAI、Anthropic、GoogleなどSoporte multiple。',
+            sponsorText: 'NotemdはGratisのオープンソースです。おPapelにDe pieてましたら、Apoyo al desarrolloをごConsideracionください。',
+            configureButton: 'LLMをConfiguracion',
             sponsorButton: 'Give a Star on GitHub',
-            closeButton: '始める',
+            closeButton: 'Comienzoめる',
             closingText: 'May NoteMD accompany you on your journey through the boundless ocean of truth, and continue to guide your learning and progress. All wishes for your life, may the pursuit of knowledge be with you.',
             coffeeButton: 'コーヒーをおごる',
         },
         sponsor: {
             heading: 'Support Development',
-            desc: 'Notemdは無料のオープンソースです。お役に立てましたら、開発支援をご検討ください。',
+            desc: 'NotemdはGratisのオープンソースです。おPapelにDe pieてましたら、Apoyo al desarrolloをごConsideracionください。',
             githubButton: 'Give a Star on GitHub',
             coffeeButton: 'コーヒーをおごる',
         },
 language: {
-            heading: '言語設定',
-            uiLocaleName: 'UI 言語',
-            uiLocaleDesc: 'プラグインのインターフェースで使う言語を選択します。"Auto" は現在の Obsidian 言語に従います。',
-            uiLocaleAuto: 'Obsidian に合わせる',
-            outputName: '出力言語',
-            outputDesc: 'LLM 応答に使用する出力言語を選択します。',
-            perTaskName: 'タスクごとに異なる言語を選択する。',
-            perTaskDesc: 'オン: 下の各タスクに個別の言語を設定します。オフ: 単一の「出力言語」を使います。',
-            disableAutoTranslationName: '自動翻訳を無効化（"翻訳" タスクを除く）',
-            disableAutoTranslationDesc: 'オン: 翻訳以外のタスクは対象言語を強制せず、出力も自動翻訳しません。明示的な「翻訳」タスクは設定どおりに動作します。',
-            taskLanguageLabel: '{task} の言語',
-            taskLanguageDesc: '"{task}" の出力言語を選択します。'
+            heading: 'Configuracion de idioma',
+            uiLocaleName: 'UI Idioma',
+            uiLocaleDesc: 'プラグインのインターフェースでEnviadoうIdiomaをSeleccionします。"Auto" はActualmenteの Obsidian IdiomaにSeguirいます。',
+            uiLocaleAuto: 'Obsidian にcombinarわせる',
+            outputName: 'Idioma de salida',
+            outputDesc: 'LLM RespuestaにusoするIdioma de salidaをSeleccionします。',
+            perTaskName: 'タスクごとにDiferenteなるIdiomaをSeleccionする。',
+            perTaskDesc: 'オン: AbajoのCada unoタスクにIndividuoのIdiomaをConfiguracionします。オフ: Solteroの「Idioma de salida」をEnviadoいます。',
+            disableAutoTranslationName: 'Traduccion automaticaをDesactivar（"Traduccion" タスクをExclusionく）',
+            disableAutoTranslationDesc: 'オン: Aparte de la traduccionのタスクはIdioma de destinoをFuerzaせず、SalidaもTraduccion automaticaしません。Explicitoな「Traduccion」タスクはConfiguracionどおりにOperacionします。',
+            taskLanguageLabel: '{task} のIdioma',
+            taskLanguageDesc: '"{task}" のIdioma de salidaをSeleccionします。'
         }
     },
     notices: {
-        processingComplete: 'Notemd の処理が完了しました！',
-        batchProcessingSuccess: '{count} 件のファイルを正常に処理しました。',
-        contentGenerationSuccess: '{file} のコンテンツを正常に生成しました！',
-        researchSummaryAppended: '"{topic}" の調査要約を追加しました。',
-        batchGenerationSuccess: '"{folderPath}" 内の対象ファイルのコンテンツを正常に生成しました。',
-        mermaidSummarizationComplete: 'Mermaid 図の要約が完了しました！',
-        conceptExtractionSuccess: '概念抽出が完了しました！ {count} 件の概念ノートを見つけて作成しました。',
-        noConceptsFoundToExtract: '抽出する概念は見つかりませんでした。',
-        batchExtractionSuccess: '一括抽出が完了しました！ {files} 件のファイルから {concepts} 件の概念を見つけました。'
+        processingComplete: 'Notemd のProcesamientoがHechoしました！',
+        batchProcessingSuccess: '{count} casosのファイルをnormalesにProcesamientoしました。',
+        contentGenerationSuccess: '{file} のコンテンツをnormalesにGeneracionしました！',
+        researchSummaryAppended: '"{topic}" のResumen de la investigacionをAdicionしました。',
+        batchGenerationSuccess: '"{folderPath}" AdentroのObjetivoファイルのコンテンツをnormalesにGeneracionしました。',
+        mermaidSummarizationComplete: 'Mermaid Fig.のResumenがHechoしました！',
+        conceptExtractionSuccess: 'Extraccion de conceptosがHechoしました！ {count} casosのConceptoノートをVerつけてCrearしました。',
+        noConceptsFoundToExtract: 'ExtraccionするConceptoはVerつかりませんでした。',
+        batchExtractionSuccess: 'Extraccion por lotesがHechoしました！ {files} casosのファイルから {concepts} casosのConceptoをVerつけました。'
     },
     errorModal: {
-        copyDetails: 'エラー詳細をコピー',
+        copyDetails: 'エラーDetallesをコピー',
         copied: 'コピーしました！',
-        copySuccessNotice: 'エラー詳細をクリップボードにコピーしました！',
-        copyFailedNotice: 'エラー詳細をコピーできませんでした。コンソールを確認してください。',
-        titles: { research: '調査エラー', batchTranslation: '一括翻訳エラー' }
+        copySuccessNotice: 'エラーDetallesをクリップボードにコピーしました！',
+        copyFailedNotice: 'エラーDetallesをコピーできませんでした。コンソールをConfirmacionしてください。',
+        titles: { research: 'Investigacionエラー', batchTranslation: 'Traduccion por lotesエラー' }
     },
     sidebar: {
         heroTitle: 'Notemd ワークベンチ',
-        heroDesc: '単体アクションやカスタムのワンクリックワークフローを、進行状況とログ付きで実行します。',
-        defaultWorkflowName: 'ワンクリック抽出',
+        heroDesc: 'Unidad unicaアクションやカスタムのワンクリックワークフローを、ProgresoとログAdjuntoきでEjecucionします。',
+        defaultWorkflowName: 'ワンクリックExtraccion',
         quickWorkflowTitle: 'クイックワークフロー',
-        quickWorkflowDesc: '組み込みアクションから組み立てたカスタムボタン。',
-        sectionTitles: { core: 'コアフロー', generation: '生成と Mermaid', knowledge: '知識', translation: '翻訳', utilities: 'ユーティリティ' },
+        quickWorkflowDesc: 'grupoみIncl.みアクションからgrupoみDe pieてたカスタムボタン。',
+        sectionTitles: { core: 'コアフロー', generation: 'Generacionと Mermaid', knowledge: 'Conocimiento', translation: 'Traduccion', utilities: 'ユーティリティ' },
         actions: {
-            processCurrentAddLinks: { label: 'ファイルを処理（リンク追加）' },
-            processFolderAddLinks: { label: 'フォルダーを処理（リンク追加）' },
-            generateFromTitle: { label: 'タイトルから生成' },
-            batchGenerateFromTitles: { label: 'タイトルから一括生成' },
-            researchAndSummarize: { label: '調査して要約' },
-            summarizeAsMermaid: { label: 'Mermaid 図として要約' },
-            translateCurrentFile: { label: '現在のファイルを翻訳' },
-            batchTranslateFolder: { label: 'フォルダーを一括翻訳' },
-            extractConceptsCurrent: { label: '概念を抽出（現在のファイル）' },
-            extractConceptsFolder: { label: '概念を抽出（フォルダー）' },
-            extractOriginalText: { label: '特定の原文を抽出' },
-            batchMermaidFix: { label: 'Mermaid を一括修正' },
-            fixFormulaCurrent: { label: '数式形式を修正（現在）' },
-            batchFixFormula: { label: '数式形式を一括修正' },
-            checkDuplicatesCurrent: { label: '重複を確認（現在のファイル）' },
-            checkRemoveDuplicateConcepts: { label: '重複を確認して削除' },
-            testLlmConnection: { label: 'LLM 接続をテスト' }
+            processCurrentAddLinks: { label: 'ファイルをProcesamiento（リンクAdicion）' },
+            processFolderAddLinks: { label: 'フォルダーをProcesamiento（リンクAdicion）' },
+            generateFromTitle: { label: 'タイトルからGeneracion' },
+            batchGenerateFromTitles: { label: 'タイトルからGeneracion masiva' },
+            researchAndSummarize: { label: 'InvestigacionしてResumen' },
+            summarizeAsMermaid: { label: 'Mermaid Fig.としてResumen' },
+            translateCurrentFile: { label: 'ActualmenteのファイルをTraduccion' },
+            batchTranslateFolder: { label: 'フォルダーをTraduccion por lotes' },
+            extractConceptsCurrent: { label: 'ConceptoをExtracto (actualmenteのファイル）' },
+            extractConceptsFolder: { label: 'ConceptoをExtraccion（フォルダー）' },
+            extractOriginalText: { label: 'EspecificoのTexto originalをExtraccion' },
+            batchMermaidFix: { label: 'Mermaid をCorreccion por lotes' },
+            fixFormulaCurrent: { label: 'Formato de formulaをModificacion (actualmente）' },
+            batchFixFormula: { label: 'Formato de formulaをCorreccion por lotes' },
+            checkDuplicatesCurrent: { label: 'DuplicacionをConfirmar (actualmenteのファイル）' },
+            checkRemoveDuplicateConcepts: { label: 'DuplicacionをConfirmacionしてEliminar' },
+            testLlmConnection: { label: 'LLM Conexionをテスト' }
         },
         status: {
-            runningAction: '"{label}" を実行中...',
-            actionComplete: '"{label}" が完了しました',
-            actionFailed: 'アクションに失敗しました: {message}',
+            runningAction: '"{label}" をCorriendo...',
+            actionComplete: '"{label}" がHechoしました',
+            actionFailed: 'アクションにFracasoしました: {message}',
             stepLabel: '[{current}/{total}] {label}',
-            stepFailed: 'ステップに失敗しました: {message}',
-            processingStopped: '処理を停止しました。',
-            cancelling: 'キャンセル中...',
-            userRequestedCancellation: 'ユーザーがキャンセルを要求しました。'
+            stepFailed: 'ステップにFracasoしました: {message}',
+            processingStopped: 'ProcesamientoをDetenteしました。',
+            cancelling: 'キャンセルMedio...',
+            userRequestedCancellation: 'ユーザーがキャンセルをSolicitudしました。'
         },
-        logOutputTitle: 'ログ出力',
+        logOutputTitle: 'ログSalida',
         copyLog: 'ログをコピー',
         copyLogSuccess: 'ログをコピーしました！',
         copyLogFailed: 'ログをコピーできませんでした。',
-        logEmpty: 'ログは空です。',
-        cancelProcessing: '処理をキャンセル',
-        languageChangedNotice: '言語を {language} に変更しました'
+        logEmpty: 'ログはcieloです。',
+        cancelProcessing: 'Procesamientoをキャンセル',
+        languageChangedNotice: 'Idiomaを {language} にCambiarしました'
     },
     progressModal: {
-        heading: 'Notemd 処理',
-        starting: '開始中...',
+        heading: 'Notemd Procesamiento',
+        starting: 'Comenzando...',
         cancelProgress: 'キャンセル',
-        timeRemaining: '推定残り時間: {time}',
-        timeRemainingCalculating: '推定残り時間: 計算中...',
+        timeRemaining: 'Resto estimadoりtiempo: {time}',
+        timeRemainingCalculating: 'Resto estimadoりtiempo: Calculando...',
         cancelledOrError: 'キャンセル/エラー',
-        processingStopped: '処理を停止しました。',
-        cancelling: 'キャンセル中...',
-        userRequestedCancellation: 'ユーザーがキャンセルを要求しました。'
+        processingStopped: 'ProcesamientoをDetenteしました。',
+        cancelling: 'キャンセルMedio...',
+        userRequestedCancellation: 'ユーザーがキャンセルをSolicitudしました。'
     }
 };
 
@@ -2414,30 +2414,30 @@ extendLocale(STRINGS_IT, {
 extendLocale(STRINGS_JA, {
     settings: {
         workflowBuilder: {
-            errorStrategyName: 'ワークフローのエラー戦略',
-            errorStrategyDesc: '最初の失敗ステップで直ちに停止するか、続行して残りのステップを完了します。',
-            errorStrategyStop: '最初のエラーで停止',
-            errorStrategyContinue: 'エラー時も続行',
+            errorStrategyName: 'ワークフローのエラーEstrategia',
+            errorStrategyDesc: 'primeroのFracasoステップでdirectoちにDetenteするか、ContinuarしてZanりのステップをHechoします。',
+            errorStrategyStop: 'primeroのエラーでDetente',
+            errorStrategyContinue: 'エラーtiempoもContinuar',
             visualBuilderName: 'ビジュアルワークフロービルダー',
-            visualBuilderDesc: 'DSL を書かずに組み込みアクションからカスタムワークフローボタンを作成します。',
-            advancedDslName: '高度な DSL エディター',
-            advancedDslDesc: '任意: Button Name::action-a>action-b 形式で直接編集します。ビジュアルビルダーと DSL は同期されたままです。',
-            dslValidationName: 'ワークフロー DSL 検証',
-            dslValidationDesc: '{count} 件の問題が見つかりました。無効な行はサイドバーの描画時に無視されます。',
-            availableActionIdsName: '利用可能なワークフローアクション ID',
-            builderDslWarning: '{count} 件の DSL 問題を検出しました。ビジュアルエディターは安全なフォールバック状態のワークフローを読み込みました。',
+            visualBuilderDesc: 'DSL をcaligrafiaかずにgrupoみIncl.みアクションからカスタムワークフローボタンをCrearします。',
+            advancedDslName: 'Altitudな DSL エディター',
+            advancedDslDesc: 'Opcional: Button Name::action-a>action-b FormatoでEdicion directaします。ビジュアルビルダーと DSL はSincronizacionされたままです。',
+            dslValidationName: 'ワークフロー DSL Verificacion',
+            dslValidationDesc: '{count} casosのProblemaがVerつかりました。InvalidoなFilaはサイドバーのAl dibujarにignorarされます。',
+            availableActionIdsName: 'Disponibleなワークフローアクション ID',
+            builderDslWarning: '{count} casosの DSL ProblemaをDeteccionしました。ビジュアルエディターはSeguridadなフォールバックCondicionのワークフローをLecturaみIncl.みました。',
             builderCardTitle: 'ワークフロー {index}',
-            deleteButton: '削除',
-            workflowRemovedNotice: 'ワークフローを削除しました。',
-            buttonNameLabel: 'ボタン名',
+            deleteButton: 'Eliminar',
+            workflowRemovedNotice: 'ワークフローをEliminarしました。',
+            buttonNameLabel: 'ボタンNombre',
             buttonNamePlaceholder: 'ワークフロー {index}',
-            actionSequenceTitle: 'アクション順序',
-            removeAction: '削除',
-            addAction: 'アクションを追加',
-            addWorkflow: 'ワークフローを追加',
-            workflowAddedNotice: 'ワークフローを追加しました。',
-            resetDefault: 'デフォルトに戻す',
-            resetDefaultNotice: 'デフォルトのワンクリックワークフローを復元しました。'
+            actionSequenceTitle: 'アクションOrden',
+            removeAction: 'Eliminar',
+            addAction: 'アクションをAdicion',
+            addWorkflow: 'ワークフローをAdicion',
+            workflowAddedNotice: 'ワークフローをAdicionしました。',
+            resetDefault: 'デフォルトにRegresoす',
+            resetDefaultNotice: 'デフォルトのワンクリックワークフローをRestauracionしました。'
         }
     }
 });
@@ -2762,43 +2762,43 @@ extendLocale(STRINGS_IT, {
 });
 
 extendLocale(STRINGS_JA, {
-    common: { select: '選択' },
+    common: { select: 'Seleccion' },
     commands: {
-        checkDuplicatesCurrent: '現在のファイルの重複を確認',
-        extractConceptsAndGenerateTitles: '概念を抽出してタイトルを生成',
-        createWikiLinkAndGenerateNoteFromSelection: 'Wikiリンクを作成して選択範囲からノートを生成'
+        checkDuplicatesCurrent: 'ActualmenteのファイルのDuplicacionをConfirmacion',
+        extractConceptsAndGenerateTitles: 'ConceptoをExtraccionしてタイトルをGeneracion',
+        createWikiLinkAndGenerateNoteFromSelection: 'WikiリンクをCrearしてRango de seleccionからノートをGeneracion'
     },
     duplicateModal: {
-        title: '重複削除の確認',
-        intro: '次の {count} 件の概念ノートは重複の可能性があると判定され、システムのゴミ箱に移動されます:',
-        reason: '理由: {reason}',
-        conflictsWith: '競合先: {files}',
-        warning: 'この操作は Obsidian 内では簡単に元に戻せませんが、通常はシステムのゴミ箱からファイルを復元できます。',
-        deleteFiles: '{count} 件のファイルを削除'
+        title: 'Eliminacion de duplicadosのConfirmacion',
+        intro: 'Siguienteの {count} casosのConceptoノートはDuplicacionのPosibilidadがあるとJuicioされ、システムのゴミCajaにMoverされます:',
+        reason: 'Razon: {reason}',
+        conflictsWith: 'Competidores: {files}',
+        warning: 'このOperacionは Obsidian AdentroではfacilにyuanesにRegresoせませんが、normalesはシステムのゴミCajaからファイルをRestauracionできます。',
+        deleteFiles: '{count} casosのファイルをEliminar'
     },
     settings: {
-        developer: { heading: '開発者向け診断' },
+        developer: { heading: 'Para desarrolladoresけDiagnostico' },
         providerConfig: { heading: 'LLM プロバイダー' },
-        multiModel: { heading: 'マルチモデル利用' },
-        translationTask: { heading: 'タスク: 翻訳' },
-        mermaidTask: { heading: 'タスク: Mermaid 図として要約' },
-        extractConceptsTask: { heading: 'タスク: 概念を抽出' },
-        stableApi: { heading: '安定した API 呼び出し' },
+        multiModel: { heading: 'マルチモデルuso' },
+        translationTask: { heading: 'タスク: Traduccion' },
+        mermaidTask: { heading: 'タスク: Mermaid Fig.としてResumen' },
+        extractConceptsTask: { heading: 'タスク: ConceptoをExtraccion' },
+        stableApi: { heading: 'Estabilidadした API LlamarびFueraし' },
         workflowBuilder: { heading: 'ワンクリックワークフローボタン' },
         generalOutput: {
-            processedHeading: '処理済みファイル出力',
-            conceptNoteHeading: '概念ノート出力',
-            conceptLogHeading: '概念ログファイル出力'
+            processedHeading: 'ProcesadoみファイルSalida',
+            conceptNoteHeading: 'ConceptoノートSalida',
+            conceptLogHeading: 'ConceptoログファイルSalida'
         },
-        contentGeneration: { heading: 'コンテンツ生成と出力' },
-        customPrompts: { heading: 'カスタムプロンプト設定' },
-        extractOriginalText: { heading: '特定の原文を抽出' },
-        webResearch: { heading: 'Web 調査プロバイダー' },
-        processing: { heading: '処理パラメータ' },
-        batchProcessing: { heading: '一括処理' },
-        batchMermaidFix: { heading: 'Mermaid 一括修正' },
-        duplicateScope: { heading: '重複確認の範囲' },
-        focusedLearning: { heading: '重点学習ドメイン' }
+        contentGeneration: { heading: 'コンテンツGeneracionとSalida' },
+        customPrompts: { heading: 'カスタムプロンプトConfiguracion' },
+        extractOriginalText: { heading: 'EspecificoのTexto originalをExtraccion' },
+        webResearch: { heading: 'Web Investigacionプロバイダー' },
+        processing: { heading: 'Procesamientoパラメータ' },
+        batchProcessing: { heading: 'Procesamiento por lotes' },
+        batchMermaidFix: { heading: 'Mermaid Correccion por lotes' },
+        duplicateScope: { heading: 'Confirmacion duplicadaのAlcance' },
+        focusedLearning: { heading: 'Aprendizaje enfocadoドメイン' }
     }
 });
 
@@ -3696,7 +3696,7 @@ extendLocale(STRINGS_ID, {
 
 extendLocale(STRINGS_JA, {
     settings: {
-        providerConfig: { temperatureName: '温度' }
+        providerConfig: { temperatureName: 'Temperatura' }
     }
 });
 
@@ -3848,15 +3848,15 @@ extendLocale(STRINGS_IT, {
 extendLocale(STRINGS_JA, {
     settings: {
         providerConfig: {
-            maxOutputTokensDesc: 'このプロバイダー専用の任意の出力トークン上限です。空欄の場合は全体の最大トークン設定を使います。',
-            topPName: 'Top-p 値',
-            topPDesc: 'OpenAI-compatible リクエスト向けの任意の nucleus sampling 上書きです。空欄の場合はプロバイダー既定値を使います。',
-            reasoningEffortName: '推論強度',
-            reasoningEffortDesc: '対応する推論モデル向けの任意ヒントです。使用可能な値: none、low、medium、high。',
+            maxOutputTokensDesc: 'このプロバイダーDedicadoのOpcionalのSalidaトークンLimite superiorです。En blancoのCasoはEn generalのmaximoトークンConfiguracionをEnviadoいます。',
+            topPName: 'Top-p Valor',
+            topPDesc: 'OpenAI-compatible リクエストDireccionけのOpcionalの nucleus sampling Sobrescribirきです。En blancoのCasoはプロバイダーValor predeterminadoをEnviadoいます。',
+            reasoningEffortName: 'Fuerza de inferencia',
+            reasoningEffortDesc: 'CorrespondenciaするRazonamientoモデルDireccionけのOpcionalヒントです。DisponibleなValor: none、low、medium、high。',
             topPPlaceholder: '0.0 - 1.0',
             reasoningEffortPlaceholder: 'none | low | medium | high',
-            thinkingEnabledName: 'Thinking モードを有効化',
-            thinkingEnabledDesc: 'DeepSeek 専用です。chat/completions リクエストで thinking: { type: "enabled" } を送信します。'
+            thinkingEnabledName: 'Thinking モードをActivacion',
+            thinkingEnabledDesc: 'DeepSeek Dedicadoです。chat/completions リクエストで thinking: { type: "enabled" } をEnviarします。'
         }
     }
 });
@@ -4190,17 +4190,17 @@ extendLocale(STRINGS_JA, {
             categoryLocal: 'ローカル',
             categoryOther: 'プロバイダー',
             presetSummaryTitle: '{provider} プリセット',
-            presetSummaryHint: '既定の endpoint: {baseUrl} · 既定のモデル: {model}'
+            presetSummaryHint: 'Predeterminadoの endpoint: {baseUrl} · Predeterminadoのモデル: {model}'
         },
         customPrompts: {
-            taskToggleName: '「{task}」にカスタムプロンプトを使う',
-            taskToggleDesc: 'オン: このタスクでは下のカスタムプロンプトを使います。オフ: 既定のプロンプトを使います。',
-            copyDefaultButton: '既定のプロンプトをコピー',
-            copyDefaultNotice: '既定のプロンプトをクリップボードにコピーしました。',
-            defaultPromptLabel: '「{task}」の既定プロンプト:',
+            taskToggleName: '「{task}」にカスタムプロンプトをEnviadoう',
+            taskToggleDesc: 'オン: このタスクではAbajoのカスタムプロンプトをEnviadoいます。オフ: PredeterminadoのプロンプトをEnviadoいます。',
+            copyDefaultButton: 'Predeterminadoのプロンプトをコピー',
+            copyDefaultNotice: 'Predeterminadoのプロンプトをクリップボードにコピーしました。',
+            defaultPromptLabel: '「{task}」のPredeterminadoプロンプト:',
             customPromptName: '「{task}」のカスタムプロンプト',
-            customPromptDesc: 'カスタムプロンプトを入力してください。{TITLE} や {RESEARCH_CONTEXT_SECTION} などのプレースホルダーは、このタスクで使える場合に置き換えられます。利用できるプレースホルダーは既定のプロンプトを参照してください。',
-            customPromptPlaceholder: '{task} 用のカスタムプロンプトを入力してください...'
+            customPromptDesc: 'カスタムプロンプトをEntradaしてください。{TITLE} や {RESEARCH_CONTEXT_SECTION} などのプレースホルダーは、このタスクでEnviadoえるCasoにColocacionきIntercambioえられます。usoできるプレースホルダーはPredeterminadoのプロンプトをReferenciaしてください。',
+            customPromptPlaceholder: '{task} paraのカスタムプロンプトをEntradaしてください...'
         }
     }
 });
@@ -4606,23 +4606,23 @@ extendLocale(STRINGS_IT, {
 extendLocale(STRINGS_JA, {
     sidebar: {
         actions: {
-            processCurrentAddLinks: { tooltip: '現在のファイルを処理し、Wiki リンクと概念ノートを作成します。' },
-            processFolderAddLinks: { tooltip: 'フォルダー内の対象ノートをすべて処理します。' },
-            generateFromTitle: { tooltip: '現在のノートタイトルからノート内容を生成します。' },
-            batchGenerateFromTitles: { tooltip: 'フォルダー内のノートタイトルから内容を一括生成します。' },
-            researchAndSummarize: { tooltip: '選択したトピックまたはタイトルを調査し、要約を追記します。' },
-            summarizeAsMermaid: { tooltip: '現在のノートから Mermaid 図の要約を生成します。' },
-            translateCurrentFile: { tooltip: 'アクティブなファイルを選択した出力言語に翻訳します。' },
-            batchTranslateFolder: { tooltip: 'フォルダー内のすべての Markdown ファイルを翻訳します。' },
-            extractConceptsCurrent: { tooltip: '現在のファイルからのみ概念を抽出します。' },
-            extractConceptsFolder: { tooltip: '選択したフォルダー内のすべてのファイルから概念を抽出します。' },
-            extractOriginalText: { tooltip: '設定した質問に対する原文抜粋をそのまま抽出します。' },
-            batchMermaidFix: { tooltip: '選択したフォルダーで Mermaid/LaTeX の構文修正を一括実行します。' },
-            fixFormulaCurrent: { tooltip: '現在のファイル内の数式区切り記号を正規化します。' },
-            batchFixFormula: { tooltip: '選択したフォルダー全体の数式区切り記号を正規化します。' },
-            checkDuplicatesCurrent: { tooltip: '現在のファイル内の重複語句を検出します。' },
-            checkRemoveDuplicateConcepts: { tooltip: '重複した概念ノートを検出して削除します。' },
-            testLlmConnection: { tooltip: 'アクティブなプロバイダーの接続と認証情報をテストします。' }
+            processCurrentAddLinks: { tooltip: 'ActualmenteのファイルをProcesamientoし、Wiki リンクとConceptoノートをCrearします。' },
+            processFolderAddLinks: { tooltip: 'フォルダーAdentroのObjetivoノートをすべてProcesamientoします。' },
+            generateFromTitle: { tooltip: 'ActualmenteのノートタイトルからノートContenidoをGeneracionします。' },
+            batchGenerateFromTitles: { tooltip: 'フォルダーAdentroのノートタイトルからContenidoをGeneracion masivaします。' },
+            researchAndSummarize: { tooltip: 'SeleccionしたトピックまたはタイトルをInvestigacionし、ResumenをP.D.します。' },
+            summarizeAsMermaid: { tooltip: 'Actualmenteのノートから Mermaid Fig.のResumenをGeneracionします。' },
+            translateCurrentFile: { tooltip: 'アクティブなファイルをSeleccionしたIdioma de salidaにTraduccionします。' },
+            batchTranslateFolder: { tooltip: 'フォルダーAdentroのすべての Markdown ファイルをTraduccionします。' },
+            extractConceptsCurrent: { tooltip: 'ActualmenteのファイルからのみConceptoをExtraccionします。' },
+            extractConceptsFolder: { tooltip: 'SeleccionしたフォルダーAdentroのすべてのファイルからConceptoをExtraccionします。' },
+            extractOriginalText: { tooltip: 'ConfiguracionしたPreguntaにvs.するExtracto del texto originalをそのままExtraccionします。' },
+            batchMermaidFix: { tooltip: 'Seleccionしたフォルダーで Mermaid/LaTeX のCorreccion de sintaxisをEjecucion por lotesします。' },
+            fixFormulaCurrent: { tooltip: 'ActualmenteのファイルAdentroのSeparador de formulasりSimboloをNormalizacionします。' },
+            batchFixFormula: { tooltip: 'SeleccionしたフォルダーEn generalのSeparador de formulasりSimboloをNormalizacionします。' },
+            checkDuplicatesCurrent: { tooltip: 'ActualmenteのファイルAdentroのPalabras duplicadasをDeteccionします。' },
+            checkRemoveDuplicateConcepts: { tooltip: 'DuplicacionしたConceptoノートをDeteccionしてEliminarします。' },
+            testLlmConnection: { tooltip: 'アクティブなプロバイダーのConexionとCredencialesをテストします。' }
         }
     }
 });
@@ -5017,20 +5017,20 @@ extendLocale(STRINGS_IT, {
 extendLocale(STRINGS_JA, {
     settings: {
         extractOriginalText: {
-            questionsName: '抽出用の質問',
-            questionsDesc: '対応する原文を抽出したい質問一覧を、1 行に 1 件ずつ入力してください。',
-            questionsPlaceholder: 'ここに質問を入力...',
-            translateOutputName: '出力を対応する言語に翻訳',
-            translateOutputDesc: '有効にすると、出力には選択した抽出言語への翻訳が含まれます。',
-            mergedQueryName: '統合クエリモード',
-            mergedQueryDesc: 'オン: すべての質問を 1 つの LLM プロンプトで送信します（より速く、低コスト）。オフ: 各質問を個別に処理します（精度が高い）。',
-            customOutputName: '抽出テキストの保存パスとファイル名をカスタマイズ',
-            customOutputDesc: 'オン: 抽出ファイルにカスタムフォルダーとサフィックスを使用します。オフ: 元のフォルダーにデフォルトの "_Extracted" サフィックスで保存します。',
-            savePathName: '抽出ファイルの保存パス',
-            savePathDesc: '抽出ファイルを保存するフォルダー（Vault ルートからの相対パス）。',
-            savePathPlaceholder: '例: ExtractedData',
+            questionsName: 'Para extraccionのPregunta',
+            questionsDesc: 'CorrespondenciaするTexto originalをExtraccionしたいLista de preguntasを、1 Filaに 1 casosずつEntradaしてください。',
+            questionsPlaceholder: 'ここにPreguntaをEntrada...',
+            translateOutputName: 'SalidaをCorrespondenciaするIdiomaにTraduccion',
+            translateOutputDesc: 'Validoにすると、SalidaにはSeleccionしたLenguaje de extraccionへのTraduccionがContieneまれます。',
+            mergedQueryName: 'Integracionクエリモード',
+            mergedQueryDesc: 'オン: すべてのPreguntaを 1 つの LLM プロンプトでEnviarします（よりVelocidadく、bajoコスト）。オフ: Cada preguntaをIndividuoにProcesamientoします（Precisionがaltoい）。',
+            customOutputName: 'ExtraccionテキストのGuardarパスとファイルNombreをカスタマイズ',
+            customOutputDesc: 'オン: Extraccionファイルにカスタムフォルダーとサフィックスをusoします。オフ: yuanesのフォルダーにデフォルトの "_Extracted" サフィックスでGuardarします。',
+            savePathName: 'ExtraccionファイルのGuardarパス',
+            savePathDesc: 'ExtraccionファイルをGuardarするフォルダー（Vault ルートからのRelativoパス）。',
+            savePathPlaceholder: 'Ejemplos: ExtractedData',
             customSuffixName: 'カスタムサフィックス',
-            customSuffixDesc: 'ファイル名に追加するカスタムサフィックス（例: "_MyExtract"）。'
+            customSuffixDesc: 'ファイルNombreにAdicionするカスタムサフィックス（Ejemplos: "_MyExtract"）。'
         }
     }
 });
@@ -5682,61 +5682,61 @@ extendLocale(STRINGS_IT, {
 extendLocale(STRINGS_JA, {
     settings: {
         stableApi: {
-            enableName: '安定した API 呼び出しを有効化（リトライロジック）',
-            enableDesc: 'オン: 失敗した LLM API 呼び出しを自動で再試行します。オフ: 最初のエラーで失敗します。',
-            retryIntervalName: '再試行間隔（秒）',
-            retryIntervalDesc: '再試行の間に待機する時間です。',
-            maxRetriesName: '最大再試行回数',
-            maxRetriesDesc: '再試行の最大回数です。',
+            enableName: 'Estabilidadした API LlamarびFueraしをActivacion（リトライロジック）',
+            enableDesc: 'オン: Fracasoした LLM API LlamarびFueraしをAutomaticoでReintentarします。オフ: primeroのエラーでFracasoします。',
+            retryIntervalName: 'Intervalo de reintento (segundos)）',
+            retryIntervalDesc: 'ReintentarのEntreにEsperaするtiempoです。',
+            maxRetriesName: 'Numero maximo de reintentos',
+            maxRetriesDesc: 'ReintentarのNumero maximo de vecesです。',
             debugModeName: 'API エラーデバッグモード',
-            debugModeDesc: 'オン: すべてのプロバイダーで詳細なエラーログ（DeepSeek スタイル）を有効にし、API 問題の診断を支援します。オフ: 標準の簡潔なエラー報告を使用します。',
-            diagnosticCallModeName: '診断呼び出しモード',
-            diagnosticCallModeDesc: 'このプロバイダーに対して開発者診断が使用する実行時の呼び出し経路を選択します。',
-            diagnosticTimeoutName: '診断タイムアウト（秒）',
-            diagnosticTimeoutDesc: '各開発者診断実行のタイムアウトです（15〜3600 秒）。',
-            stabilityRunsName: '安定性テストの実行回数',
-            stabilityRunsDesc: '「安定性テストを実行」で繰り返す回数です（1〜10）。',
-            longRequestName: '開発者向けプロバイダー診断（長時間リクエスト）',
-            longRequestDesc: '選択した呼び出しモードで長時間リクエスト診断を 1 回実行し、完全なレポートを Vault ルートに保存します。'
+            debugModeDesc: 'オン: すべてのプロバイダーでDetallesなエラーログ（DeepSeek スタイル）をValidoにし、API ProblemaのDiagnosticoをApoyoします。オフ: EstandarのconcisoなエラーInformeをusoします。',
+            diagnosticCallModeName: 'Llamada de diagnosticoびFueraしモード',
+            diagnosticCallModeDesc: 'このプロバイダーにvs.してDiagnostico del desarrolladorがusoするtiempo de ejecucionのLlamarびFueraしRutaをSeleccionします。',
+            diagnosticTimeoutName: 'Diagnosticoタイムアウト（segundos）',
+            diagnosticTimeoutDesc: 'Ejecutar cada diagnostico de desarrollador.のタイムアウトです（15〜3600 segundos）。',
+            stabilityRunsName: 'EstabilidadテストのNumero de ejecuciones',
+            stabilityRunsDesc: '「EstabilidadテストをEjecucion」でRepetirりRegresoすNumero de vecesです（1〜10）。',
+            longRequestName: 'Para desarrolladoresけプロバイダーDiagnostico (largo tiempo)リクエスト）',
+            longRequestDesc: 'SeleccionしたLlamarびFueraしモードでMucho tiempoリクエストDiagnosticoを 1 Ejecutar tiemposし、completoなレポートを Vault ルートにGuardarします。'
         },
         webResearch: {
-            searchProviderName: '検索プロバイダー',
-            searchProviderDesc: '「調査して要約」で使用するエンジンです。',
-            tavilyOption: 'Tavily（API キーが必要）',
-            duckduckgoOption: 'DuckDuckGo（実験的）',
+            searchProviderName: 'Buscarプロバイダー',
+            searchProviderDesc: '「InvestigacionしてResumen」でusoするエンジンです。',
+            tavilyOption: 'Tavily（API キーがRequerido）',
+            duckduckgoOption: 'DuckDuckGo（experimentales）',
             tavilyApiKeyName: 'Tavily API キー',
-            tavilyApiKeyDesc: 'Tavily には必須です。tavily.com で取得してください。',
-            tavilyApiKeyPlaceholder: 'Tavily API キーを入力 (tvly-...)',
-            tavilyMaxResultsName: 'Tavily 最大結果数',
-            tavilyMaxResultsDesc: '最大結果数（1〜20）。',
-            tavilySearchDepthName: 'Tavily 検索深度',
-            tavilySearchDepthDesc: '「advanced」はより多くのクレジットを使用します。',
-            tavilySearchDepthBasic: '基本',
-            tavilySearchDepthAdvanced: '高度（2 クレジット）',
-            duckduckgoMaxResultsName: 'DuckDuckGo 最大結果数',
-            duckduckgoMaxResultsDesc: '解析する結果の最大数です。',
-            duckduckgoFetchTimeoutName: 'DuckDuckGo コンテンツ取得タイムアウト（秒）',
-            duckduckgoFetchTimeoutDesc: '各結果 URL ごとの最大待機時間です。',
-            maxResearchTokensName: '調査コンテンツの最大トークン数',
-            maxResearchTokensDesc: '要約プロンプトに使用する Web 結果由来トークンの概算上限です。'
+            tavilyApiKeyDesc: 'Tavily にはRequeridoです。tavily.com でAdquisicionしてください。',
+            tavilyApiKeyPlaceholder: 'Tavily API キーをEntrada (tvly-...)',
+            tavilyMaxResultsName: 'Tavily Numero maximo de resultados',
+            tavilyMaxResultsDesc: 'Numero maximo de resultados（1〜20）。',
+            tavilySearchDepthName: 'Tavily Profundidad de busqueda',
+            tavilySearchDepthDesc: '「advanced」はよりmuchosくのクレジットをusoします。',
+            tavilySearchDepthBasic: 'Conceptos basicos',
+            tavilySearchDepthAdvanced: 'Altitud（2 クレジット）',
+            duckduckgoMaxResultsName: 'DuckDuckGo Numero maximo de resultados',
+            duckduckgoMaxResultsDesc: 'AnalisisするResultadosのNumero maximoです。',
+            duckduckgoFetchTimeoutName: 'DuckDuckGo コンテンツAdquisicionタイムアウト（segundos）',
+            duckduckgoFetchTimeoutDesc: 'Cada resultado URL ごとのTiempo maximo de esperaです。',
+            maxResearchTokensName: 'InvestigacionコンテンツのmaximoトークンNumero',
+            maxResearchTokensDesc: 'Resumenプロンプトにusoする Web Origen del resultadoトークンのLimite superior aproximadoです。'
         },
         duplicateScope: {
-            modeName: '重複チェック範囲モード',
-            modeDesc: '重複候補を探す範囲を定義します。',
-            optionVault: 'Vault 全体（既定 - 概念ノートを他のすべてのノートと比較）',
-            optionInclude: '特定フォルダーのみ含める（概念ノートを指定フォルダー内のノートと比較）',
-            optionExclude: '特定フォルダーを除外する（概念ノートを指定フォルダー外のノートと比較）',
-            optionConceptFolderOnly: '概念フォルダーのみ（概念ノート同士を比較）',
-            includeFoldersName: '含めるフォルダー',
-            excludeFoldersName: '除外するフォルダー',
-            pathsDesc: '{mode} 対象のフォルダー相対パスを 1 行に 1 つずつ入力してください。モードが「Vault 全体」または「概念フォルダーのみ」でない場合は必須です。パスは大文字小文字を区別し、区切りには "/" を使用します。',
-            pathsModeInclude: '含める',
-            pathsModeExclude: '除外する',
-            pathsPlaceholder: '例: Notes/ProjectA\nSource Material',
-            invalidPathNotice: `無効なパスです: "{path}"。パス区切りには "\\" ではなく "/" を使用してください。`,
-            invalidCharacterNotice: 'パス "{path}" に無効な文字 "{char}" があります。使用禁止文字: 空白、\\、<、>、:、|、?、#、^、[、]',
-            emptyPathsNotice: '「含める」または「除外する」モードが選択されている場合、フォルダーパスを空にできません。',
-            invalidPathsNotSaved: '無効なパスが検出されたため、このフィールドの設定は保存されませんでした。'
+            modeName: 'DuplicacionチェックAlcanceモード',
+            modeDesc: 'Candidatos duplicadosをBuscarすAlcanceをDefinicionします。',
+            optionVault: 'Vault General (predeterminado - ConceptoノートをOtrosのすべてのノートとComparacion）',
+            optionInclude: 'EspecificoフォルダーのみContieneめる（ConceptoノートをEspecificacionフォルダーAdentroのノートとComparacion）',
+            optionExclude: 'EspecificoフォルダーをExclusionする（ConceptoノートをEspecificacionフォルダーAfueraのノートとComparacion）',
+            optionConceptFolderOnly: 'Conceptoフォルダーのみ（ConceptoノートamigosをComparacion）',
+            includeFoldersName: 'Contieneめるフォルダー',
+            excludeFoldersName: 'Exclusionするフォルダー',
+            pathsDesc: '{mode} ObjetivoのフォルダーRelativoパスを 1 Filaに 1 つずつEntradaしてください。モードが「Vault En general」または「Conceptoフォルダーのみ」でないCasoはRequeridoです。パスはLetras mayusculas y minusculasをDistincionし、Separacionりには "/" をusoします。',
+            pathsModeInclude: 'Contieneめる',
+            pathsModeExclude: 'Exclusionする',
+            pathsPlaceholder: 'Ejemplos: Notes/ProjectA\nSource Material',
+            invalidPathNotice: `Invalidoなパスです: "{path}"。パスSeparacionりには "\\" ではなく "/" をusoしてください。`,
+            invalidCharacterNotice: 'パス "{path}" にInvalidoなPersonajes "{char}" があります。Personajes prohibidos: En blanco、\\、<、>、:、|、?、#、^、[、]',
+            emptyPathsNotice: '「Contieneめる」または「Exclusionする」モードがSeleccionされているCaso、フォルダーパスをcieloにできません。',
+            invalidPathsNotSaved: 'InvalidoなパスがDeteccionされたため、このフィールドのConfiguracionはGuardarされませんでした。'
         }
     }
 });
@@ -6148,7 +6148,7 @@ extendLocale(STRINGS_TH, {
             tavilySearchDepthBasic: 'พื้นฐาน',
             tavilySearchDepthAdvanced: 'ขั้นสูง (2 เครดิต)',
             duckduckgoMaxResultsName: 'จำนวนผลลัพธ์สูงสุดของ DuckDuckGo',
-            duckduckgoMaxResultsDesc: 'จำนวนผลลัพธ์สูงสุดที่จะ解析',
+            duckduckgoMaxResultsDesc: 'จำนวนผลลัพธ์สูงสุดที่จะAnalisis',
             duckduckgoFetchTimeoutName: 'หมดเวลาการดึงเนื้อหา DuckDuckGo (วินาที)',
             duckduckgoFetchTimeoutDesc: 'เวลารอสูงสุดต่อ URL ของผลลัพธ์',
             maxResearchTokensName: 'จำนวนโทเค็นสูงสุดของเนื้อหาวิจัย',
@@ -6630,37 +6630,37 @@ extendLocale(STRINGS_IT, {
 extendLocale(STRINGS_JA, {
     settings: {
         generalOutput: {
-            processedSavePathName: '処理済みファイルの保存先をカスタマイズ',
-            processedSavePathDesc: 'オン: 指定したパスに保存します。オフ: 元のフォルダーに保存します。',
-            processedFolderPathName: '処理済みファイルのフォルダーパス',
-            processedFolderPathDesc: 'Vault 内の相対パスです。',
-            processedFolderPathPlaceholder: '例: Processed/Notes',
-            moveOriginalName: '処理後に元ファイルを移動',
-            moveOriginalDesc: 'オン: 元ファイルを処理済みフォルダーに移動します。オフ: "_processed.md" という名前のコピーを作成します。',
-            customAddLinksFilenameName: '"Add links" にカスタム出力ファイル名を使う',
-            customAddLinksFilenameDesc: 'オン: カスタムの接尾辞/置換を使います。オフ: "_processed.md" を使います。',
-            addLinksSuffixName: 'カスタム接尾辞/置換文字列',
-            addLinksSuffixDesc: '空欄にすると元ファイルを上書きします。例: "_linked"。',
-            addLinksSuffixPlaceholder: '上書きする場合は空欄のままにする',
-            removeCodeFencesName: '"Add links" でコードフェンスを削除',
-            removeCodeFencesDesc: 'オン: "Process File" と "Process Folder" の最終出力からすべての ```markdown と ``` フェンスを削除します。オフ: コードフェンスを保持します。',
-            conceptNotePathName: '概念ノートのパスをカスタマイズ',
-            conceptNotePathDesc: 'オン: 指定したパスに新しい概念ノートを作成します。オフ: 自動では作成しません。',
-            conceptNoteFolderName: '概念ノートのフォルダーパス',
-            conceptNoteFolderDesc: 'Vault 内の相対パスです。',
-            conceptNoteFolderPlaceholder: '例: Concepts',
-            generateConceptLogName: '概念ログファイルを生成',
-            generateConceptLogDesc: 'オン: 新しく作成された概念ノートを記録します。',
-            customLogPathName: 'ログファイルの保存先をカスタマイズ',
-            customLogPathDescWithConceptFolder: 'オン: 指定したパスにログを保存します。オフ: 概念ノートフォルダー ("{folder}") に保存します。',
-            customLogPathDescVault: 'オン: 指定したパスにログを保存します。オフ: Vault ルートに保存します。',
-            conceptLogFolderName: '概念ログフォルダーパス',
-            conceptLogFolderDesc: '相対パスです。カスタムパスを有効にした場合は必須です。',
-            conceptLogFolderPlaceholder: '例: Logs/ConceptLogs',
-            customLogFileNameToggleName: 'ログファイル名をカスタマイズ',
-            customLogFileNameToggleDesc: 'オン: 指定した名前を使います。オフ: "{defaultName}" を使います。',
-            conceptLogFileNameName: '概念ログファイル名',
-            conceptLogFileNameDesc: 'ログファイル名です。カスタム名を有効にした場合は必須です。'
+            processedSavePathName: 'ProcesadoみファイルのGuardar destinoをカスタマイズ',
+            processedSavePathDesc: 'オン: EspecificacionしたパスにGuardarします。オフ: yuanesのフォルダーにGuardarします。',
+            processedFolderPathName: 'Procesadoみファイルのフォルダーパス',
+            processedFolderPathDesc: 'Vault AdentroのRelativoパスです。',
+            processedFolderPathPlaceholder: 'Ejemplos: Processed/Notes',
+            moveOriginalName: 'Despues del procesamientoにyuanesファイルをMover',
+            moveOriginalDesc: 'オン: yuanesファイルをProcesadoみフォルダーにMoverします。オフ: "_processed.md" というNombreのコピーをCrearします。',
+            customAddLinksFilenameName: '"Add links" にカスタムSalidaファイルNombreをEnviadoう',
+            customAddLinksFilenameDesc: 'オン: カスタムのSufijo/SustitucionをEnviadoいます。オフ: "_processed.md" をEnviadoいます。',
+            addLinksSuffixName: 'カスタムSufijo/Cuerda de repuesto',
+            addLinksSuffixDesc: 'En blancoにするとyuanesファイルをSobrescribirきします。Ejemplos: "_linked"。',
+            addLinksSuffixPlaceholder: 'SobrescribirきするCasoはEn blancoのままにする',
+            removeCodeFencesName: '"Add links" でコードフェンスをEliminar',
+            removeCodeFencesDesc: 'オン: "Process File" と "Process Folder" のResultado finalからすべての ```markdown と ``` フェンスをEliminarします。オフ: コードフェンスをRetencionします。',
+            conceptNotePathName: 'Conceptoノートのパスをカスタマイズ',
+            conceptNotePathDesc: 'オン: EspecificacionしたパスにnuevoしいConceptoノートをCrearします。オフ: AutomaticoではCrearしません。',
+            conceptNoteFolderName: 'Conceptoノートのフォルダーパス',
+            conceptNoteFolderDesc: 'Vault AdentroのRelativoパスです。',
+            conceptNoteFolderPlaceholder: 'Ejemplos: Concepts',
+            generateConceptLogName: 'ConceptoログファイルをGeneracion',
+            generateConceptLogDesc: 'オン: nuevoしくCrearされたConceptoノートをRegistrosします。',
+            customLogPathName: 'ログファイルのGuardar destinoをカスタマイズ',
+            customLogPathDescWithConceptFolder: 'オン: EspecificacionしたパスにログをGuardarします。オフ: Conceptoノートフォルダー ("{folder}") にGuardarします。',
+            customLogPathDescVault: 'オン: EspecificacionしたパスにログをGuardarします。オフ: Vault ルートにGuardarします。',
+            conceptLogFolderName: 'Conceptoログフォルダーパス',
+            conceptLogFolderDesc: 'Relativoパスです。カスタムパスをValidoにしたCasoはRequeridoです。',
+            conceptLogFolderPlaceholder: 'Ejemplos: Logs/ConceptLogs',
+            customLogFileNameToggleName: 'ログファイルNombreをカスタマイズ',
+            customLogFileNameToggleDesc: 'オン: EspecificacionしたNombreをEnviadoいます。オフ: "{defaultName}" をEnviadoいます。',
+            conceptLogFileNameName: 'ConceptoログファイルNombre',
+            conceptLogFileNameDesc: 'ログファイルNombreです。カスタムNombreをValidoにしたCasoはRequeridoです。'
         }
     }
 });
@@ -7309,34 +7309,34 @@ extendLocale(STRINGS_JA, {
     sidebar: {
         status: {
             workflowStart: 'ワークフロー: {name}',
-            workflowComplete: 'ワークフロー「{name}」が完了しました',
-            workflowFailed: 'ワークフローに失敗しました',
-            workflowFailedLog: 'ワークフローに失敗しました: {message}',
-            workflowFinishedWithErrors: 'ワークフロー「{name}」は {count} 件のエラーで終了しました',
-            stepLabel: '[{current}/{total}] 手順: {label}',
-            stepLog: '手順 {current}/{total}: {label}',
-            processingActive: '処理中...（実行中: {count}）',
-            timeRemaining: '推定残り時間: {time}',
-            timeRemainingCalculating: '推定残り時間: 計算中...',
-            stopped: '停止済み'
+            workflowComplete: 'ワークフロー「{name}」がHechoしました',
+            workflowFailed: 'ワークフローにFracasoしました',
+            workflowFailedLog: 'ワークフローにFracasoしました: {message}',
+            workflowFinishedWithErrors: 'ワークフロー「{name}」は {count} casosのエラーでFinしました',
+            stepLabel: '[{current}/{total}] Procedimiento: {label}',
+            stepLog: 'Procedimiento {current}/{total}: {label}',
+            processingActive: 'Procesamiento...（Corriendo: {count}）',
+            timeRemaining: 'Resto estimadoりtiempo: {time}',
+            timeRemainingCalculating: 'Resto estimadoりtiempo: Calculando...',
+            stopped: 'Suspendidoみ'
         },
-        builtInActionsPrefix: '組み込みの {category} アクション。',
-        workflowFallbackWarning: 'ワークフロー DSL に {count} 件の問題があります。サイドバーは既定のフォールバックを使用しています。'
+        builtInActionsPrefix: 'grupoみIncl.みの {category} アクション。',
+        workflowFallbackWarning: 'ワークフロー DSL に {count} casosのProblemaがあります。サイドバーはPredeterminadoのフォールバックをusoしています。'
     },
     errorModal: {
         titles: {
-            processing: 'Notemd 処理エラー',
-            batchProcessing: 'Notemd 一括処理エラー',
-            llmConnectionTest: 'LLM 接続テストエラー',
-            contentGeneration: 'コンテンツ生成エラー',
-            batchGeneration: 'Notemd 一括生成エラー',
-            duplicateCheckRemove: '重複確認/削除エラー',
-            batchMermaidFix: 'Notemd 一括 Mermaid 修正エラー',
-            translation: '翻訳エラー',
-            conceptExtraction: '概念抽出エラー',
-            batchConceptExtraction: '一括概念抽出エラー',
+            processing: 'Notemd Procesamientoエラー',
+            batchProcessing: 'Notemd Procesamiento por lotesエラー',
+            llmConnectionTest: 'LLM Conexionテストエラー',
+            contentGeneration: 'コンテンツGeneracionエラー',
+            batchGeneration: 'Notemd Generacion masivaエラー',
+            duplicateCheckRemove: 'Confirmacion duplicada/Eliminarエラー',
+            batchMermaidFix: 'Notemd a granel Mermaid Modificacionエラー',
+            translation: 'Traduccionエラー',
+            conceptExtraction: 'Extraccion de conceptosエラー',
+            batchConceptExtraction: 'Extraccion de conceptos por lotesエラー',
             generic: 'エラー',
-            extraction: '抽出エラー'
+            extraction: 'Extraccionエラー'
         }
     }
 });
@@ -8283,56 +8283,56 @@ extendLocale(STRINGS_IT, {
 extendLocale(STRINGS_JA, {
     settings: {
         providerConfig: {
-            summaryTitle: 'プロバイダープリセットが {count} 件に拡張されました。',
+            summaryTitle: 'プロバイダープリセットが {count} casosにExpansionされました。',
             summaryDesc:
-                'OpenAI 互換プロバイダーは現在、単一のランタイム経路を共有しています。組み込みプリセットには Qwen、Doubao、Moonshot、GLM、MiniMax、Baidu Qianfan、SiliconFlow など中国向けサービスが含まれ、汎用の "OpenAI Compatible" プリセットでは LiteLLM、vLLM、Perplexity、Vercel AI Gateway、または独自プロキシを対象にできます。',
-            manageName: 'プロバイダー設定を管理',
-            manageDesc: '現在のプロバイダー設定を JSON ファイルにエクスポートするか、ファイルから設定をインポートします。',
+                'OpenAI CompatibilidadプロバイダーはActualmente solteroのランタイムRutaをcompartirしています。grupoみIncl.みプリセットには Qwen、Doubao、Moonshot、GLM、MiniMax、Baidu Qianfan、SiliconFlow などPara ChinaけサービスがContieneまれ、Proposito generalの "OpenAI Compatible" プリセットでは LiteLLM、vLLM、Perplexity、Vercel AI Gateway、またはUnicoプロキシをObjetivoにできます。',
+            manageName: 'プロバイダーConfiguracionをGestion',
+            manageDesc: 'ActualmenteのプロバイダーConfiguracionを JSON ファイルにエクスポートするか、ファイルからConfiguracionをインポートします。',
             exportButton: 'プロバイダーをエクスポート',
-            exportTooltip: 'プロバイダー設定を保存',
+            exportTooltip: 'プロバイダーConfiguracionをGuardar',
             importButton: 'プロバイダーをインポート',
-            importTooltip: 'プロバイダー設定を読み込む（マージ）',
+            importTooltip: 'プロバイダーConfiguracionをLecturaみIncl.む（マージ）',
             activeProviderName: 'アクティブなプロバイダー',
-            activeProviderDesc: '処理に使用する LLM プロバイダーを選択します。',
-            providerDetailsHeading: '{provider} の詳細',
+            activeProviderDesc: 'Procesamientoにusoする LLM プロバイダーをSeleccionします。',
+            providerDetailsHeading: '{provider} のDetalles',
             apiKeyName: 'API キー',
             apiKeyDescRequired: '{provider} の API キーです。{extra}',
-            apiKeyDescOptional: '{provider} の API キーです。プレースホルダーまたは匿名アクセスを許可するエンドポイントでは任意です。',
-            apiKeyExtraLmStudio: "（任意、通常は 'EMPTY'）",
-            apiKeyPlaceholderDefault: 'API キーを入力',
-            apiKeyPlaceholderLmStudio: '通常は EMPTY、または空欄のまま',
+            apiKeyDescOptional: '{provider} の API キーです。プレースホルダーまたはanonimoアクセスをPermisoするエンドポイントではOpcionalです。',
+            apiKeyExtraLmStudio: "（Opcional, generalmenteは 'EMPTY'）",
+            apiKeyPlaceholderDefault: 'API キーをEntrada',
+            apiKeyPlaceholderLmStudio: 'normalesは EMPTY、またはEn blancoのまま',
             baseUrlName: 'ベース URL / エンドポイント',
             baseUrlDesc: '{provider} の API エンドポイントです。{required}',
-            baseUrlRequired: ' 必須です。',
-            baseUrlPlaceholder: 'API ベース URL を入力',
+            baseUrlRequired: ' Requeridoです。',
+            baseUrlPlaceholder: 'API ベース URL をEntrada',
             modelName: 'モデル',
-            modelDesc: '{provider} で使用するモデル名です。',
-            modelPlaceholder: 'モデル名を入力',
+            modelDesc: '{provider} でusoするモデルNombreです。',
+            modelPlaceholder: 'モデルNombreをEntrada',
             temperatureName: 'Temperature',
-            temperatureDesc: 'ランダム性を制御します（0=決定的、1=創造的）。',
+            temperatureDesc: 'ランダムSexoをControlarします（0=decisivo、1=creativo）。',
             apiVersionName: 'API バージョン',
-            apiVersionDesc: 'Azure OpenAI に必要な API バージョン（例: 2024-02-15-preview）',
-            apiVersionPlaceholder: 'API バージョンを入力',
-            testConnectionName: '{provider} 接続をテスト',
-            testConnectionDesc: 'API キー、エンドポイント、モデルへのアクセス可否を確認します。',
-            testConnectionButton: '接続をテスト',
-            testConnectionTesting: 'テスト中...',
-            testConnectionRunning: '{provider} への接続をテスト中...',
+            apiVersionDesc: 'Azure OpenAI にRequeridoな API バージョン（Ejemplos: 2024-02-15-preview）',
+            apiVersionPlaceholder: 'API バージョンをEntrada',
+            testConnectionName: '{provider} Conexionをテスト',
+            testConnectionDesc: 'API キー、エンドポイント、モデルへのアクセスPosibilidadをConfirmacionします。',
+            testConnectionButton: 'Conexionをテスト',
+            testConnectionTesting: 'テストMedio...',
+            testConnectionRunning: '{provider} へのConexionをテストMedio...',
             testConnectionBlocked: '{provider} をテストできません: {issues}',
-            testConnectionSuccess: '✅ 成功: {message}',
-            testConnectionFailed: '❌ 失敗: {message}。コンソールを確認してください。',
-            testConnectionError: '接続テスト中のエラー: {message}',
-            missingActiveProvider: 'エラー: アクティブなプロバイダーの設定が見つかりませんでした。',
-            exportDirectoryError: 'プラグインディレクトリの作成エラー: {message}',
-            exportSuccess: 'プロバイダー設定を {path} に正常にエクスポートしました',
-            exportError: '設定のエクスポートエラー: {message}',
-            importFileMissing: "インポートファイルが {path} に見つかりません。そこに 'notemd-providers.json' を配置してください。",
-            importInvalidArray: 'インポートしたファイルに有効なプロバイダー配列が含まれていません。',
-            activeProviderReset: 'インポート後に以前のプロバイダーが見つからなかったため、アクティブなプロバイダーを既定値に戻しました。',
-            importSuccess: '{newCount} 件の新規設定をインポートし、既存のプロバイダー設定 {updatedCount} 件を更新しました。',
-            importError: '設定のインポートエラー: {message}',
-            validationRequired: '設定が必要です',
-            validationWarning: '設定の警告'
+            testConnectionSuccess: '✅ Exito: {message}',
+            testConnectionFailed: '❌ Fracaso: {message}。コンソールをConfirmacionしてください。',
+            testConnectionError: 'ConexionテストMedioのエラー: {message}',
+            missingActiveProvider: 'エラー: アクティブなプロバイダーのConfiguracionがVerつかりませんでした。',
+            exportDirectoryError: 'プラグインディレクトリのCrearエラー: {message}',
+            exportSuccess: 'プロバイダーConfiguracionを {path} にnormalesにエクスポートしました',
+            exportError: 'Configuracionのエクスポートエラー: {message}',
+            importFileMissing: "インポートファイルが {path} にVerつかりません。そこに 'notemd-providers.json' をColocacionしてください。",
+            importInvalidArray: 'インポートしたファイルにValidoなプロバイダーmatrizがContieneまれていません。',
+            activeProviderReset: 'インポートDespuesにAnteriormenteのプロバイダーがVerつからなかったため、アクティブなプロバイダーをValor predeterminadoにRegresoしました。',
+            importSuccess: '{newCount} casosのNuevas configuracionesをインポートし、ExistenteのプロバイダーConfiguracion {updatedCount} casosをActualizacionしました。',
+            importError: 'Configuracionのインポートエラー: {message}',
+            validationRequired: 'ConfiguracionがRequeridoです',
+            validationWarning: 'ConfiguracionのAdvertencia'
         }
     }
 });
@@ -8402,7 +8402,7 @@ extendLocale(STRINGS_ID, {
 
 extendLocale(STRINGS_JA, {
     settings: {
-        providerConfig: { temperatureName: '温度' }
+        providerConfig: { temperatureName: 'Temperatura' }
     }
 });
 

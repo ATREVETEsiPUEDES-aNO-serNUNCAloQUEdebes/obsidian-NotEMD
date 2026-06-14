@@ -97,19 +97,19 @@ describe('markdownSectionUtils', () => {
 
     test('preserves unicode chapter titles in generated file names', () => {
         const markdown = [
-            '# 架构路线图',
+            '# Hoja de ruta de la arquitectura',
             '',
-            '## 系统设计',
-            '设计内容',
+            '## Diseno del sistema',
+            'Disenar contenido',
             '',
-            '## 发布计划',
-            '发布内容'
+            '## Plan de lanzamiento',
+            'Publicar contenido'
         ].join('\n');
 
-        const plan = planMarkdownChapterSections(markdown, 'Notes/架构路线图.md', '架构路线图');
+        const plan = planMarkdownChapterSections(markdown, 'Notes/Hoja de ruta de la arquitectura.md', 'Hoja de ruta de la arquitectura');
 
-        expect(plan.chapters[0].outputFileName).toBe('01-系统设计.md');
-        expect(plan.chapters[1].outputFileName).toBe('02-发布计划.md');
+        expect(plan.chapters[0].outputFileName).toBe('01-Diseno del sistema.md');
+        expect(plan.chapters[1].outputFileName).toBe('02-Plan de lanzamiento.md');
     });
 
     test('honors an explicit split heading level override when configured', () => {

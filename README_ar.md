@@ -5,7 +5,7 @@
 
 # إضافة Notemd لـ Obsidian
 
-[English](./README.md) | [简体中文](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [繁體中文](./README_zh_Hant.md) | [日本語](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
+[English](./README.md) | [Chino simplificado](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [chino tradicional](./README_zh_Hant.md) | [japones](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
 
 اقرأ الوثائق بلغات إضافية من: [مركز اللغات](./docs/i18n/README.md)
 
@@ -384,7 +384,7 @@
 - **Output Language**:
   - اختر لغة الخرج المرغوبة لمهام "Generate from Title" و"Batch Generate from Title".
   - **English (الافتراضي)**: تتم معالجة الـ prompt وإرجاع التوثيق النهائي باللغة الإنجليزية.
-  - **لغات أخرى**: يطلب من LLM أن يقوم بالاستدلال باللغة الإنجليزية، ثم يعيد التوثيق النهائي بلغتك المختارة، مثل Español أو Français أو 简体中文 أو 繁體中文 أو العربية أو हिन्दी وغيرها.
+  - **لغات أخرى**: يطلب من LLM أن يقوم بالاستدلال باللغة الإنجليزية، ثم يعيد التوثيق النهائي بلغتك المختارة، مثل Español أو Français أو Chino simplificado أو chino tradicional أو العربية أو हिन्दी وغيرها.
 - **Change Prompt Word**:
   - تسمح بتغيير prompt word الخاصة بمهمة محددة.
   - في **Custom Prompt Word** يمكنك إدخال الصياغة الخاصة بك.

@@ -103,7 +103,7 @@ export function showConceptNotePathWarningModal(
         };
 
         const skipOnceButton = buttonContainer.createEl('button', {
-            text: options.uiLocale?.toLowerCase().startsWith('zh') ? '本次不提示' : 'Skip once'
+            text: options.uiLocale?.toLowerCase().startsWith('zh') ? 'No hay aviso esta vez' : 'Skip once'
         });
         skipOnceButton.onclick = () => {
             modal.close();
@@ -111,7 +111,7 @@ export function showConceptNotePathWarningModal(
         };
 
         const skipForeverButton = buttonContainer.createEl('button', {
-            text: options.uiLocale?.toLowerCase().startsWith('zh') ? '不再提示' : 'Do not show again'
+            text: options.uiLocale?.toLowerCase().startsWith('zh') ? 'No vuelvas a preguntar' : 'Do not show again'
         });
         skipForeverButton.onclick = () => {
             modal.close();

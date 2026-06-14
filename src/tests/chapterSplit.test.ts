@@ -121,19 +121,19 @@ describe('chapterSplit', () => {
 
     test('keeps unicode chapter titles in output paths instead of collapsing to fallback slugs', () => {
         const markdown = [
-            '# 架构路线图',
+            '# Hoja de ruta de la arquitectura',
             '',
-            '## 系统设计',
-            '内容'
+            '## Diseno del sistema',
+            'Contenido'
         ].join('\n');
 
         const plan = buildChapterSplitPlan({
-            sourcePath: 'Docs/架构路线图.md',
-            sourceBasename: '架构路线图',
+            sourcePath: 'Docs/Hoja de ruta de la arquitectura.md',
+            sourceBasename: 'Hoja de ruta de la arquitectura',
             markdown
         });
 
-        expect(plan.chapters[0].outputPath).toBe('Docs/架构路线图_chapters/01-系统设计.md');
+        expect(plan.chapters[0].outputPath).toBe('Docs/Hoja de ruta de la arquitectura_chapters/01-Diseno del sistema.md');
     });
 
     test('preserves the source basename when the source file name already contains separators', () => {

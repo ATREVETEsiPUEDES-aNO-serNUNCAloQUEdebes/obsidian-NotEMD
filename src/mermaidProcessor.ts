@@ -95,7 +95,7 @@ export async function refineMermaidBlocks(content: string): Promise<string> {
 
 			// Apply new quote rules BEFORE removing brackets, ONLY if 'subgraph' is NOT on the line
 			if (!line.includes('subgraph')) {
-				// 先保护 |" 和 "| 的情况
+				// Proteger primero |" y "| situacion
 				const placeholder = '___PROTECTED_QUOTE___';
 				line = line.replace(/\|"/g, `|${placeholder}`);
 				line = line.replace(/"\|/g, `${placeholder}|`);
@@ -109,7 +109,7 @@ export async function refineMermaidBlocks(content: string): Promise<string> {
 				// Rule 2: Replace "; with ];
 				line = line.replace(/";/g, '"];');
 
-				// 还原被保护的引号
+				// Restaurar las comillas protegidas
 				line = line.replace(new RegExp(placeholder, 'g'), '"');
 				
 				// Rule 3: Replace ["; with "];
@@ -117,8 +117,8 @@ export async function refineMermaidBlocks(content: string): Promise<string> {
 				// New Rule 4: Replace ?["; with ?"];
 				line = line.replace(/\?\[";/g, '?"];');
 				
-				// 添加额外的清理步骤，确保没有残留的[";模式
-				// 重复应用Rule 3直到没有更多的[";模式
+				// Agregue pasos de limpieza adicionales para garantizar que no queden residuos.[";Patron
+				// Repetir la aplicacionRule 3Hasta que no haya mas[";Patron
 				while (line.includes('[";')) {
 					line = line.replace(/\[";/g, '"];');
 					
@@ -141,9 +141,9 @@ export async function refineMermaidBlocks(content: string): Promise<string> {
                 // --- User Requested "Fix Mode" Logic for [ ... ] ---
                 // Detects Node[Label] where Label isn't fully quoted but contains brackets/quotes.
                 // Targeted cases:
-                // 1. `Investment[Corporate Investment "[企业投资]"]` -> `Investment["Corporate Investment [企业投资]"]`
-                // 2. `Consumption[Consumption [消费]]` -> `Consumption["Consumption [消费]"]`
-                // 3. `WhiteDwarf[白矮星 [White Dwarf]]` -> `WhiteDwarf["白矮星 [White Dwarf]"]`
+                // 1. `Investment[Corporate Investment "[Inversion corporativa]"]` -> `Investment["Corporate Investment [Inversion corporativa]"]`
+                // 2. `Consumption[Consumption [Consumo]]` -> `Consumption["Consumption [Consumo]"]`
+                // 3. `WhiteDwarf[enana blanca [White Dwarf]]` -> `WhiteDwarf["enana blanca [White Dwarf]"]`
                 
                 // Improved regex to handle one level of nested brackets:
                 // ([^\s\[]+)  : NodeID (non-whitespace AND non-[ chars)
@@ -1093,7 +1093,7 @@ export function fixMalformedArrows(content: string): string {
 
 /**
  * Internal function to fix missing brackets in Mermaid nodes.
- * Example: `... --> SpreadCalc价差计算 Spread Calculation;` -> `... --> SpreadCalc[价差计算 Spread Calculation];`
+ * Example: `... --> SpreadCalcCalculo de diferencia de precio Spread Calculation;` -> `... --> SpreadCalc[Calculo de diferencia de precio Spread Calculation];`
  */
 export function fixMissingBrackets(content: string): string {
     const lines = content.split('\n');

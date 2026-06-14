@@ -126,15 +126,15 @@ export const EXPERIMENTAL_DIAGRAM_PIPELINE_LOCALE_EXTENSIONS: Record<string, Dee
         settings: {
             developer: {
                 experimentalDiagramPipeline: {
-                    heading: '実験的なダイアグラムパイプライン',
-                    enableName: '仕様先行の Mermaid パイプラインを有効化',
+                    heading: 'experimentalesなダイアグラムパイプライン',
+                    enableName: 'Avance de especificacionの Mermaid パイプラインをActivacion',
                     enableDesc:
-                        'オン: 従来の Mermaid プロンプトより前に、新しい DiagramSpec -> renderer パイプラインを先に試します。実験経路が失敗した場合、Notemd は自動で従来の Mermaid フローへ戻ります。',
-                    compatibilityName: '実験的互換モード',
+                        'オン: Convencionalの Mermaid プロンプトよりAnteriorに、nuevoしい DiagramSpec -> renderer パイプラインをDestinoにJuicioします。Ruta experimentalがFracasoしたCaso、Notemd はAutomaticoでConvencionalの Mermaid フローへRegresoります。',
+                    compatibilityName: 'Compatibilidad experimentalモード',
                     compatibilityDesc:
-                        '実験的な図生成とプレビューがどれだけ積極的に図ターゲットを選ぶかを指定します。「Mermaid 互換」は Mermaid 互換出力を維持します。「最適一致」はより豊かな intent を先に試し、未対応ならフォールバックします。標準の「Mermaid 図として要約」コマンドは、spec-first 経路を常に Mermaid 互換出力へ固定します。',
-                    compatibilityLegacy: 'Mermaid 互換',
-                    compatibilityBestFit: '最適一致'
+                        'experimentalesなGeneracion de diagramasとプレビューがどれだけProactivoにFig.ターゲットをSeleccionぶかをEspecificacionします。「Mermaid Compatibilidad」は Mermaid Salida compatibleをMantenimientoします。「Mejor partido」はよりYutakaかな intent をDestinoにJuicioし、No compatibleならフォールバックします。Estandarの「Mermaid Fig.としてResumen」コマンドは、spec-first RutaをSiempreに Mermaid Salida compatibleへFijoします。',
+                    compatibilityLegacy: 'Mermaid Compatibilidad',
+                    compatibilityBestFit: 'Mejor partido'
                 }
             }
         }

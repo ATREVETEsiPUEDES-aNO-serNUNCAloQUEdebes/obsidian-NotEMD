@@ -143,9 +143,9 @@ describe('welcome modal', () => {
         const nodes = flattenElements(modal.contentEl);
         const releaseNotes = getWelcomeReleaseNotes('zh-CN');
 
-        expect(modal.titleEl.text).toBe('欢迎使用 Notemd');
-        expect(nodes.some(node => node.text === '最近更新')).toBe(true);
-        expect(nodes.some(node => node.text === '查看最近两个版本的重要更新，帮助你快速了解当前功能变化。')).toBe(true);
+        expect(modal.titleEl.text).toBe('Bienvenido Notemd');
+        expect(nodes.some(node => node.text === 'Ultimas actualizaciones')).toBe(true);
+        expect(nodes.some(node => node.text === 'Consulte las actualizaciones importantes de las dos ultimas versiones para ayudarle a comprender rapidamente los cambios funcionales actuales.。')).toBe(true);
 
         for (const release of releaseNotes) {
             expect(nodes.some(node => node.text === `v${release.version}`)).toBe(true);
@@ -168,11 +168,11 @@ describe('welcome modal', () => {
         const nodes = flattenElements(modal.contentEl);
         const releaseNotes = getWelcomeReleaseNotes('auto');
 
-        expect(modal.titleEl.text).toBe('欢迎使用 Notemd');
+        expect(modal.titleEl.text).toBe('Bienvenido Notemd');
         expect(releaseNotes).toHaveLength(2);
-        expect(releaseNotes[0].highlights[0]).toContain('Sidebar 底部滚动区与 API 可观测性样式已恢复');
+        expect(releaseNotes[0].highlights[0]).toContain('Sidebar Area de desplazamiento inferior y API Estilos de observabilidad restaurados');
         expect(nodes.some(node => node.text === releaseNotes[0].highlights[0])).toBe(true);
-        expect(nodes.some(node => node.text === '最近更新')).toBe(true);
+        expect(nodes.some(node => node.text === 'Ultimas actualizaciones')).toBe(true);
     });
 
     test('keeps release notes in a dedicated scroll container and focuses the configure button', () => {

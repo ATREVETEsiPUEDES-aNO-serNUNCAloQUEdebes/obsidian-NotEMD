@@ -5,7 +5,7 @@
 
 # Complemento Notemd para Obsidian
 
-[English](./README.md) | [简体中文](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [繁體中文](./README_zh_Hant.md) | [日本語](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
+[English](./README.md) | [Chino simplificado](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [Chino tradicional](./README_zh_Hant.md) | [japones](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
 
 Lea los documentos en más idiomas: [Centro de Idiomas](./docs/i18n/README.md)
 
@@ -382,7 +382,7 @@ Accede a los ajustes del complemento a través de:
     *   **Desactivado**: Deja la salida generada de Mermaid sin tocar a menos que ejecutes la `Corrección de Mermaid por Lotes` manualmente o la añadas a un flujo de trabajo personalizado.
 -   **Idioma de Salida**: (Nuevo) Selecciona el idioma de salida deseado para las tareas de "Generar desde Título" y "Generación por lotes desde títulos".
     *   **Inglés (Predeterminado)**: Los prompts se procesan y producen en inglés.
-    *   **Otros Idiomas**: Se instruye al LLM para que realice su razonamiento en inglés pero proporcione la documentación final en el idioma seleccionado (por ejemplo, Español, Français, 简体中文, 繁體中文, العربية, हिन्दी, etc.).
+    *   **Otros Idiomas**: Se instruye al LLM para que realice su razonamiento en inglés pero proporcione la documentación final en el idioma seleccionado (por ejemplo, Español, Français, Chino simplificado, Chino tradicional, العربية, हिन्दी, etc.).
 -   **Cambiar Palabra del Prompt**: (Nuevo)
     *   **Cambiar Palabra del Prompt**: Te permite cambiar la palabra del prompt para una tarea específica.
     *   **Palabra del Prompt Personalizada**: Introduce tu palabra de prompt personalizada para la tarea.
@@ -687,7 +687,7 @@ Notemd se ejecuta localmente dentro de Obsidian, pero algunas funciones envían 
 ## Documentación del Mantenedor
 
 - [Flujo de Trabajo de Lanzamiento (Inglés)](./docs/maintainer/release-workflow.md)
-- [Flujo de Trabajo de Lanzamiento (简体中文)](./docs/maintainer/release-workflow.zh-CN.md)
+- [Flujo de Trabajo de Lanzamiento (Chino simplificado)](./docs/maintainer/release-workflow.zh-CN.md)
 
 ## Licencia
 

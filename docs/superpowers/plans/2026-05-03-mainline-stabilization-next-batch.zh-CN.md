@@ -1,167 +1,167 @@
-# Notemd 主线稳定化下一批执行计划
+# Notemd El proximo lote de planes de ejecucion para la estabilizacion de la linea principal.
 
-> **给代理执行者：** 必须使用 `superpowers:subagent-driven-development`（推荐）或 `superpowers:executing-plans`，按任务逐步执行本计划。步骤继续使用复选框 `- [ ]` 语法跟踪。
+> **Al agente albacea：** Debe usar `superpowers:subagent-driven-development`（Recomendado) o `superpowers:executing-plans`，Implementar este plan paso a paso segun las tareas. Pasos para seguir usando casillas de verificacion `- [ ]` Seguimiento gramatical。
 
-**目标：** 将当前“仓库真相审计”转化为一批可执行的稳定化工作：收口图表命令表面、建立可持续的维护者本地语义核验 runbook，并明确重型渲染运行时的真实打包边界，同时不回退 legacy Mermaid 可用性。
+**Metas：** Transforme la actual "auditoria de verdad del almacen" en un lote de trabajo de estabilizacion ejecutable: cierre la superficie de comando del grafico y establezca una verificacion semantica local sostenible del mantenedor runbook，Y aclarar los verdaderos limites del empaquetado del tiempo de ejecucion de renderizado pesado sin respaldo legacy Mermaid Disponibilidad。
 
-**架构：** 这批工作是边界加固，不是 renderer 扩张。保持 `src/main.ts` 对现有发货命令的兼容编排，把命令表面逐步收敛到一个规范图表路径，把语义核验明确放在 CI 之外记录，并在构建系统真正落实之前，继续把重型预览运行时隔离状态视为显式未完成项。
+**Arquitectura：** Este lote de trabajo es para refuerzo de fronteras, no renderer Ampliacion. mantener `src/main.ts` Organice de manera compatible los comandos de envio existentes, haga converger gradualmente la superficie de comando a una ruta de grafico estandarizada y coloque claramente la verificacion semantica en CI Documentar externamente y continuar tratando el estado de aislamiento del tiempo de ejecucion de vista previa pesada como un elemento explicito sin terminar hasta que el sistema de compilacion se implemente realmente.。
 
-**技术栈：** TypeScript、Obsidian Plugin API、Jest、npm scripts、GitHub Actions release workflow、Markdown 文档
+**Pila de tecnologia：** TypeScript、Obsidian Plugin API、Jest、npm scripts、GitHub Actions release workflow、Markdown Documentacion
 
 ---
 
-## 问题界定
+## Definicion del problema
 
-代码库现在已经具备真实的图表平台，但剩余风险主要是边界风险：
+La base del codigo ahora tiene una plataforma de graficos real, pero el riesgo restante es mayormente riesgo limite.：
 
-- 命令表面仍暴露 3 个部分重叠的图表入口
-- 维护者验证预期仍把仓库硬门和历史一次性 live proof 混在一起
-- 重型运行时打包仍更多停留在“意图表述”，而不是已发货的资产边界
-- Drawnix 虽然已经研究清楚，但还没有被真正固化为执行层面的明确非目标
+- La superficie de mando aun esta expuesta. 3 entradas de graficos parcialmente superpuestas
+- Se espera que la verificacion del mantenedor siga haciendo que las puertas duras del repositorio y el historial sean desechables. live proof Mezclalo
+- El empaquetado de tiempo de ejecucion pesado aun permanece mas en la “declaracion de intenciones” que en los limites de los activos enviados.
+- Drawnix Aunque se ha estudiado claramente, no se ha consolidado realmente como un no objetivo claro a nivel de implementacion.
 
-因此，这一批次应优先稳定已有能力，而不是继续扩展新引擎或新宿主集成。
+Por lo tanto, este lote deberia priorizar la estabilizacion de las capacidades existentes en lugar de continuar expandiendo nuevos motores o nuevas integraciones de host.。
 
-## 与 Roadmap 的交叉印证
+## con Roadmap Corroboracion cruzada
 
-结合 `docs/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.en.md` 的中长期目标回看，本计划进一步收窄了真实的下一批范围：
+combinar `docs/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.en.md` Si analizamos los objetivos a medio y largo plazo, este plan ha reducido aun mas el alcance del proximo lote real.：
 
-- 需要继续“建设”的已经不是平台本身
-- 当前真正的缺口是命令、验证、打包这三类边界成熟度
-- 所有未来扩展工作都应显式后置于这些边界完成之后
+- Lo que hay que seguir “construyendo” ya no es la plataforma en si
+- Las verdaderas brechas actualmente son los tres tipos de madurez de limites: comando, verificacion y empaquetamiento.
+- Todo trabajo de extension futuro debe ubicarse explicitamente despues de la finalizacion de estos limites.
 
-因此，这份计划不是偏离 roadmap，而是 roadmap 在当前阶段的具体执行形态。
+Por lo tanto, este plan no es una desviacion de roadmap，En lugar de eso roadmap Formulario de implementacion especifico en la etapa actual。
 
-## 需求追踪
+## Seguimiento de la demanda
 
-来源文档：
+Documentos fuente：
 
 - `docs/brainstorms/2026-05-03-mainline-stabilization-and-ci-hardening-requirements.zh-CN.md`
 - `docs/brainstorms/2026-05-03-drawnix-feasibility-and-integration-direction.zh-CN.md`
 - `docs/brainstorms/2026-05-02-progress-audit-and-next-direction.zh-CN.md`
 - `docs/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.zh-CN.md`
 
-继承约束：
+Restricciones de herencia：
 
-- 在收口命令表面时必须保留 legacy Mermaid 可用性
-- 在打包边界真正落地前，不得把重型运行时隔离描述为已完成
-- Drawnix 继续作为参考边界，而不是发货依赖或嵌入宿主
-- `ref/` 与其他本地分析产物继续保持在发货范围之外
+- Debe conservarse al cerrar la superficie de mando. legacy Mermaid Disponibilidad
+- El aislamiento intensivo del tiempo de ejecucion no debe describirse como completo hasta que se implementen los limites del empaquetado.
+- Drawnix Continuar como limite de referencia en lugar de enviar dependencias o incorporar hosts
+- `ref/` Otros productos analiticos locales quedan fuera del alcance de entrega.
 
-## 实施单元
+## Unidad de implementacion
 
-### 任务 1：命令表面收口计划
+### Tareas 1：Plano de cierre de superficie de mando
 
-**文件：**
-- 修改：`src/main.ts`
-- 修改：`src/ui/NotemdSidebarView.ts`
-- 修改：`src/workflowButtons.ts`
-- 修改：`src/ui/NotemdSettingTab.ts`
-- 测试：`src/tests/sidebarDomButtonClicks.test.ts`
-- 测试：`src/tests/sidebarButtonTriggerChains.test.ts`
-- 测试：`src/tests/workflowButtons.test.ts`
+**Documentacion：**
+- Modificacion：`src/main.ts`
+- Modificacion：`src/ui/NotemdSidebarView.ts`
+- Modificacion：`src/workflowButtons.ts`
+- Modificacion：`src/ui/NotemdSettingTab.ts`
+- Pruebas：`src/tests/sidebarDomButtonClicks.test.ts`
+- Pruebas：`src/tests/sidebarButtonTriggerChains.test.ts`
+- Pruebas：`src/tests/workflowButtons.test.ts`
 
-- [x] **步骤 1：先写失败测试，定义稳定命令模型**
-补齐覆盖 canonical command mapping、alias 行为，以及 sidebar/workflow ID 与插件 command ID 之间的预期关系。
+- [x] **Pasos 1：Primero escriba pruebas de falla y defina un modelo de comando estable**
+Cobertura de finalizacion canonical command mapping、alias Conducta, y sidebar/workflow ID Con complementos command ID La relacion esperada entre。
 
-- [x] **步骤 2：确认聚焦失败**
-执行：
+- [x] **Pasos 2：Confirmar que el enfoque fallo**
+Ejecucion：
 ```bash
 npm test -- --runInBand src/tests/sidebarDomButtonClicks.test.ts src/tests/sidebarButtonTriggerChains.test.ts src/tests/workflowButtons.test.ts
 ```
-预期：针对新的命令收口预期出现 FAIL。
+Anticipacion: Anticipacion de nuevos cierres de mandos FAIL。
 
-- [x] **步骤 3：实现最小编排调整**
-必要时保留旧 ID 作为兼容别名，但把用户可见标签和内部执行逐步统一到一个清晰的图表命令表面。
+- [x] **Pasos 3：Implementar ajustes minimos de orquestacion.**
+Conserva los viejos si es necesario ID Actuar como alias compatibles, pero unificar gradualmente las etiquetas visibles para el usuario y la ejecucion interna en una superficie de comando grafica clara.。
 
-- [x] **步骤 4：重跑聚焦测试**
-重新执行相同命令，确认新的命令表面契约通过。
+- [x] **Pasos 4：Vuelva a ejecutar la prueba de enfoque**
+Ejecute el mismo comando nuevamente y confirme que parece que se paso el nuevo comando.。
 
-- [x] **步骤 5：回查命令文档漂移**
-更新仍把 3 个命令表述为长期独立入口的用户文案或维护者说明。
+- [x] **Pasos 5：Revisar la deriva del documento de comando**
+La actualizacion aun esta 3 Los comandos se expresan como copia del usuario o instrucciones del mantenedor para entradas independientes a largo plazo.。
 
-### 任务 2：维护者本地语义核验 Runbook
+### Tareas 2：Verificacion semantica local del mantenedor Runbook
 
-**文件：**
-- 创建：`docs/maintainer/diagram-semantic-verification.md`
-- 创建：`docs/maintainer/diagram-semantic-verification.zh-CN.md`
-- 修改：`docs/maintainer/release-workflow.md`
-- 修改：`docs/maintainer/release-workflow.zh-CN.md`
-- 测试/验证：仅当措辞需要对齐时，再评估 `README.md`、`README_zh.md`
+**Documentacion：**
+- Crear：`docs/maintainer/diagram-semantic-verification.md`
+- Crear：`docs/maintainer/diagram-semantic-verification.zh-CN.md`
+- Modificacion：`docs/maintainer/release-workflow.md`
+- Modificacion：`docs/maintainer/release-workflow.zh-CN.md`
+- Pruebas/Validar: reevaluar solo si es necesario alinear la redaccion `README.md`、`README_zh.md`
 
-- [x] **步骤 1：定义受维护的语义核验范围**
-明确当改动触及 `src/diagram/`、`src/mermaidProcessor.ts` 或 renderer 行为时，本地必须抽样验证 Mermaid、JSON Canvas 与 Vega-Lite。
+- [x] **Pasos 1：Definir el alcance de la verificacion semantica que se mantendra.**
+Deje en claro cuando los cambios impliquen `src/diagram/`、`src/mermaidProcessor.ts` o renderer Al hacerlo, se debe realizar un muestreo local para verificar Mermaid、JSON Canvas con Vega-Lite。
 
-- [x] **步骤 2：保持 runbook 无秘密依赖**
-文档不得依赖已跟踪密钥、已提交 vault 路径或误提交的 live test 文件。它应描述维护者自持环境与证据采集方式，而不是自动化不安全的本地 secrets。
+- [x] **Pasos 2：mantener runbook Sin dependencias secretas**
+Los documentos no deben depender de claves rastreadas, enviadas vault Ruta o envio incorrecto live test Documentacion. Debe describir el entorno autosostenible del mantenedor y los metodos de recopilacion de evidencia, en lugar de metodos locales automatizados e inseguros. secrets。
 
-- [x] **步骤 3：定义证据标准**
-明确什么算足够证据：输出文件检查、截图、保存产物，以及这些证据应如何记录到 release handoff 或 PR 上下文中。
+- [x] **Pasos 3：Definir estandares de evidencia.**
+Aclare que es evidencia suficiente: inspeccion del archivo de salida, capturas de pantalla, productos guardados y como se debe registrar esta evidencia. release handoff o PR En contexto。
 
-- [x] **步骤 4：与发布流程交叉引用**
-让 release workflow 文档明确区分“仓库内硬门”和“维护者本地语义核验”。
+- [x] **Pasos 4：Cruzamiento con procesos de liberacion**
+deja release workflow El documento distingue claramente entre "puerta dura en el almacen" y "verificacion semantica local del mantenedor"”。
 
-- [x] **步骤 5：检入可复用 helper**
-新增一个无 secrets 的 `npm run verify:diagram-semantics` helper，用来生成 Markdown 检查模板、仓库硬门、vault 感知的 CLI 检查命令，以及 Mermaid / JSON Canvas / Vega-Lite 的证据区块；它不会启动 Obsidian，也不依赖仓库中跟踪的 vault 路径。
+- [x] **Pasos 5：Registrese para su reutilizacion helper**
+Agregue un nuevo Ninguno secrets de `npm run verify:diagram-semantics` helper，Se utiliza para generar Markdown Verificar plantillas y puertas duras de almacen.、vault Percibido CLI Verifique el comando y Mermaid / JSON Canvas / Vega-Lite Bloque de pruebas; no arranca Obsidian，No confies en el seguimiento en el almacen vault Camino。
 
-### 任务 3：运行时打包边界审计
+### Tareas 3：Auditoria de limites de empaquetado en tiempo de ejecucion
 
-**文件：**
-- 修改：`esbuild.config.mjs`
-- 修改：`scripts/audit-render-host-bundle.js`
-- 测试：`src/tests/renderHostBundleAuditScript.test.ts`
-- 测试：已有覆盖 render host 交付边界的打包测试
-- 文档：`docs/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.zh-CN.md`
+**Documentacion：**
+- Modificacion：`esbuild.config.mjs`
+- Modificacion：`scripts/audit-render-host-bundle.js`
+- Pruebas：`src/tests/renderHostBundleAuditScript.test.ts`
+- Prueba: ya cubierto render host Pruebas de paquetes en los limites de entrega
+- Documentacion：`docs/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.zh-CN.md`
 
-- [x] **步骤 1：先写失败审计覆盖，定义下一层打包事实**
-把下一步真正希望成立的打包事实写进测试，例如更明确的重型运行时资产所有权，或更严格的单 bundle 契约。
+- [x] **Pasos 1：Primero escriba la cobertura de la auditoria de fallas y defina la siguiente capa de datos del empaque.**
+Escriba en las pruebas los datos del paquete que realmente desea que se cumplan a continuacion, como una propiedad mas clara de los activos de tiempo de ejecucion pesados o una propiedad unica mas estricta. bundle Contrato。
 
-- [x] **步骤 2：确认失败**
-在修改构建逻辑前，先运行聚焦的打包审计测试并确认失败。
+- [x] **Pasos 2：La confirmacion fallo**
+Antes de modificar la logica de compilacion, ejecute la prueba de auditoria de empaquetado enfocada y confirme la falla.。
 
-- [x] **步骤 3：实现最小打包澄清或隔离步骤**
-要么进一步加固当前单 bundle 契约，要么落地第一个真实多入口边界。不要让文档声称的隔离程度超过构建实际证明的程度。
+- [x] **Pasos 3：Implementar pasos minimos de clarificacion o aislamiento del empaque.**
+O fortalecer aun mas el orden actual bundle Contrato, o el primer limite real de multiples entradas. No permita que la documentacion reclame mas aislamiento del que puede crear para demostrarlo.。
 
-- [x] **步骤 4：重跑审计与构建检查**
-至少执行：
+- [x] **Pasos 4：Vuelva a ejecutar la auditoria y la verificacion de compilacion.**
+Al menos actuar：
 ```bash
 npm run build
 npm test -- --runInBand src/tests/renderHostBundleAuditScript.test.ts
 npm run audit:render-host
 ```
 
-- [x] **步骤 5：同步更新路线图表述**
-当前打包仍然是单入口，这一点现在已经在路线图和配套文档中明确写清：当前真正落地并被强制约束的边界，是由 `main.js` 自包含携带的 `srcdoc` host，而不是已发布的独立 render-host 资产包。
+- [x] **Pasos 5：Actualizar sincronicamente la descripcion de la hoja de ruta.**
+El embalaje actual sigue siendo de una sola entrada. Esto ya ha quedado claramente establecido en la hoja de ruta y en los documentos de respaldo: el limite que actualmente se implementa y se restringe por la fuerza esta determinado por `main.js` Autonomo y portatil `srcdoc` host，En lugar de la publicacion independiente render-host Paquete de activos。
 
-### 任务 4：把 Drawnix 边界固化为稳定非目标
+### Tareas 4：poner Drawnix Los limites se solidifican en no objetivos estables
 
-**文件：**
-- 修改：`docs/brainstorms/2026-05-03-drawnix-feasibility-and-integration-direction.md`
-- 修改：`docs/brainstorms/2026-05-03-drawnix-feasibility-and-integration-direction.zh-CN.md`
-- 修改：`docs/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.en.md`
-- 修改：`docs/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.zh-CN.md`
+**Documentacion：**
+- Modificacion：`docs/brainstorms/2026-05-03-drawnix-feasibility-and-integration-direction.md`
+- Modificacion：`docs/brainstorms/2026-05-03-drawnix-feasibility-and-integration-direction.zh-CN.md`
+- Modificacion：`docs/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.en.md`
+- Modificacion：`docs/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.zh-CN.md`
 
-- [x] **步骤 1：保留代码支撑的结论**
-保留已经核实的证据：Drawnix 导出模型、浏览器文件系统边界、浏览器持久化、app shell UI 复杂度，以及惰性加载的转换模块。
+- [x] **Pasos 1：Mantenga las conclusiones respaldadas por codigo**
+Conservar pruebas verificadas：Drawnix Modelo de exportacion, limite del sistema de archivos del navegador, persistencia del navegador、app shell UI Complejidad y modulos de conversion con carga diferida。
 
-- [x] **步骤 2：把研究结论转化为范围控制**
-明确文档层面的结论：Drawnix 不是下一批次工作，近期唯一合理的方向也只能是在命令/运行时稳定化之后，再做 adapter / data-boundary 级实验。
+- [x] **Pasos 2：Convertir las conclusiones de la investigacion en control de alcance.**
+Aclarar las conclusiones a nivel de documento：Drawnix En lugar del siguiente lote de trabajo, la unica direccion razonable en el futuro cercano es ordenar/Una vez estabilizado el tiempo de ejecucion, haga adapter / data-boundary Experimento de nivel。
 
-- [x] **步骤 3：避免宿主级范围蔓延**
-删除或重写任何暗示“下一版可能整体嵌入宿主”的表述。
+- [x] **Pasos 3：Evite el desplazamiento del alcance a nivel de host**
+Eliminar o reescribir cualquier declaracion que implique que "la proxima version puede estar completamente integrada en el host".。
 
-## 固定执行顺序
+## Orden de ejecucion fija
 
-除非后续代码现实直接推翻该序列，否则这份计划应按以下顺序执行：
+A menos que la realidad del codigo posterior anule directamente esta secuencia, este plan debe ejecutarse en el siguiente orden：
 
-1. 任务 1：命令表面收口
-2. 任务 2：维护者本地语义核验 runbook
-3. 任务 3：运行时打包边界审计
-4. 完成任务 1-3 后，才恢复 legacy prompt 或 MermaidProcessor 的收缩工作
-5. 再之后，才重新打开 board-style export 或高级引擎探索
+1. Tareas 1：Ordena a la superficie que se cierre
+2. Tareas 2：Verificacion semantica local del mantenedor runbook
+3. Tareas 3：Auditoria de limites de empaquetado en tiempo de ejecucion
+4. Realizar tareas 1-3 Solo despues legacy prompt o MermaidProcessor Trabajos de contraccion
+5. Luego vuelve a abrirlo board-style export O exploracion avanzada del motor.
 
-## 测试策略
+## Estrategia de prueba
 
-本批次仓库内硬门：
+Puertas duras en este lote de almacenes.：
 
 - `npm run build`
 - `npm test -- --runInBand`
@@ -169,49 +169,49 @@ npm run audit:render-host
 - `npm run audit:render-host`
 - `git diff --check`
 
-聚焦回归表面：
+Centrarse en las superficies de retorno：
 
 - `src/tests/sidebarDomButtonClicks.test.ts`
 - `src/tests/sidebarButtonTriggerChains.test.ts`
 - `src/tests/workflowButtons.test.ts`
 - `src/tests/renderHostBundleAuditScript.test.ts`
 
-维护者本地语义核验仍是单独记录层，不替代 CI。
+La verificacion semantica local del mantenedor sigue siendo una capa de registro separada y no sera reemplazada. CI。
 
-## 风险与控制
+## Riesgos y controles
 
-- **风险：** 命令收口误伤用户肌肉记忆或 workflow button 绑定。
-  **控制：** 在必要处保留 alias 行为，并显式测试 sidebar/workflow 路由。
+- **Riesgos：** Ordenar cerrar la boca dana accidentalmente la memoria muscular del usuario o workflow button Encuadernacion。
+  **Controlar：** Reserva cuando sea necesario alias Comportamiento y pruebas explicitas sidebar/workflow Enrutamiento。
 
-- **风险：** 文档再次跑在实现前面。
-  **控制：** 代码或审计变更必须与计划、brainstorm、维护者文档同批更新。
+- **Riesgos：** La documentacion vuelve a preceder a la implementacion.。
+  **Controlar：** Los cambios de codigo o auditoria deben ser consistentes con el plan.、brainstorm、Los documentos del mantenedor se actualizan en el mismo lote.。
 
-- **风险：** 重型运行时打包边界被写得过于乐观。
-  **控制：** 只记录构建产物和审计脚本真正能证明的边界。
+- **Riesgos：** Los limites de empaquetado pesados en tiempo de ejecucion se escribieron de manera demasiado optimista.。
+  **Controlar：** Solo documente los limites que sus artefactos de compilacion y scripts de auditoria realmente puedan probar。
 
-- **风险：** Drawnix 范围蔓延，分散稳定化注意力。
-  **控制：** 在任务 1-3 完成前，坚持把 Drawnix 仅视为参考边界。
+- **Riesgos：** Drawnix El desplazamiento del alcance distrae la atencion de la estabilizacion。
+  **Controlar：** En la tarea 1-3 Hasta que termines, sigue trabajando Drawnix Considerado unicamente como limite de referencia.。
 
-## 退出标准
+## Criterios de salida
 
-- 命令表面方向已写入测试，并反映到实际命令 wiring 中
-- 维护者本地语义核验 runbook 已有英文和简体中文版本
-- 运行时打包表述已与构建真实边界对齐
-- Drawnix 被文档化为受约束的未来 adapter/export 参考，而不是近期宿主集成目标
-- 最终分支通过完整仓库验证门
+- La direccion de la superficie de comando se ha escrito para probar y se refleja en el comando real. wiring Medio
+- Verificacion semantica local del mantenedor runbook Disponible en ingles y chino simplificado.
+- Las representaciones de empaquetado en tiempo de ejecucion estan alineadas con los limites verdaderos de construccion.
+- Drawnix Documentado como un futuro limitado adapter/export Referencias, no objetivos de integracion de host a corto plazo
+- La sucursal final pasa la puerta de verificacion completa del almacen.
 
-## 推进进度更新
+## Actualizaciones anticipadas del progreso
 
-这份执行计划现在已经不再只是前瞻性清单。计划中的这一批工作已按当前范围实质性落到 `main`：
+Este plan de ejecucion es ahora mas que una lista de verificacion prospectiva. Este lote de trabajo planificado se ha completado sustancialmente de acuerdo con el alcance actual. `main`：
 
-- 任务 1 已按“保兼容收口”的目标落地：canonical `generate-diagram` / `preview-diagram` workflow/sidebar ID 已经生效，用户可见文案已收口，而旧的 `*-experimental-diagram` token 只作为兼容别名保留。
-- 任务 2 已不再停留在纯 prose：仓库现在已提供 `npm run verify:diagram-semantics`，维护者 runbook 与 release workflow 文档也已对齐到同一条无 secrets 的核验路径。
-- 任务 3 已以“真值收紧切片”形式落地，而不是真正多入口隔离：helper 模板与维护者文档现在都明确记录，`audit:render-host` 证明的是当前单入口 `main.js` + 内联 `srcdoc` 契约，而不是真正完成了 heavy-runtime isolation。
-- 任务 4 已以范围控制方式落地：路线图和进度文档现已把 Drawnix 固定为受约束的未来 adapter/export 参考，而不是活跃的整体宿主集成目标。
-- 支撑这一批的 release 侧 CI hardening 也已不再只是计划：`repo-saga` 编年史刷新现在已有检入的 package-manager runtime helper 与回归测试，因此在 GitHub Actions 里即使 `pnpm` 只能通过 `corepack` 一类 fallback 访问，也能继续重建上游 workspace。
-- 后续防漂移硬化也已落地：semantic helper 的 packaging 清单会从 `esbuild.config.mjs` 自动提取入口/输出事实，对应测试已锁定该对齐关系；同时 package-manager fallback 现在会按执行失败逐候选重试（`pnpm`、`corepack pnpm`、`bun x pnpm`），以保持 CI 编年史刷新链路稳健。
-- 语义 helper 的额外加固也已落地：打包输出目标状态已显式建模（`outfile` / `outdir` / `unknown` / `ambiguous`），解析覆盖已支持反引号字面量，且解析范围已优先收敛到 `esbuild.context({...})` 选项块，避免文件内同名 decoy 字段造成静默误判。
-- Stage B 契约定义推进也已具备可执行形态：semantic helper 模板新增 `Packaging Contract` 区块，从 `scripts/release/publish-github-release.js` 同步 release 必需资产，并在维护者核验中显式保留双语 release notes 文件契约，同时记录数字 tag 与 create/upload 模式契约真值，并校验 `.github/workflows/release.yml` 的 tag-only 触发防护约束。
-- Stage B 契约提升边界也已具备可执行形态：helper 模板新增 `Contract Promotion Boundary` 区块，从 `src/operations/registry.ts` 提取 workflow/settings/export 邻近操作的约束真值。
+- Tareas 1 Se ha implementado el objetivo de “mantener la compatibilidad y cerrar fronteras”：canonical `generate-diagram` / `preview-diagram` workflow/sidebar ID ha entrado en vigor, los usuarios pueden ver que la copia se ha cerrado y la antigua `*-experimental-diagram` token Reservado solo como alias compatible。
+- Tareas 2 Ya no te quedas en lo puro prose：Almacen ya disponible `npm run verify:diagram-semantics`，mantenedor runbook con release workflow El documento tambien se ha alineado con el mismo secrets Ruta de verificacion。
+- Tareas 3 Se ha implementado en forma de "corte de ajuste de la verdad" en lugar de un verdadero aislamiento de entradas multiples.：helper Las plantillas y los documentos de mantenimiento ahora estan claramente documentados.，`audit:render-host` Lo que si esta demostrado es la actual entrada unica `main.js` + En linea `srcdoc` Contrato, no finalizacion real heavy-runtime isolation。
+- Tareas 4 Implementado con control de alcance: la hoja de ruta y los documentos de progreso ahora incluyen Drawnix Fijado como un futuro limitado adapter/export Referencia en lugar de objetivo activo de integracion de alojamiento general。
+- Apoya este lote release Lado CI hardening Ya no es solo un plan：`repo-saga` La actualizacion de Chronicle ahora se ha registrado package-manager runtime helper Con las pruebas de regresion, por lo tanto, en GitHub Actions Aunque estes aqui `pnpm` Solo puedo pasar `corepack` Categoria 1 fallback Acceder y continuar reconstruyendo el upstream workspace。
+- Tambien se ha implementado un endurecimiento antideriva posterior.：semantic helper de packaging La lista comenzara desde `esbuild.config.mjs` Extraccion automatica de entradas./Muestra el hecho de que la prueba correspondiente ha bloqueado la relacion de alineacion; al mismo tiempo package-manager fallback Ahora volvera a intentarlo uno por uno segun el error de ejecucion.（`pnpm`、`corepack pnpm`、`bun x pnpm`），Para mantener CI El enlace de actualizacion de Chronicle es estable.。
+- Semantica helper Tambien se han implementado mejoras adicionales: el estado objetivo de salida empaquetado se ha modelado explicitamente（`outfile` / `outdir` / `unknown` / `ambiguous`），La cobertura de analisis ha admitido literales de comillas invertidas y se ha priorizado el rango de analisis para converger a `esbuild.context({...})` Bloque de opciones para evitar archivos con el mismo nombre decoy Los campos provocan errores de juicio silenciosos。
+- Stage B El avance de la definicion del contrato tambien se ha vuelto ejecutable：semantic helper Nueva plantilla agregada `Packaging Contract` Bloquear, desde `scripts/release/publish-github-release.js` Sincronizacion release Activos requeridos y preservar explicitamente el bilinguismo en la verificacion del mantenedor. release notes Documentar el contrato y registrar los numeros. tag con create/upload Valor de verdad y verificacion del contrato de patron. `.github/workflows/release.yml` de tag-only Restricciones del gatillo。
+- Stage B Los limites ampliados del contrato tambien tienen una forma ejecutable：helper Nueva plantilla agregada `Contract Promotion Boundary` Bloquear, desde `src/operations/registry.ts` Extraccion workflow/settings/export Valores de verdad restringidos de las operaciones de proximidad.。
 
-因此，这份计划之后真正剩下的工作已经不再是“补第一版 runbook”或“补第一版 packaging 澄清”。这些基础片段现在已经检入。剩余工作是保持这套已检入真值不漂移，并进一步判断下一个真实实现批次应优先落在 heavy-runtime packaging isolation，还是后续更窄的 contract-promotion 切片。
+Por lo tanto, el verdadero trabajo que queda despues de este plan ya no es "complementar la primera version". runbook”O “complementar la primera edicion” packaging Aclaracion". Estos fragmentos basicos ya se han registrado. El trabajo restante es evitar que este conjunto de valores de verdad registrados se desvie y determinar aun mas donde se debe priorizar el siguiente lote de implementaciones reales. heavy-runtime packaging isolation，¿Sera mas estrecho en el futuro? contract-promotion rebanada。

@@ -4,121 +4,121 @@ last_updated: 2026-05-10
 topic: multi-entry-candidate-contract-and-stage-c-gate
 ---
 
-# Stage-B2 多入口候选契约与 Stage-C 启动 Gate
+# Stage-B2 Contratos candidatos de entradas multiples y Stage-C puesta en marcha Gate
 
-## 1. 目的与范围
+## 1. Proposito y Alcance
 
-本文档将 packaging/semantic convergence 轨道中的 Stage-B2 契约单独落盘为可引用工件。  
-它不会立即改动运行时打包，只定义在进入 Stage-C 运行时实现前必须成立的证据边界。
+Este documento packaging/semantic convergence En orbita Stage-B2 El contrato se coloca por separado como un artefacto referenciable.。  
+No cambia inmediatamente el empaquetado del tiempo de ejecucion, solo se define al ingresar Stage-C Limites de la evidencia que deben establecerse antes de la implementacion del tiempo de ejecucion。
 
-关联需求来源：
+Fuentes de demanda asociadas：
 
-1. `.trellis/tasks/05-08-packaging-semantic-verification-convergence/prd.md`（R1-R6 与 acceptance criteria）
+1. `.trellis/tasks/05-08-packaging-semantic-verification-convergence/prd.md`（R1-R6 con acceptance criteria）
 2. `docs/superpowers/plans/2026-05-03-mainline-stabilization-next-batch.zh-CN.md`
 3. `docs/brainstorms/2026-05-08-packaging-semantic-convergence-progress-and-next-steps.zh-CN.md`
 
-## 2. 当前代码真值快照（主线证据）
+## 2. Instantanea del valor de verdad del codigo actual (evidencia principal）
 
-### 2.1 构建边界真值（`esbuild.config.mjs`）
+### 2.1 Construyendo valores de verdad limite（`esbuild.config.mjs`）
 
 - `entryPoints: ["src/main.ts"]`
 - `outfile: "main.js"`
-- 未声明 `outdir`
+- No declarado `outdir`
 
-结论：当前构建真值仍然是单入口、单输出插件 bundle 模型。
+Conclusion: La verdad de la compilacion actual sigue siendo un complemento de una sola entrada y una sola salida. bundle modelo。
 
-### 2.2 运行时宿主打包真值（`scripts/audit-render-host-bundle.js`）
+### 2.2 Valor de verdad del empaquetado del host en tiempo de ejecucion（`scripts/audit-render-host-bundle.js`）
 
-- 审计要求 render-host 标记字符串存在于 `main.js` 内
-- 审计显式拒绝以下独立宿主产物：
+- Requisitos de auditoria render-host La cadena de marcas existe en `main.js` Adentro
+- La auditoria rechaza explicitamente los siguientes productos anfitriones independientes：
   - `render-host.html`
   - `render-host.js`
   - `rendering-webview/index.html`
-- 审计也拒绝暗示外部宿主资产的引用
+- La auditoria tambien rechaza referencias que impliquen activos externos del anfitrion.
 
-结论：当前被强制约束的边界仍然只证明“内联 `srcdoc` 宿主自包含”，并不等于独立宿主资产隔离已完成。
+Conclusion: Los limites actualmente aplicados todavia solo resultan “en linea `srcdoc` "Host autonomo" no significa que se haya completado el aislamiento de los activos del host independiente.。
 
-### 2.3 Release 资产契约真值（`scripts/release/publish-github-release.js`）
+### 2.3 Release Valor real del contrato de activos（`scripts/release/publish-github-release.js`）
 
 - `REQUIRED_RELEASE_ASSETS = ['main.js', 'manifest.json', 'styles.css', 'README.md']`
-- release tag 必须匹配数字格式 `x.x.x`
+- release tag Debe coincidir con el formato del numero. `x.x.x`
 
-结论：当前 release 契约仍然假定 `main.js` 是主要运行时交付产物。
+Conclusion: Actual release El contrato aun asume `main.js` Es el principal producto de entrega en tiempo de ejecucion.。
 
-### 2.4 语义契约真值（`scripts/diagram-semantic-verification.js`）
+### 2.4 Valor de verdad del contrato semantico（`scripts/diagram-semantic-verification.js`）
 
-- helper 模板当前包含：
+- helper La plantilla contiene actualmente：
   - `Packaging Boundary`
   - `Packaging Contract`
   - `Contract Promotion Boundary`
   - `Implementation Readiness Contract`
-- helper 现已编码：
-  - 输出目标真值（`outfile` vs `outdir`）
-  - release 资产契约真值
-  - Stage-B2 runtime-isolation 前置条件映射
+- helper Ahora codificado：
+  - Genere el valor verdadero objetivo（`outfile` vs `outdir`）
+  - release Valor real del contrato de activos
+  - Stage-B2 runtime-isolation Mapeo de condiciones previas
 
-结论：语义层契约表达已经成熟到足以作为 Stage-C 启动 gate，但运行时隔离依旧是显式“未宣称完成”的状态。
+Conclusion: La expresion del contrato de capa semantica ha madurado lo suficiente como para servir como Stage-C puesta en marcha gate，Pero el aislamiento en tiempo de ejecucion todavia se encuentra en un estado explicito de "no declarado completo"。
 
-## 3. 深度对比：先前要求 vs 当前架构推进进度
+## 3. Comparacion profunda: requisitos previos vs Progreso de la arquitectura actual.
 
-| 需求轨道 | 先前预期 | 当前证据 | 推进状态 | Stage-C 前仍需补齐 |
+| Seguimiento de la demanda | Expectativas anteriores | Evidencia actual | Estado de avance | Stage-C Todavia necesito recuperarme antes |
 |---|---|---|---|---|
-| PRD R1 | 不夸大 heavy-runtime isolation | build/audit/release 仍都锚定 `main.js` + 内联 host 真值 | 已闭环且稳定 | 无 |
-| PRD R2 | 不重开 operation 语义表面 | 收敛切片仍限定在 helper/测试/文档 | 已闭环且稳定 | 当前轨道无 |
-| PRD R3/R5 | 耐久契约检查 + 防漂移覆盖 | helper + 脚本测试 + 文档已对齐且持续扩展 | 已闭环且稳定 | parser/contract 变更继续先补失败样例 |
-| PRD R4 | 文档声明必须跟随代码真值 | maintainer + progress/superpowers EN/ZH 已同步 | 已闭环且稳定 | 继续保持同批同步 |
-| superpowers 任务 3 初衷 | 诚实澄清运行时打包边界 | 边界文案已由 audit/helper 显式表达并受约束 | 在“真值澄清层”已完成 | 真实 multi-entry runtime split 尚未开始 |
-| Stage-B2 readiness 初衷 | 在 runtime 改动前固化 implementation-readiness 契约 | helper 已有 readiness 区块与前置条件映射 | 部分完成 | 还需独立落盘 multi-entry 候选与迁移 gate |
+| PRD R1 | No exageres heavy-runtime isolation | build/audit/release Todavia anclado `main.js` + En linea host Valor de verdad | Bucle cerrado y estable. | Ninguno |
+| PRD R2 | No reabrir operation Superficie semantica | El corte convergente todavia esta limitado a helper/Pruebas/Documentacion | Bucle cerrado y estable. | No hay ninguna pista actual |
+| PRD R3/R5 | Inspeccion del contrato de durabilidad + Cobertura antideriva | helper + Prueba de guion + Los documentos estan alineados y en continua expansion. | Bucle cerrado y estable. | parser/contract Continue con el cambio y arregle primero el ejemplo fallido. |
+| PRD R4 | Las declaraciones de documentacion deben seguir los valores de verdad del codigo. | maintainer + progress/superpowers EN/ZH sincronizado | Bucle cerrado y estable. | Continuar sincronizando el mismo lote |
+| superpowers Tareas 3 Intencion original | Sea honesto acerca de los limites del empaquetado en tiempo de ejecucion | La copia del borde ha sido escrita por audit/helper Expresar y ser restringido | Completado en “Capa de aclaracion de la verdad” | verdadero multi-entry runtime split Aun no he empezado |
+| Stage-B2 readiness Intencion original | en runtime Curado antes de la modificacion. implementation-readiness Contrato | helper Ya tengo readiness Mapeo de bloques y condiciones previas | Parcialmente completado | Todavia necesito realizar pedidos de forma independiente. multi-entry Candidatos y migracion gate |
 
-## 4. Stage-B2 候选契约（进入运行时改造前必须显式化的内容）
+## 4. Stage-B2 Contrato candidato (contenido que debe hacerse explicito antes de ingresar a la transformacion en tiempo de ejecucion).）
 
-### 4.1 候选打包方向（实现前语义）
+### 4.1 Direcciones de empaquetado candidatas (semantica previa a la implementacion)）
 
-供 Stage-C 评估的候选方向：
+Proporcionar Stage-C Indicaciones para la evaluacion del candidato：
 
-1. 从单一 `outfile` 迁移到受控的 `outdir` 产物所有权
-2. 只有在 release/audit 契约同批升级时，才允许拆分 dedicated host/runtime 资产
-3. 迁移过程中必须继续显式记录 `main.js` 的兼容与归属预期
+1. De un solo `outfile` Migrar a controlado `outdir` Propiedad del producto
+2. Solo si release/audit La division solo se permite cuando los contratos se actualizan en el mismo lote dedicated host/runtime Activos
+3. La documentacion explicita debe continuar durante la migracion. `main.js` Compatibilidad y expectativas de pertenencia
 
-这仍然只是候选契约表述，不是已落地实现声明。
+Esto sigue siendo solo una expresion de contrato candidato, no una declaracion implementada.。
 
-### 4.2 `outfile -> outdir` 迁移所需的契约更新
+### 4.2 `outfile -> outdir` Actualizaciones de contrato necesarias para la migracion
 
-如果要启动 Stage-C，同一批次必须同时包含：
+Si quieres empezar Stage-C，Un mismo lote debe contener ambos：
 
-1. 构建真值更新（`esbuild.config.mjs`），显式声明输出产物所有权
-2. 审计真值更新（`scripts/audit-render-host-bundle.js`），重定义允许/禁止的资产集合
-3. release 契约更新（`REQUIRED_RELEASE_ASSETS` 及其相关测试/文档）
-4. semantic helper 文案与测试更新，防止继续保留过时的单入口声明
+1. Construyendo actualizaciones de la verdad.（`esbuild.config.mjs`），Declarar explicitamente la propiedad de los productos de salida.
+2. Auditoria de actualizacion del valor de verdad（`scripts/audit-render-host-bundle.js`），Redefinicion permitida/Cobros de activos prohibidos
+3. release Actualizacion del contrato（`REQUIRED_RELEASE_ASSETS` Y pruebas relacionadas/Documentacion）
+4. semantic helper Redaccion y actualizaciones de prueba para evitar que se conserven declaraciones de entrada unica obsoletas
 
-### 4.3 被 runtime-isolation 前置条件阻塞的提升声明
+### 4.3 Ser runtime-isolation Declaracion de elevacion para el bloqueo de condiciones previas
 
-在运行时边界真正实现并验证前，所有依赖宿主隔离假设的 workflow/settings/export 邻近操作叙述，都应继续保持“禁止提升为已完成声明”状态。
+Antes de implementar y verificar el limite del tiempo de ejecucion, todo lo que depende del supuesto de aislamiento del host workflow/settings/export Las declaraciones de operaciones vecinas deben continuar en el estado de "promocion prohibida a declaracion completa"。
 
-## 5. Stage-C 启动 Gate（必须全部满足）
+## 5. Stage-C puesta en marcha Gate（Todo debe cumplirse）
 
-只有当以下条件全部成立时，Stage-C 运行时边界实现才可以启动：
+Solo cuando se cumplan todas las siguientes condiciones，Stage-C Se requiere la implementacion del limite de tiempo de ejecucion para comenzar：
 
-1. **契约 Gate：** Stage-B2 候选契约已落盘到文档，并在 helper 文案中有对应语义锚点。
-2. **测试 Gate：** 针对计划中的契约迁移已具备 fail-first 回归样例。
-3. **审计 Gate：** 新资产拓扑下的 `audit:render-host` 真值模型已先定义，再允许构建改动落地。
-4. **Release Gate：** 迁移后 release 资产归属与 release notes 契约仍保持显式。
-5. **文档 Gate：** maintainer + progress + superpowers EN/ZH 文档必须与代码真值同批更新。
-6. **仓库 Gate：** 完整验证链通过（`build`、全量测试、audits、`git diff --check`、`obsidian help`、`obsidian-cli help`）。
+1. **Contrato Gate：** Stage-B2 El contrato candidato ha sido colocado en el documento y esta en helper Hay anclajes semanticos correspondientes en la copia.。
+2. **Pruebas Gate：** Ya disponible para la migracion de contrato planificada fail-first Ejemplo de regresion。
+3. **Auditoria Gate：** Bajo la nueva topologia de activos `audit:render-host` Primero se definio el modelo de verdad y luego se permitio que se implementaran cambios de construccion.。
+4. **Release Gate：** Despues de la migracion release Propiedad de activos y release notes El contrato sigue siendo explicito.。
+5. **Documentacion Gate：** maintainer + progress + superpowers EN/ZH La documentacion debe actualizarse en el mismo lote que el valor de verdad del codigo.。
+6. **Almacen Gate：** Se paso la cadena de verificacion completa.（`build`、Prueba completa、audits、`git diff --check`、`obsidian help`、`obsidian-cli help`）。
 
-## 6. 本文档落盘后的具体下一步
+## 6. Proximos pasos especificos despues de la publicacion de este documento
 
-1. 在 semantic helper 脚本测试中补充围绕 `outfile -> outdir` 候选迁移语义的 fail-first 样例。
-2. 在真正改构建前，先起草“独立 host 资产”审计契约差异。
-3. 起草 release-helper 资产迁移测试，确保迁移过程中 `main.js` 归属语义不丢失。
-4. 继续保持每个切片原子化、CI-safe，并执行完整门禁链。
+1. en semantic helper Entorno complementario en las pruebas de guiones `outfile -> outdir` Semantica de la migracion de candidatos fail-first muestra。
+2. Redactar una “independencia host Diferencias en el contrato de auditoria de activos。
+3. Redaccion release-helper Pruebas de migracion de activos para garantizar que el proceso de migracion `main.js` La semantica de atribucion no se pierde。
+4. Continue manteniendo cada porcion atomica、CI-safe，E implementar la cadena de acceso completa.。
 
-## 7. 非声明项（防越界）
+## 7. Articulos no declarados (para evitar）
 
-本文档**不**宣称：
+Este documento**No**Reclamacion：
 
-- runtime isolation 已经实现
-- multi-entry 构建产物已经发货
-- 独立 render-host 资产已经被 release 批准
+- runtime isolation Ya implementado
+- multi-entry El producto de construccion ha sido enviado.
+- Independencia render-host El activo ha sido release Aprobacion
 
-当前真值仍然是：单入口 `src/main.ts -> main.js`，并由现有 audit 与 release 契约强制约束“内联 host 自包含”。
+El valor de verdad actual sigue siendo: entrada unica `src/main.ts -> main.js`，Y por existir audit con release Restricciones impuestas por contrato “en linea host Autonomo”。

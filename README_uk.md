@@ -5,7 +5,7 @@
 
 # Плагін Notemd для Obsidian
 
-[English](./README.md) | [简体中文](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [繁體中文](./README_zh_Hant.md) | [日本語](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
+[English](./README.md) | [Chino simplificado](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [Chino tradicional](./README_zh_Hant.md) | [japones](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
 
 Читайте документацію іншими мовами: [Мовний центр](./docs/i18n/README.md)
 
@@ -377,7 +377,7 @@ Notemd покращує ваш робочий процес в Obsidian, інте
   - **Disabled**: залишає згенерований Mermaid-вивід без змін, якщо ви вручну не запустите `Batch Mermaid Fix` або не додасте його до власного workflow.
 - **Output Language**: нове. Виберіть бажану мову виходу для завдань "Generate from Title" і "Batch Generate from Title".
   - **English (Default)**: prompt обробляються і результат створюється англійською.
-  - **Other Languages**: LLM отримує вказівку міркувати англійською, але надати фінальну документацію вашою вибраною мовою, наприклад Español, Français, 简体中文, 繁體中文, العربية, हिन्दी тощо.
+  - **Other Languages**: LLM отримує вказівку міркувати англійською, але надати фінальну документацію вашою вибраною мовою, наприклад Español, Français, Chino simplificado, Chino tradicional, العربية, हिन्दी тощо.
 - **Change Prompt Word**: нове.
   - **Change Prompt Word**: дозволяє змінити prompt word для конкретного завдання.
   - **Custom Prompt Word**: введіть власний prompt word для завдання.

@@ -1,104 +1,104 @@
-# 中国区 Provider 扩展第二轮执行计划
+# Distrito Chino Provider Ampliar la segunda ronda del plan de ejecucion.
 
-> **给代理执行者：** 必须使用 `superpowers:subagent-driven-development`（推荐）或 `superpowers:executing-plans`，按任务逐步执行本计划。步骤继续使用复选框 `- [ ]` 语法跟踪。
+> **给代理Ejecucion者：** Debe usar `superpowers:subagent-driven-development`（Recomendado) o `superpowers:executing-plans`，Implementar este plan paso a paso segun las tareas. Pasos para seguir usando casillas de verificacion `- [ ]` Seguimiento gramatical。
 
-**目标：** 将 `Qwen Code`、`Z AI` 与 `Huawei Cloud MaaS` 作为 Notemd 的完整 provider 预设交付，包括运行时覆盖、连接测试覆盖、文档更新与补丁版本发布。
+**Metas：** voluntad `Qwen Code`、`Z AI` con `Huawei Cloud MaaS` como Notemd completo provider Entrega preestablecida, incluida la cobertura del tiempo de ejecucion, la cobertura de la prueba de conexion, las actualizaciones de documentos y el lanzamiento de la version del parche.。
 
-**架构：** 三个 provider 全部继续复用现有 `openai-compatible` transport，使实现保持 metadata-driven。先扩展 provider registry，再用定向 routing 与 connection-test 覆盖锁定行为，最后更新文档并带着必需资产发布双语版本。
+**Arquitectura：** Tres provider Continuar reutilizando los existentes. `openai-compatible` transport，Mantener la implementacion metadata-driven。Expandir primero provider registry，Orientacion sobre reutilizacion routing con connection-test Anule el comportamiento de bloqueo, finalmente actualice la documentacion y publique la version bilingue con los recursos necesarios.。
 
-**技术栈：** TypeScript、Jest、Obsidian Plugin API、现有 Notemd provider registry/runtime、GitHub Releases
-
----
-
-## 进度对齐更新（2026-05-08）
-
-这份第二轮计划已交付完成，现在应作为历史发布记录来阅读。
-
-已交付结果：
-
-- `Qwen Code`、`Z AI`、`Huawei Cloud MaaS` 已作为一等预设进入 `src/llmProviders.ts`。
-- 这批 Provider 的路由与连接测试行为已由 `src/tests/llmProviders.test.ts` 和 `src/tests/llmUtilsProviderSupport.test.ts` 覆盖。
-- 对应文档与变更记录更新已落地（`README.md`、`README_zh.md`、`change.md`）。
-
-超出本计划的后续进展也已落地：
-
-- 同方向的更多中国区预设已发布（`Baidu Qianfan`、`SiliconFlow`、`Xiaomi MiMo`）。
-- 共享 transport 行为继续保持 metadata-driven，必要场景下通过 chat-first probing 走 OpenAI-compatible 统一运行时路径。
-
-真实剩余缺口：
-
-1. 随上游 provider 目录演进，持续保持预设默认值、测试覆盖与文档说明同步。
-2. 将更广泛的 packaging/semantic-verification convergence 与 provider 列表增长分离推进。
+**Pila de tecnologia：** TypeScript、Jest、Obsidian Plugin API、Existente Notemd provider registry/runtime、GitHub Releases
 
 ---
 
-## 文件结构
+## 进度对齐Actualizacion（2026-05-08）
 
-### 核心 Provider 元数据
-- 修改：`src/llmProviders.ts`
-- 职责：新增 provider 预设、描述、setup hint、排序、默认 model 以及 API-test 元数据。
+Esta segunda ronda de planes se ha cumplido y ahora debe leerse como un record historico de lanzamiento.。
 
-### 运行时与连接测试覆盖
-- 修改：`src/tests/llmProviders.test.ts`
-- 修改：`src/tests/llmUtilsProviderSupport.test.ts`
-- 职责：锁定这些新 provider 的 registry 暴露、transport 路由、probe endpoint 与 transient-failure fallback 行为。
+Resultados entregados：
 
-### 文档与发布材料
-- 修改：`README.md`
-- 修改：`README_zh.md`
-- 修改：`change.md`
-- 修改：`package.json`
-- 修改：`package-lock.json`
-- 修改：`manifest.json`
-- 修改：`versions.json`
-- 职责：为 `1.7.6` 同步 provider 文档、changelog 与发布元数据。
+- `Qwen Code`、`Z AI`、`Huawei Cloud MaaS` Ingresado como valor predeterminado de primera clase `src/llmProviders.ts`。
+- Este lote Provider El comportamiento de prueba de enrutamiento y conexion ha sido cambiado por `src/tests/llmProviders.test.ts` y `src/tests/llmUtilsProviderSupport.test.ts` Cobertura。
+- Se han implementado los documentos correspondientes y las actualizaciones de registros de cambios.（`README.md`、`README_zh.md`、`change.md`）。
 
-### 验证与发布
-- 重新构建产物：`main.js`
-- 发布资产：`main.js`、`manifest.json`、`styles.css`、`README.md`
-- 职责：产出一个干净的 patch release，并附带双语 release notes 与必需资产。
+Tambien se han implementado desarrollos posteriores mas alla de este plan.：
+
+- Se han lanzado mas ajustes preestablecidos de China en la misma direccion.（`Baidu Qianfan`、`SiliconFlow`、`Xiaomi MiMo`）。
+- compartir transport El comportamiento continua metadata-driven，Pasar en circunstancias necesarias. chat-first probing ir OpenAI-compatible Ruta de ejecucion unificada。
+
+Brecha residual real：
+
+1. Ir contra la corriente provider Evolucion del catalogo, manteniendo continuamente sincronizados los valores predeterminados preestablecidos, la cobertura de pruebas y las descripciones de la documentacion.。
+2. Hazlo mas ancho packaging/semantic-verification convergence con provider Promocion separada del crecimiento de la lista。
 
 ---
 
-### 任务 1：为新 Provider 增加 Registry 覆盖
+## Estructura de archivos
 
-**文件：**
-- 修改：`src/tests/llmProviders.test.ts`
-- 修改：`src/llmProviders.ts`
-- 验证：`src/tests/llmProviders.test.ts`
+### Nucleo Provider Metadatos
+- Modificacion：`src/llmProviders.ts`
+- Responsabilidades: Nuevo provider Preestablecido, descripcion、setup hint、Clasificacion, por defecto model y API-test Metadatos。
 
-- [ ] **步骤 1：编写失败的注册表断言**
+### Cobertura de prueba de conexion y tiempo de ejecucion
+- Modificacion：`src/tests/llmProviders.test.ts`
+- Modificacion：`src/tests/llmUtilsProviderSupport.test.ts`
+- Responsabilidad: Bloquee estos nuevos provider de registry Exposicion、transport Enrutamiento、probe endpoint con transient-failure fallback Comportamiento。
 
-新增测试期望，检查：
-- provider 存在性：`Qwen Code`、`Z AI`、`Huawei Cloud MaaS`
+### Documentacion y materiales de autorizacion
+- Modificacion：`README.md`
+- Modificacion：`README_zh.md`
+- Modificacion：`change.md`
+- Modificacion：`package.json`
+- Modificacion：`package-lock.json`
+- Modificacion：`manifest.json`
+- Modificacion：`versions.json`
+- Responsabilidades: para `1.7.6` Sincronizacion provider Documentacion、changelog Con metadatos de publicacion。
+
+### Verificacion y Liberacion
+- Reconstruir el producto：`main.js`
+- Liberar activos：`main.js`、`manifest.json`、`styles.css`、`README.md`
+- Responsabilidad: Producir una limpieza patch release，Y viene con bilingue release notes Con los activos necesarios。
+
+---
+
+### Tareas 1：Para lo nuevo Provider aumentar Registry Cobertura
+
+**Documentacion：**
+- Modificacion：`src/tests/llmProviders.test.ts`
+- Modificacion：`src/llmProviders.ts`
+- Verificacion：`src/tests/llmProviders.test.ts`
+
+- [ ] **Pasos 1：Redaccion de aserciones de registro fallidas**
+
+Agregue expectativas de prueba y verifique：
+- provider Existencia：`Qwen Code`、`Z AI`、`Huawei Cloud MaaS`
 - transport：`openai-compatible`
 - API test mode：`chat-only`
-- openai-compatible 分类
+- openai-compatible Clasificacion
 
-这些新增断言应出现在：
-- 扩展后的 provider-set 断言中
-- transport 元数据断言中
-- China-focused / openai-compatible 元数据断言块中
+Estas nuevas afirmaciones deberian aparecer en：
+- extendido provider-set Afirmar
+- transport MetadatosAfirmar
+- China-focused / openai-compatible En el bloque de asercion de metadatos
 
-- [ ] **步骤 2：运行聚焦的注册表测试并确认失败**
+- [ ] **Pasos 2：Ejecute pruebas de registro especificas y confirme fallas**
 
-执行：
+Ejecucion：
 
 ```bash
 npx jest src/tests/llmProviders.test.ts --runInBand
 ```
 
-预期：
-- 失败，因为三项 provider 还没有进入 `src/llmProviders.ts`
+Expectativas：
+- Fallo por tres cosas provider Aun no ingresado `src/llmProviders.ts`
 
-- [ ] **步骤 3：实现最小注册表条目**
+- [ ] **Pasos 3：Implementar entradas de registro minimas**
 
-更新 `src/llmProviders.ts`，新增：
+Actualizacion `src/llmProviders.ts`，nuevo：
 - `Qwen Code`
 - `Z AI`
 - `Huawei Cloud MaaS`
 
-除非实现阶段查阅官方文档后证明存在更安全的默认值，否则使用以下默认配置：
+Utilice la siguiente configuracion predeterminada a menos que se demuestre un valor predeterminado mas seguro despues de consultar la documentacion oficial durante la fase de implementacion.：
 - `Qwen Code`
   - base URL: `https://dashscope.aliyuncs.com/compatible-mode/v1`
   - model: `qwen3-coder-plus`
@@ -109,24 +109,24 @@ npx jest src/tests/llmProviders.test.ts --runInBand
   - base URL: `https://api.modelarts-maas.com/v1`
   - model: `DeepSeek-V3`
 
-三个 provider 都应使用：
+Tres provider Se deben usar todos：
 - category: `cloud`
 - transport: `openai-compatible`
 - apiKeyMode: `required`
 - apiTestMode: `chat-only`
 
-- [ ] **步骤 4：重新运行聚焦的注册表测试并确认通过**
+- [ ] **Pasos 4：Vuelva a ejecutar la prueba de registro enfocada y confirme que pasa.**
 
-执行：
+Ejecucion：
 
 ```bash
 npx jest src/tests/llmProviders.test.ts --runInBand
 ```
 
-预期：
+Expectativas：
 - PASS
 
-- [ ] **步骤 5：提交注册表切片**
+- [ ] **Pasos 5：Enviar segmento de registro**
 
 ```bash
 git add src/llmProviders.ts src/tests/llmProviders.test.ts
@@ -135,56 +135,56 @@ git commit -m "feat: add round 2 china provider presets"
 
 ---
 
-### 任务 2：为新 Provider 增加运行时路由测试
+### Tareas 2：Para lo nuevo Provider Agregar prueba de enrutamiento en tiempo de ejecucion
 
-**文件：**
-- 修改：`src/tests/llmUtilsProviderSupport.test.ts`
-- 验证：`src/tests/llmUtilsProviderSupport.test.ts`
+**Documentacion：**
+- Modificacion：`src/tests/llmUtilsProviderSupport.test.ts`
+- Verificacion：`src/tests/llmUtilsProviderSupport.test.ts`
 
-- [ ] **步骤 1：编写失败的 `callLLM()` 测试**
+- [ ] **Pasos 1：La escritura fallo `callLLM()` Pruebas**
 
-新增聚焦测试，断言 `callLLM()` 会将：
-- `Qwen Code` 路由到 DashScope compatible `chat/completions`
-- `Z AI` 路由到 `https://api.z.ai/api/paas/v4/chat/completions`
-- `Huawei Cloud MaaS` 路由到 `https://api.modelarts-maas.com/v1/chat/completions`
+Se agregaron nuevas pruebas y afirmaciones enfocadas. `callLLM()` voluntad：
+- `Qwen Code` Ruta a DashScope compatible `chat/completions`
+- `Z AI` Ruta a `https://api.z.ai/api/paas/v4/chat/completions`
+- `Huawei Cloud MaaS` Ruta a `https://api.modelarts-maas.com/v1/chat/completions`
 
-每条测试都应断言：
+Cada prueba debe afirmar：
 - URL
 - `Authorization` header
-- model 透传
-- 现有 OpenAI-compatible 响应解析器成功提取结果
+- model Transmision transparente
+- Existente OpenAI-compatible El analizador de respuestas extrae resultados con exito
 
-- [ ] **步骤 2：运行聚焦的 provider-support 测试并确认失败**
+- [ ] **Pasos 2：Corre concentrado provider-support Pruebe y confirme el fallo.**
 
-执行：
-
-```bash
-npx jest src/tests/llmUtilsProviderSupport.test.ts --runInBand
-```
-
-预期：
-- 失败，因为新 provider 尚未被 routing 断言覆盖，或测试依赖的元数据路径还无法识别这些 provider 名称
-
-- [ ] **步骤 3：以最小改动补齐运行时覆盖**
-
-只更新那些让新 provider 名称流经现有 `openai-compatible` 路径所必需的代码。
-
-重要约束：
-- 不要新增 transport
-- 除非实现证明共享路径完全不可行，否则不要新增基于 provider-name 的 runtime 分支
-
-- [ ] **步骤 4：重新运行聚焦的 provider-support 测试并确认新路由测试通过**
-
-执行：
+Ejecucion：
 
 ```bash
 npx jest src/tests/llmUtilsProviderSupport.test.ts --runInBand
 ```
 
-预期：
-- 新增的 `callLLM()` 用例 PASS
+Expectativas：
+- Fracaso porque es nuevo provider Todavia no routing Aun no se reconocen la cobertura de aserciones o las rutas de metadatos de las dependencias de prueba. provider Nombre
 
-- [ ] **步骤 5：提交运行时路由切片**
+- [ ] **Pasos 3：Cobertura completa del tiempo de ejecucion con cambios minimos.**
+
+Actualice solo aquellos que hacen lo nuevo. provider El nombre fluye a traves de lo existente. `openai-compatible` Codigo requerido para la ruta。
+
+Limitaciones importantes：
+- No agregues nuevos transport
+- A menos que la implementacion demuestre que las rutas compartidas son completamente inviables, no agregue otras nuevas basadas en provider-name de runtime Sucursal
+
+- [ ] **Pasos 4：Vuelva a ejecutar enfocado provider-support Pruebe y confirme que pasa la prueba de la nueva ruta.**
+
+Ejecucion：
+
+```bash
+npx jest src/tests/llmUtilsProviderSupport.test.ts --runInBand
+```
+
+Expectativas：
+- nuevo `callLLM()` Casos de uso PASS
+
+- [ ] **Pasos 5：Enviar segmentos de enrutamiento en tiempo de ejecucion**
 
 ```bash
 git add src/tests/llmUtilsProviderSupport.test.ts src/llmProviders.ts src/llmUtils.ts
@@ -193,56 +193,56 @@ git commit -m "test: cover runtime routing for new china providers"
 
 ---
 
-### 任务 3：增加连接测试与瞬时回退覆盖
+### Tareas 3：Agregue prueba de conexion y cobertura alternativa instantanea
 
-**文件：**
-- 修改：`src/tests/llmUtilsProviderSupport.test.ts`
-- 验证：`src/tests/llmUtilsProviderSupport.test.ts`
+**Documentacion：**
+- Modificacion：`src/tests/llmUtilsProviderSupport.test.ts`
+- Verificacion：`src/tests/llmUtilsProviderSupport.test.ts`
 
-- [ ] **步骤 1：编写失败的 `testAPI()` 测试**
+- [ ] **Pasos 1：La escritura fallo `testAPI()` Pruebas**
 
-新增以下测试：
-- `Qwen Code` 的 `testAPI()` 成功探测
-- `Z AI` 的 `testAPI()` 成功探测
-- `Huawei Cloud MaaS` 的 `testAPI()` 成功探测
-- 每个新 provider 在 `testAPI()` 阶段发生瞬时 `ERR_CONNECTION_CLOSED` 时的 fallback
+nuevo以下Pruebas：
+- `Qwen Code` de `testAPI()` Deteccion exitosa
+- `Z AI` de `testAPI()` Deteccion exitosa
+- `Huawei Cloud MaaS` de `testAPI()` Deteccion exitosa
+- Cada nuevo provider en `testAPI()` La etapa ocurre instantaneamente `ERR_CONNECTION_CLOSED` oportuno fallback
 
-每条测试都应断言：
-- `chat/completions` probe 路径
-- fallback 后的预期调用次数
-- 恢复重试后的 `success: true`
+Cada prueba debe afirmar：
+- `chat/completions` probe Camino
+- fallback Numero esperado de llamadas despues
+- Recuperacion despues del reintento `success: true`
 
-- [ ] **步骤 2：运行聚焦的 provider-support 测试并确认新连接用例失败**
+- [ ] **Pasos 2：Corre concentrado provider-support Pruebe y confirme que el nuevo caso de conexion falla**
 
-执行：
+Ejecucion：
 
 ```bash
 npx jest src/tests/llmUtilsProviderSupport.test.ts --runInBand
 ```
 
-预期：
-- 失败，直到 registry 元数据与测试夹具补齐这些新 connection 用例
+Expectativas：
+- Falla hasta registry Los metadatos y los dispositivos de prueba complementan estos nuevos connection Casos de uso
 
-- [ ] **步骤 3：实现最小连接测试支持**
+- [ ] **Pasos 3：Implementar soporte minimo para pruebas de conexion.**
 
 保持实现继续 metadata-driven：
 - `apiTestMode: chat-only`
-- 复用现有 `requestUrlForConnectionTest()` fallback 路径
+- Reutilizar lo existente `requestUrlForConnectionTest()` fallback Camino
 
-除非证明确实存在 provider 专属不兼容，否则不要单独为这些 provider 新增连接测试函数。
+A menos que se demuestre su existencia provider Exclusivamente incompatibles; de lo contrario, no pague solo por estos provider Se agrego una nueva funcion de prueba de conexion.。
 
-- [ ] **步骤 4：重新运行聚焦的 provider-support 测试并确认通过**
+- [ ] **Pasos 4：Vuelva a ejecutar enfocado provider-support Prueba y confirma el paso.**
 
-执行：
+Ejecucion：
 
 ```bash
 npx jest src/tests/llmUtilsProviderSupport.test.ts --runInBand
 ```
 
-预期：
+Expectativas：
 - PASS
 
-- [ ] **步骤 5：提交连接测试切片**
+- [ ] **Pasos 5：Enviar segmento de prueba de conexion**
 
 ```bash
 git add src/tests/llmUtilsProviderSupport.test.ts src/llmProviders.ts src/llmUtils.ts
@@ -251,40 +251,40 @@ git commit -m "test: cover connection probes for new china providers"
 
 ---
 
-### 任务 4：更新 Provider 扩展文档
+### Tareas 4：Actualizacion Provider Documentacion ampliada
 
-**文件：**
-- 修改：`README.md`
-- 修改：`README_zh.md`
-- 修改：`change.md`
+**Documentacion：**
+- Modificacion：`README.md`
+- Modificacion：`README_zh.md`
+- Modificacion：`change.md`
 
-- [ ] **步骤 1：编辑前先写文档检查清单**
+- [ ] **Pasos 1：Escriba una lista de verificacion del documento antes de editarlo.**
 
-确认每份文档都会提到：
-- `Qwen Code` 作为 coding-focused preset
-- `Z AI` 作为 `GLM` 的国际补充入口
-- `Huawei Cloud MaaS` 作为托管式 OpenAI-compatible preset
-- 更新后的 provider 覆盖列表
+Asegurate de que cada documento mencione：
+- `Qwen Code` como coding-focused preset
+- `Z AI` como `GLM` Entrada suplementaria internacional
+- `Huawei Cloud MaaS` Como alojado OpenAI-compatible preset
+- Actualizado provider Lista de cobertura
 
-- [ ] **步骤 2：更新英文 README**
+- [ ] **Pasos 2：Actualizar ingles README**
 
-编辑 `README.md`，更新：
-- feature / preset 覆盖 bullet
-- provider 配置章节
+Editar `README.md`，Actualizacion：
+- feature / preset Cobertura bullet
+- provider Capitulo de configuracion
 - supported provider table/list
 
-- [ ] **步骤 3：更新中文 README**
+- [ ] **Pasos 3：Actualizar chino README**
 
-编辑 `README_zh.md`，以中文表达与英文 README 同样的含义。
+Editar `README_zh.md`，Express en chino e ingles README Mismo significado。
 
-- [ ] **步骤 4：更新变更日志**
+- [ ] **Pasos 4：Actualizar el registro de cambios**
 
-在 `change.md` 中新增 `1.7.6` 小节，说明：
-- 新增的 preset
-- provider 测试覆盖
-- 本次发布涉及的 runtime 行为说明
+en `change.md` Nuevo en `1.7.6` Seccion, Descripcion：
+- nuevo preset
+- provider Cobertura de prueba
+- Esta liberacion implica runtime Descripcion del comportamiento
 
-- [ ] **步骤 5：提交文档切片**
+- [ ] **Pasos 5：Envie fragmentos de documentos**
 
 ```bash
 git add README.md README_zh.md change.md
@@ -293,27 +293,27 @@ git commit -m "docs: add round 2 provider coverage"
 
 ---
 
-### 任务 5：准备并验证 1.7.6 发布
+### Tareas 5：Preparar y verificar 1.7.6 Liberacion
 
-**文件：**
-- 修改：`package.json`
-- 修改：`package-lock.json`
-- 修改：`manifest.json`
-- 修改：`versions.json`
-- 构建：`main.js`
+**Documentacion：**
+- Modificacion：`package.json`
+- Modificacion：`package-lock.json`
+- Modificacion：`manifest.json`
+- Modificacion：`versions.json`
+- construir：`main.js`
 
-- [ ] **步骤 1：将版本元数据同步到 `1.7.6`**
+- [ ] **Pasos 1：Sincronizar los metadatos de la version con `1.7.6`**
 
-同步：
+Sincronizacion：
 - `package.json`
 - `package-lock.json`
 - `manifest.json`
 - `versions.json`
-- `README.md` 与 `README_zh.md` 中任何可见版本字符串
+- `README.md` con `README_zh.md` Cualquier cadena de version visible en
 
-- [ ] **步骤 2：运行完整仓库验证**
+- [ ] **Pasos 2：Ejecute la verificacion completa del almacen**
 
-执行：
+Ejecucion：
 
 ```bash
 npm test -- --runInBand
@@ -323,22 +323,22 @@ obsidian help
 obsidian-cli help
 ```
 
-预期：
-- Jest 通过
-- build 退出 `0`
-- `git diff --check` 干净
-- Obsidian CLI 结果必须如实记录，包括当前机器环境中仍可能失败的限制
+Expectativas：
+- Jest Pase
+- build Salir `0`
+- `git diff --check` limpio
+- Obsidian CLI Los resultados deben documentarse fielmente, incluidas las limitaciones que aun pueden fallar en el entorno actual de la maquina.
 
-- [ ] **步骤 3：提交发布准备切片**
+- [ ] **Pasos 3：Envie la porcion para prepararse para su lanzamiento.**
 
 ```bash
 git add package.json package-lock.json manifest.json versions.json README.md README_zh.md change.md main.js
 git commit -m "chore: release 1.7.6"
 ```
 
-- [ ] **步骤 4：推送、打标签并创建 GitHub 发布**
+- [ ] **Pasos 4：Empuja, etiqueta y crea GitHub Liberacion**
 
-使用非交互式 git 与 GitHub CLI 命令：
+使用非交互式 git con GitHub CLI Orden：
 
 ```bash
 git push origin main
@@ -347,30 +347,30 @@ git push origin 1.7.6
 gh release create 1.7.6 main.js manifest.json styles.css README.md --title 1.7.6 --notes-file /tmp/notemd-release-1.7.6.md --verify-tag
 ```
 
-Release notes 要求：
-- 完整英文段
-- 完整中文段
-- 两部分都可独立阅读
+Release notes Requisitos：
+- Parrafo completo en ingles.
+- Parrafo chino completo
+- Ambas partes se pueden leer de forma independiente.
 
-- [ ] **步骤 5：验证已发布的 GitHub 发布**
+- [ ] **Pasos 5：Verificacion已Liberacionde GitHub Liberacion**
 
-执行：
+Ejecucion：
 
 ```bash
 git status --short --branch
 gh release view 1.7.6 --json tagName,name,url,body,assets
 ```
 
-预期：
-- worktree 干净
-- tag/name 正确
-- 四项必需资产已上传
-- 双语 release body 存在
+Expectativas：
+- worktree limpio
+- tag/name Correcto
+- Se han subido los cuatro activos requeridos.
+- Bilingue release body existencia
 
 ---
 
-## 评审说明
+## Revisar las instrucciones
 
-本计划刻意保持 metadata-driven 实现。如果目标 provider 里有任何一个最终被证明确实需要非标准 auth header、签名或协议流，必须停止并将该 provider 单独拆到另一份设计中，而不是强行塞进共享 transport 路径。
+Este plan mantiene deliberadamente metadata-driven 实现。如果Metas provider ¿Alguno de ellos requiere requisitos no estandar? auth header、Debe detenerse el flujo de firmas o acuerdos y provider Separalo en otro diseno en lugar de obligarlo a compartirlo. transport Camino。
 
-当前会话没有用户明确授权进行子代理委派，因此未使用专门的 plan-review 子代理。本计划已根据已批准的 spec `docs/superpowers/specs/2026-03-26-china-provider-expansion-round2-design.md`、当前测试布局以及仓库已经固化的发布规则完成自审。
+Ningun usuario esta autorizado explicitamente para la delegacion de subagente para la sesion actual, por lo que no hay ningun usuario dedicado. plan-review 子代理。 Este plan se basa en el plan aprobado spec `docs/superpowers/specs/2026-03-26-china-provider-expansion-round2-design.md`、Complete la autoevaluacion del diseno de prueba actual y las reglas de liberacion solidificadas del almacen.。

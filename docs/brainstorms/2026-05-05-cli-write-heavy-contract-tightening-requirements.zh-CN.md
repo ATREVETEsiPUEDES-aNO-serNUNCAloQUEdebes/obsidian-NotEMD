@@ -3,143 +3,143 @@ date: 2026-05-05
 topic: cli-write-heavy-contract-tightening
 ---
 
-# CLI 写入型契约收口需求
+# CLI Requisitos de cierre de contratos por escrito
 
-> 更新（2026-05-05，当天稍后）：第一批 direct-surface wrapper 已经落地。`testLlmConnectionCommand`、`generateDiagramCommand` 与 `previewExperimentalDiagramCommand` 现在都通过 host adapter 代理，并返回结构化结果。当前开放问题已经下移到 diagram/provider command-core 收敛。
+> Actualizacion（2026-05-05，Mas tarde ese mismo dia): primer lote direct-surface wrapper Ya aterrizo。`testLlmConnectionCommand`、`generateDiagramCommand` Con `previewExperimentalDiagramCommand` Todo paso ahora host adapter Proxy y devolucion de resultados estructurados. El problema abierto actual se ha movido a diagram/provider command-core Convergencia。
 >
-> 更新（2026-05-05，当天更晚）：registry/capability/contract 路径现在也已导出 `provider.connection.test` 与 `diagram.preview` 的 typed operation surface。剩余问题不再是这些 seam 要不要存在，而是 diagram wrapper 之下的 save/artifact 分支是否值得继续提升为额外 typed boundary。
+> Actualizacion（2026-05-05，Mas tarde ese dia）：registry/capability/contract La ruta ahora tambien se exporta. `provider.connection.test` Con `diagram.preview` de typed operation surface。Las preguntas restantes ya no son estas seam Existir o no, pero diagram wrapper Abajo save/artifact ¿Vale la pena seguir promocionando la rama como extra? typed boundary。
 >
-> 更新（2026-05-05，更晚一些）：`src/operations/diagramCommandExecution.ts` 现在已经承接 `src/main.ts` 之下的 Mermaid-save 与 artifact-save 执行流程，`diagram.generate` 的 typed result schema 也已补上 `outputPath` 与 `previewOpened`。剩余问题进一步收窄为：这些内部 save/artifact 分支是否还值得继续拆成额外 typed boundary。
+> Actualizacion（2026-05-05，Mas tarde）：`src/operations/diagramCommandExecution.ts` Ahora aceptado `src/main.ts` Abajo Mermaid-save Con artifact-save Proceso de ejecucion，`diagram.generate` de typed result schema Tambien agregado `outputPath` Con `previewOpened`。Las preguntas restantes se reducen aun mas a: estas cuestiones internas save/artifact ¿Vale la pena seguir dividiendo la rama en adicionales? typed boundary。
 
-## 问题框架
+## Encuadre del problema
 
-前几轮需求已经把“大范围抽取”问题解决掉，而最新代码也已经把最小证明批次补齐：
+Las rondas de requisitos anteriores resolvieron el problema de la "extraccion a gran escala" y el ultimo codigo tambien completo el lote minimo de prueba.：
 
-- `content.extract-original-text` 已经返回结构化结果，且成功 notice 已移动到 `src/operations/noteProcessingCommandHostAdapter.ts`
-- `translate.file` 与 `translate.folder-batch` 现在都会返回结构化翻译结果，翻译成功 notice 也已移到 note-processing host adapter
-- `formula.fix-file` 与 `formula.batch-fix` 现在都会返回结构化 file/folder 结果，公式修复成功 notice 也已移到 utility host adapter
-- `src/operations/registry.ts` 现在也已导出这些 write-heavy 家族的 richer result schema，不再把它们压平成仅路径或仅计数语义
-- 第一批 `src/fileUtils.ts` 的 process/generate 子切片也已落地：
-  - `processFile()` 返回 `ProcessFileResult`
-  - `generateContentForTitle()` 返回 `GenerateContentForTitleResult`
-  - `batchGenerateContentForTitles()` 返回 `BatchGenerateContentForTitlesResult`
-  - `runProcessFolderWithNotemdCommandWithHost()` 现在返回带 `savedCount`、`errors` 与 `cancelled` 的 `BatchProcessFolderResult`
-  - 批量生成的无文件 notice 现在改由 host adapter 承接，而不是留在 utility core
-- `src/fileUtils.ts` 的剩余尾部也已落地：
-  - `batchFixMermaidSyntaxInFolder()` 返回 `BatchMermaidFixResult`
-  - `checkAndRemoveDuplicateConceptNotes()` 返回 `ConceptDedupeResult`
-  - Mermaid 无文件处理与 duplicate deletion confirmation 现在都已进入 utility host adapter，而不是留在 utility core
-  - `src/operations/registry.ts` 现在也已导出 `mermaid.batch-fix` 与 `concept.dedupe` 的 richer result schema
+- `content.extract-original-text` El resultado estructurado se ha devuelto correctamente. notice Se mudo a `src/operations/noteProcessingCommandHostAdapter.ts`
+- `translate.file` Con `translate.folder-batch` Ahora se devolveran los resultados de la traduccion estructurada y la traduccion se realizo correctamente. notice Tambien se mudo a note-processing host adapter
+- `formula.fix-file` Con `formula.batch-fix` Ahora todas las devoluciones estructuradas. file/folder Como resultado, la formula se reparo con exito. notice Tambien se mudo a utility host adapter
+- `src/operations/registry.ts` Estos ahora tambien se exportan write-heavy familia richer result schema，No mas aplanarlos a una semantica de solo ruta o de solo conteo
+- Primer lote `src/fileUtils.ts` de process/generate La subporcion tambien ha aterrizado.：
+  - `processFile()` Regreso `ProcessFileResult`
+  - `generateContentForTitle()` Regreso `GenerateContentForTitleResult`
+  - `batchGenerateContentForTitles()` Regreso `BatchGenerateContentForTitlesResult`
+  - `runProcessFolderWithNotemdCommandWithHost()` Ahora regresa al cinturon. `savedCount`、`errors` Con `cancelled` de `BatchProcessFolderResult`
+  - No se generan archivos en lotes notice Ahora cambia a host adapter Emprender, no quedarse utility core
+- `src/fileUtils.ts` La cola restante tambien ha aterrizado.：
+  - `batchFixMermaidSyntaxInFolder()` Regreso `BatchMermaidFixResult`
+  - `checkAndRemoveDuplicateConceptNotes()` Regreso `ConceptDedupeResult`
+  - Mermaid Sin procesamiento de archivos vs. duplicate deletion confirmation Ya estan todos ingresados. utility host adapter，En lugar de quedarse utility core
+  - `src/operations/registry.ts` Ahora tambien exportado `mermaid.batch-fix` Con `concept.dedupe` de richer result schema
 
-这意味着，write-heavy 批次已经不再是未完成工作。当前真正的压力点只剩：
+Esto significa，write-heavy El lote ya no es obra inacabada. Los unicos puntos de presion reales en la actualidad son：
 
-- `src/main.ts`，这里现在主要保留较薄的 diagram/provider delegator，而更深层问题已经转移到 operation layer 中的 diagram save/generation follow-through 与 Vega-Lite preview
-- selection/export 与 workflow/settings 表面，它们的 contract 深度仍落后于 write-heavy proof set
-- 以及一个典型误区：在更大的写入型家族还没稳定之前，就过早引入全局统一结果 envelope
+- `src/main.ts`，Aqui mantenemos principalmente a los delgados. diagram/provider delegator，Y el problema mas profundo se ha trasladado a operation layer en diagram save/generation follow-through Con Vega-Lite preview
+- selection/export Con workflow/settings Superficies, sus contract La profundidad aun esta por detras write-heavy proof set
+- Y un malentendido tipico: introducir prematuramente resultados unificados globales antes de que la familia mas grande basada en escritura sea estable. envelope
 
-因此，下一步最稳妥的动作应是保持 write-heavy 家族闭环，转向剩余 direct command surfaces，而不是回头重开已经落地的切片，也不是现在就强行上全局抽象。
+Por lo tanto, el siguiente paso mas seguro deberia ser mantener write-heavy Cerrar el circulo familiar y recurrir al superavit direct command surfaces，En lugar de volver atras y reabrir las porciones que se han implementado, ni forzar la abstraccion global ahora。
 
-## 与先前需求的对比
+## Comparacion con requisitos anteriores
 
-| 先前文档 | 当时判断 | 当前代码已验证 |
+| Documentos anteriores | Sentencia en su momento | El codigo actual ha sido verificado. |
 |---|---|---|
-| `docs/brainstorms/2026-05-04-obsidian-cli-extensibility-and-notemd-capability-extraction.md` | public CLI 暴露必须晚于 host-neutral operation | 结论成立；operation 覆盖广度已基本到位，当前阻塞点变成 contract 深度 |
-| `docs/brainstorms/2026-05-05-cli-mainline-progress-sync-and-next-phase-requirements.md` | 最小剩余证明批次应先做 `translate.*` 与 `formula.*`，再进入更大的 write-heavy 工作 | 结论成立，而且现在已经交付 |
-| `docs/superpowers/plans/2026-05-05-notemd-note-processing-registry-hardening.en.md` | registry onboarding 应先于更强自动化声明完成 | 结论成立；registry 覆盖广度已不再是当前最高杠杆主题 |
+| `docs/brainstorms/2026-05-04-obsidian-cli-extensibility-and-notemd-capability-extraction.md` | public CLI La exposicion debe ocurrir mas tarde de host-neutral operation | La conclusion esta establecida.；operation La amplitud de la cobertura esta basicamente establecida y el punto de bloqueo actual se convierte en contract Profundidad |
+| `docs/brainstorms/2026-05-05-cli-mainline-progress-sync-and-next-phase-requirements.md` | El lote minimo de prueba restante debe realizarse primero `translate.*` Con `formula.*`，Luego ingresa el mas grande. write-heavy Trabajo | Conclusion establecida y ahora entregada |
+| `docs/superpowers/plans/2026-05-05-notemd-note-processing-registry-hardening.en.md` | registry onboarding Deberia completarse antes de declaraciones de automatizacion mas solidas. | La conclusion esta establecida.；registry La amplitud de la cobertura ya no es el tema de mayor influencia en la actualidad. |
 
-## 方案比较
+## Comparacion de opciones
 
-### 方案一：继续重开 write-heavy 家族
+### Opcion 1: continuar reabriendo write-heavy familia
 
-继续回头微调 Mermaid repair / duplicate cleanup 结果词汇，再去碰剩余 direct command surfaces。
+Continue retrocediendo y afinando Mermaid repair / duplicate cleanup Vocabulario de resultados, luego toca el resto. direct command surfaces。
 
-- 优点：局部一致性更强
-- 缺点：会重开已经交付的批次
-- 风险：制造 churn，却不推进当前主线瓶颈
-- 适用：只有当当前 write-heavy 批次还没闭环时才成立，而现在已不成立
+- Ventajas: mayor coherencia local
+- Desventaja: Los lotes ya entregados se reabriran
+- Riesgo: Fabricacion churn，Pero no avanza el actual cuello de botella principal.
+- Aplicable: Solo cuando la corriente write-heavy Esto era cierto cuando el lote no estaba cerrado, pero ya no lo es ahora.
 
-### 方案二：先清空剩余 `src/main.ts` 直连面
+### Opcion 2: borrar el resto primero `src/main.ts` Conexion directa
 
-优先处理 `testLlmConnectionCommand`、diagram save/generate、preview 流，因为 write-heavy 家族已经不再是主阻塞。
+Priorizar el procesamiento `testLlmConnectionCommand`、diagram save/generate、preview Fluir porque write-heavy La familia ya no es el principal bloqueador。
 
-- 优点：直接攻击当前剩余瓶颈
-- 缺点：要在 diagram surfaces 与 provider connection-test 之间谨慎挑第一个 seam
-- 风险：diagram / preview 这组表面包含更多 save/open 分叉，容易过度抽象
-- 适用：如果当前最核心目标是 entrypoint 清洁，而不是 operation 语义
+- Ventajas: atacar directamente los cuellos de botella restantes actuales
+- Desventajas: necesidad de estar en diagram surfaces Con provider connection-test Elige el primero con cuidado seam
+- Riesgos：diagram / preview Este conjunto de superficies contiene mas save/open Bifurcacion, facil de abstraer demasiado
+- Aplicable: Si el objetivo principal actual es entrypoint Limpiar en lugar de operation Semantica
 
-### 方案三：现在就上全局统一结果 envelope
+### Opcion 3: Unificar los resultados globales ahora envelope
 
-先定义一套通用 operation result shape，再把 `src/fileUtils.ts`、translation、formula、process、generate 一起往里套。
+Primero defina un conjunto de generales. operation result shape，otra vez `src/fileUtils.ts`、translation、formula、process、generate Ponlo junto。
 
-- 优点：如果成功，一次性获得最强一致性叙事
-- 缺点：在最大家族尚未建模时就上抽象，风险最高
-- 风险：过早固化通用 envelope，反而拖慢交付
-- 适用：只有当多个更大的家族都已经语义稳定时才合适，而当前并不是
+- Ventajas: si tiene exito, obtenga la narrativa mas solida y consistente de inmediato.
+- Desventajas: abstraer la familia mas grande antes de que haya sido modelada tiene el mayor riesgo
+- Riesgo: curado prematuro envelope，Por el contrario, retrasa la entrega.
+- Aplicable: solo es adecuado cuando varias familias mas grandes son semanticamente estables, lo que no es el caso actualmente
 
-## 推荐方向
+## Direccion recomendada
 
-选择方案二。
+Opcion 2。
 
-`content.extract-original-text`、`translate.*`、`formula.*` 与完整的 write-heavy `src/fileUtils.ts` 家族已经提供了清晰 proof slice。现在最缺的证据不再是 write-heavy family 能否成立，而是剩余 direct command surfaces 能否也被推进到同等级的 operation/result 边界。
+`content.extract-original-text`、`translate.*`、`formula.*` con completo write-heavy `src/fileUtils.ts` La familia ha aportado claridad proof slice。La evidencia que mas falta ahora ya no es write-heavy family Si se puede establecer, pero el resto direct command surfaces ¿Se puede ascender al mismo nivel? operation/result Limites。
 
-## 需求
+## Demanda
 
-**当前事实同步**
-- R1. 当前进度文档与架构文档必须把完整 write-heavy 家族描述为已交付 proof，而不是待完成工作。
-- R2. 当前文档必须精确点名剩余更深层 seam：现在位于 `src/operations/diagramCommandExecution.ts` 中的内部 save/artifact follow-through，以及已经落地的 `provider.connection.test` / `diagram.preview` typed wrapper 与更丰富的 `diagram.generate` result shape。
+**Sincronizacion de hechos actuales**
+- R1. El documento de progreso actual y el documento de arquitectura deben estar completos. write-heavy Familia descrita como entregada proof，En lugar de trabajos por hacer。
+- R2. El documento actual debe nombrar con precision las capas mas profundas restantes. seam：Ahora ubicado en `src/operations/diagramCommandExecution.ts` Interior de save/artifact follow-through，Y ya implementado `provider.connection.test` / `diagram.preview` typed wrapper Con mas rico `diagram.generate` result shape。
 
-**短期收口**
-- R3. 下一批 P0 实施必须优先处理 `src/operations/diagramCommandExecution.ts` 中剩余更深层的 diagram/provider command core，重点是已经落地 wrapper 之下仍然存在的 save/artifact follow-through。
-- R4. 这些更深层 seam 要么返回可比于 write-heavy proof set 的结构化结果与显式副作用边界，要么被明确标记为现有 typed operation 之下的 internal command-core branch。
-- R5. 这些流程的成功 notice、preview-only 文案与 save/open 分叉应继续向 host adapter 或 operation-layer boundary 收口，而不是再回流到 `src/main.ts` 中。
-- R6. `src/operations/registry.ts`、`src/operations/capabilityManifest.ts` 与 `src/cliContracts.ts` 只有在更深层 save/artifact seam 足够 deterministic 时才应继续扩展；`diagram.preview` 仍应保持 `interactive-ui`，`provider.connection.test` 仍应保持 `safe`，`diagram.generate` 则应已通过 `outputPath` / `previewOpened` 描述保存后的 follow-through。
+**Cierre a corto plazo**
+- R3. Siguiente lote P0 Se debe priorizar la implementacion `src/operations/diagramCommandExecution.ts` Los restantes mas profundos diagram/provider command core，El punto clave es que se ha implementado wrapper Aun existente bajo save/artifact follow-through。
+- R4. Estos son mas profundos seam O devolver algo comparable a write-heavy proof set Resultados estructurados con limites explicitos de efectos secundarios o marcados explicitamente como existentes typed operation Abajo internal command-core branch。
+- R5. El exito de estos procesos notice、preview-only Redaccion y save/open Las bifurcaciones deben continuar hacia host adapter o operation-layer boundary Cierra la boca en lugar de regresar a ella. `src/main.ts` Medio。
+- R6. `src/operations/registry.ts`、`src/operations/capabilityManifest.ts` Con `src/cliContracts.ts` Solo a un nivel mas profundo save/artifact seam suficiente deterministic Solo entonces deberiamos seguir ampliando；`diagram.preview` Aun debe mantenerse `interactive-ui`，`provider.connection.test` Aun debe mantenerse `safe`，`diagram.generate` entonces habra sido pasado `outputPath` / `previewOpened` Describe a los salvos. follow-through。
 
-**中期收敛**
-- R7. 更深层 diagram/provider command-core 批次之后，下一批实施必须转向 packaging isolation 与 maintainer-local semantic verification 的后续硬化。
-- R8. diagram save/generate/preview 与 provider connection-test 要么在现有 wrapper 之下继续深化 operation/result discoverability，要么在文档中明确声明为 automation-grade CLI contract 之外的 internal command-core branch。
-- R9. 在至少有一条 `src/fileUtils.ts` 家族和一条 direct-surface 家族都稳定之前，项目应继续优先 family-local result object，而不是急着合并成全局 envelope。
+**Convergencia a medio plazo**
+- R7. Mas profundo diagram/provider command-core Despues de un lote, la implementacion del siguiente lote debe pasar a packaging isolation Con maintainer-local semantic verification Endurecimiento posterior de。
+- R8. diagram save/generate/preview Con provider connection-test Ya sea en existente wrapper Continue profundizando a continuacion. operation/result discoverability，Indiquelo explicitamente en la documentacion como automation-grade CLI contract Aparte de internal command-core branch。
+- R9. En al menos uno `src/fileUtils.ts` Familia e Ichijo direct-surface Hasta que la familia este estable, el proyecto debe seguir siendo una prioridad family-local result object，En lugar de apresurarse a fusionarse en una sociedad global envelope。
 
-**长期命令面收敛**
-- R10. 只有在更大的 write-heavy 语义稳定后，项目才应重开全局统一结果 envelope 或更强 public CLI 声明。
-- R11. packaging isolation、maintainer-local semantic verification 与 live runbook hardening 仍是有效后续工作，但不能挤占当前 operation-contract 优先级。
-- R12. public CLI 暴露仍必须分阶段推进：先 internal operation contract，再 maintainer-grade invocation，最后才是稳定用户 CLI API。
+**Convergencia de la superficie de mando a largo plazo**
+- R10. Solo en mas grande write-heavy Solo despues de que la semantica sea estable, el proyecto debe reabrirse para lograr resultados unificados globales. envelope o mas fuerte public CLI Declaracion。
+- R11. packaging isolation、maintainer-local semantic verification Con live runbook hardening Sigue siendo un trabajo de seguimiento valido, pero no puede eliminar el trabajo actual. operation-contract Prioridad。
+- R12. public CLI La exposicion aun debe realizarse por etapas: primero internal operation contract，Otra vez maintainer-grade invocation，Lo ultimo son los usuarios estables. CLI API。
 
-**文档与卫生**
-- R13. `docs/brainstorms/2026-05-05-cli-mainline-progress-sync-and-next-phase-requirements.*`、`docs/brainstorms/2026-05-02-progress-audit-and-next-direction.*`、`docs/architecture*` 与 `docs/maintainer/notemd-cli-capability-matrix*` 必须逐段更新，对齐“proof slice 已交付 + 新的短中长期方向”。
-- R14. 交付必须结束在最新 `origin/main`，并附 fresh build/test/audit 证据与 clean worktree。
+**Documentacion e Higiene**
+- R13. `docs/brainstorms/2026-05-05-cli-mainline-progress-sync-and-next-phase-requirements.*`、`docs/brainstorms/2026-05-02-progress-audit-and-next-direction.*`、`docs/architecture*` Con `docs/maintainer/notemd-cli-capability-matrix*` Debe actualizarse y alinearse seccion por seccion“proof slice Entregado + Nuevas direcciones a corto, medio y largo plazo”。
+- R14. La entrega debe finalizar a mas tardar. `origin/main`，Adjunto fresh build/test/audit Pruebas y clean worktree。
 
-## 成功标准
+## Criterios de exito
 
-- 维护者不需要再做代码考古，就能直接说清楚后三波架构推进顺序：先剩余 direct surfaces，再 packaging / semantic verification 后续硬化，最后 broader CLI/public-surface 决策。
-- 当前文档不再把 translation 或 formula contract tightening 写成待办。
-- 下一轮 planning 可以直接从剩余 direct-surface batch 开始，而不需要重新发明 why、ordering 或 scope boundary。
+- Los mantenedores ya no necesitan hacer arqueologia del codigo, pueden explicar directamente el orden de avance de las proximas tres oleadas de arquitectura: permanecer primero direct surfaces，Otra vez packaging / semantic verification Endurecimiento posterior, finalmente broader CLI/public-surface Toma de decisiones。
+- El documento actual ya no es translation o formula contract tightening Escribe una lista de tareas pendientes。
+- Proxima ronda planning Se puede obtener directamente del resto. direct-surface batch Emprender sin reinventarse why、ordering o scope boundary。
 
-## 范围边界
+## Limites del alcance
 
-- 本轮 requirements 不新增 `obsidian-cli` 子命令。
-- 本轮 requirements 还不会强行在所有 operation family 之上建立全局统一结果 envelope。
-- 本轮 requirements 不尝试在同一批次里重写全部剩余 direct command surfaces。
-- 本轮 requirements 不清理或复用 dirty root worktree。
+- Esta ronda requirements No hay nuevas incorporaciones `obsidian-cli` Subcomandos。
+- Esta ronda requirements Nada forzado operation family Establecer un resultado global unificado ademas de envelope。
+- Esta ronda requirements No intentes reescribir todos los elementos restantes del mismo lote. direct command surfaces。
+- Esta ronda requirements No limpiar ni reutilizar dirty root worktree。
 
-## 关键决策
+## Decisiones clave
 
-- 把已交付的 write-heavy 切片当成证明，而不是下一目标。
-- 继续优先 family-specific result object；等更大的 `src/fileUtils.ts` 家族与至少一条更深层 diagram/provider seam 都建模成功后，再决定是否值得上全局 envelope。
-- 把剩余 `src/main.ts` diagram/provider command-core branch 视为 `src/fileUtils.ts` 之后的下一收敛问题，而不是之前。
+- Toma lo que te han entregado write-heavy Cortar como prueba, no como proximo objetivo。
+- Continuar priorizando family-specific result object；Espera a que lleguen los mas grandes `src/fileUtils.ts` Familia y al menos una mas profunda. diagram/provider seam Despues de que todo el modelado sea exitoso, decida si vale la pena adoptar una vision general. envelope。
+- Quedate con el resto `src/main.ts` diagram/provider command-core branch Tratar como `src/fileUtils.ts` El proximo problema de convergencia despues, no antes。
 
-## 依赖 / 假设
+## Dependencia / Suposiciones
 
-- 当前事实已通过 `src/main.ts`、`src/translate.ts`、`src/formulaFixer.ts`、`src/fileUtils.ts`、`src/operations/registry.ts` 与 2026-05 的 brainstorm 文档核对。
-- `content.extract-original-text`、`translate.*`、`formula.*`、`mermaid.batch-fix`、`concept.dedupe` 与 process/generate 子切片已经提供目标模式：utility core 输出 richer result，成功/no-file/confirmation 语义交给 host adapter。
-- 当前 registry 已覆盖下一批所需 operation IDs，也已包含 `provider.connection.test`、`diagram.preview` 与更丰富的 `diagram.generate` 结果字段；剩余工作主要是这些 typed seam 之下更深层的 contract 深度与 host-side effect 上提。
+- Hechos actuales pasados. `src/main.ts`、`src/translate.ts`、`src/formulaFixer.ts`、`src/fileUtils.ts`、`src/operations/registry.ts` Con 2026-05 de brainstorm Verificacion de documentos。
+- `content.extract-original-text`、`translate.*`、`formula.*`、`mermaid.batch-fix`、`concept.dedupe` Con process/generate Subslice ya proporciona el modo objetivo：utility core Salida richer result，Exito/no-file/confirmation Entregar la semantica host adapter。
+- Actual registry Cubierto para el proximo lote operation IDs，Tambien incluido `provider.connection.test`、`diagram.preview` Con mas rico `diagram.generate` Campos de resultados; el trabajo restante son principalmente estos typed seam Mas profundo debajo contract Profundidad vs. host-side effect Levanta。
 
-## 未决问题
+## Cuestiones abiertas
 
-### 延后到规划阶段
-- [影响 R4][Technical] `src/operations/diagramCommandExecution.ts` 中哪些更深层 diagram save/artifact 分支已经足够 deterministic，值得继续提升为额外 typed operation boundary？
-- [影响 R5][Technical] 第一个更深层 seam 应该先做 save-Mermaid follow-through、artifact-save follow-through，还是先做两者共享的更小公共边界？
-- [影响 R8][Technical] direct-surface 批次之后，workflow/settings packaging 与 maintainer semantic verification 谁的杠杆更高？
+### Aplazar la etapa de planificacion
+- [Impacto R4][Technical] `src/operations/diagramCommandExecution.ts` ¿Cual de los 18? diagram save/artifact La ramificacion es suficiente deterministic，Vale la pena continuar actualizando como beneficio adicional typed operation boundary？
+- [Impacto R5][Technical] El primero mas profundo seam Debe hacerse primero save-Mermaid follow-through、artifact-save follow-through，Creemos un limite comun mas pequeno compartido por los dos primeros.？
+- [Impacto R8][Technical] direct-surface Despues del lote，workflow/settings packaging Con maintainer semantic verification ¿Quien tiene mayor apalancamiento?？
 
-## 下一步
+## Siguiente paso
 
--> `/ce:plan` for 剩余 direct-surface batch
+-> `/ce:plan` for Resto direct-surface batch

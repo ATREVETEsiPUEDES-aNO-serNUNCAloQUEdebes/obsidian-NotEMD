@@ -1,59 +1,59 @@
-# AGENTS 与 Provider 扩展设计
+# AGENTS con Provider Diseno ampliado
 
-**日期：** 2026-03-26
+**fecha：** 2026-03-26
 
-## 范围
+## Alcance
 
-本设计覆盖 Notemd 中三项相互关联的改动：
+Este diseno cubre Notemd Tres cambios interrelacionados en 22.：
 
-1. 在不重写 `GEMINI.md` 的前提下，新增项目级 `AGENTS.md`，作为 Codex/agent 工作流的执行权威。
-2. 为 `Doubao` 预设增加前端校验提示，当模型字段看起来仍是未设置的 Ark endpoint 占位值时，给用户明确反馈。
-3. 扩展集中式 LLM provider registry，新增 `Baidu Qianfan` 与 `SiliconFlow`，并补齐 runtime 支持、API 连接测试、文档与回归测试。
+1. Sin reescribir `GEMINI.md` Bajo la premisa de agregar nivel de proyecto `AGENTS.md`，como Codex/agent Autoridad de ejecucion del flujo de trabajo.。
+2. para `Doubao` Se agrego un mensaje de validacion de front-end de forma predeterminada cuando los campos del modelo todavia parecen no estar configurados. Ark endpoint Proporcionar comentarios claros al usuario a la hora de valorar。
+3. Ampliar centralizado LLM provider registry，nuevo `Baidu Qianfan` con `SiliconFlow`，Y completo runtime Apoyo、API Pruebas de conexion, documentacion y pruebas de regresion.。
 
-之所以把这三项合并，是因为它们都在提升 agent/operator 的可靠性：一项作用于仓库工作流层，一项作用于 provider UX 层，一项作用于 provider 覆盖面。
+La razon por la que se combinan estos tres elementos es porque todos estan mejorando. agent/operator Fiabilidad: uno actua sobre la capa de flujo de trabajo del almacen y el otro actua sobre provider UX Capa, un elemento actua sobre provider Cobertura。
 
-## 架构
+## Arquitectura
 
-provider 架构应继续使用 `src/llmProviders.ts` 作为 provider 元数据的单一事实源。新增 provider 必须表现为 registry 定义，并沿着 `src/llmUtils.ts` 中 transport-driven 的 dispatch 路径流动，而不是继续增加 provider-name 分支。
+provider La arquitectura debe seguir utilizandose `src/llmProviders.ts` como provider Fuente unica de verdad para los metadatos. Nuevo provider Debe aparecer como registry Definir y seguir `src/llmUtils.ts` Medio transport-driven de dispatch Los caminos fluyen en lugar de aumentar provider-name Sucursal。
 
-provider 校验应实现为一个小型纯函数 helper，向 UI 消费方返回 warning。设置页可以渲染这些 warning，并在 provider 配置显然不完整时阻止 connection test。这样可以让校验逻辑保持可测试、可复用，而不是埋在脆弱的 UI 特判里。
+provider La verificacion debe implementarse como una pequena funcion pura. helper，a UI Devoluciones del consumidor warning。La pagina de configuracion puede mostrar estos warning，y en provider Bloqueo cuando la configuracion aparentemente esta incompleta connection test。Esto permite que la logica de verificacion siga siendo comprobable y reutilizable, en lugar de quedar enterrada en fragiles UI Tribunal Especial。
 
-新的 `AGENTS.md` 应作为仓库本地文档，明确表达 Notemd 的 build、verification、documentation、release 和 asset-upload 工作流。它必须显式写清：GitHub release 除了 `main.js`、`manifest.json`、`styles.css` 外，还必须上传 `README.md`。
+nuevo `AGENTS.md` Debe expresarse claramente como documento local en el almacen. Notemd de build、verification、documentation、release y asset-upload Flujo de trabajo. debe estar escrito explicitamente：GitHub release excepto `main.js`、`manifest.json`、`styles.css` Ademas, tambien debes subir `README.md`。
 
-## 组件
+## Componentes
 
-### 1. 仓库指南
+### 1. Guia de almacen
 
-- 在仓库根目录创建 `AGENTS.md`。
-- 保持 `GEMINI.md` 不变。
-- 内容应覆盖项目概览、关键文件、build/test 命令、release workflow、文档同步规则、provider 扩展规则和 Git 安全规则。
+- Crear en el directorio raiz del almacen. `AGENTS.md`。
+- mantener `GEMINI.md` Sin cambios。
+- El contenido debe cubrir la descripcion general del proyecto y los documentos clave.、build/test Orden、release workflow、Reglas de sincronizacion de documentos.、provider Reglas de extension y Git Normas de seguridad。
 
-### 2. Provider 校验
+### 2. Provider Verificacion
 
-- 在 provider registry 附近新增一个小型校验 helper。
-- 检测 `Doubao` 是否仍使用占位 endpoint model，或配置值是否看起来不像有效的 Ark endpoint ID。
-- 在用户运行任务或连接测试之前，于设置页中展示 warning。
+- en provider registry Agregue una pequena suma de verificacion cerca helper。
+- Pruebas `Doubao` Si se deben seguir utilizando marcadores de posicion endpoint model，¿O el valor de configuracion no parece valido? Ark endpoint ID。
+- Mostrar en la pagina de configuracion antes de que el usuario ejecute una tarea o prueba de conexion. warning。
 
-### 3. Provider 扩展
+### 3. Provider Extension
 
-- 将 `Baidu Qianfan` 与 `SiliconFlow` 新增到 registry 中。
-- 保持它们继续走现有的 `openai-compatible` transport。
-- 设置 API-test 元数据，确保 connection test 针对的是用户实际配置的 model。
-- 同步更新 `README.md` 与 `README_zh.md`。
+- voluntad `Baidu Qianfan` con `SiliconFlow` Agregar a registry Medio。
+- Mantenlos como estan `openai-compatible` transport。
+- Configuracion API-test Metadatos, asegurando connection test Esta dirigido a lo realmente configurado por el usuario. model。
+- Actualizaciones sincronicas `README.md` con `README_zh.md`。
 
-## 错误处理
+## Manejo de errores
 
-连接测试路径应继续沿用当前 runtime/API 错误处理行为。新的 provider-validation 层只处理明显不完整的本地配置，并生成面向用户的 warning；它不应尝试猜测或自动改写 provider model。
+La ruta de prueba de conexion debe continuar usando la ruta actual. runtime/API Comportamiento de manejo de errores. nuevo provider-validation La capa solo maneja la configuracion local obviamente incompleta y genera informacion orientada al usuario. warning；No debe intentar adivinar ni reescribir automaticamente. provider model。
 
-对于 `Doubao`，UX 的目标应是提示用户配置有效的 Ark endpoint，同时保留 provider 侧未来更改命名方式的空间。Warning 比破坏性归一化更安全。
+Para `Doubao`，UX El objetivo debe ser solicitar al usuario que configure una opcion valida. Ark endpoint，Conserva ambos provider Deje espacio para futuros cambios en el metodo de denominacion.。Warning Mas segura que la normalizacion destructiva。
 
-## 测试策略
+## Estrategia de prueba
 
-- 为 provider validation warning 新增单元测试。
-- 扩展 provider registry 测试，断言 `Baidu Qianfan` 与 `SiliconFlow` 存在。
-- 扩展 provider runtime/API 测试，断言两者都走 openai-compatible runtime，并使用 chat-first API probing。
-- 实现完成后重新运行完整 build 与 Jest 套件。
+- para provider validation warning Prueba unitaria agregada。
+- Extension provider registry Probar, afirmar `Baidu Qianfan` con `SiliconFlow` Existencia。
+- Extension provider runtime/API Prueba, afirma ambos openai-compatible runtime，Y uso chat-first API probing。
+- Vuelva a ejecutarlo por completo una vez completada la implementacion. build con Jest equipo。
 
-## 评审说明
+## Revisar las instrucciones
 
-本次未使用专门的 spec-review 子代理，因为当前会话没有用户明确授权进行子代理委派。本设计已依据仓库当前 provider 架构与 release workflow 进行自审。
+Esta vez no hay nada especial spec-review Subagente porque ningun usuario de la sesion actual esta autorizado explicitamente para la delegacion de subagente. Este diseno se ha basado en el almacen actual. provider Arquitectura y release workflow Realizar una autoauditoria。

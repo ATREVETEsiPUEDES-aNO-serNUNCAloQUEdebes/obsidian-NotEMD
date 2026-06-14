@@ -61,8 +61,8 @@ end`;
 \
 mermaid
 graph TD
-MarketDataA[市场 A 数据源 Market Data A] --> SpreadCalc价差计算 Spread Calculation;
-MarketDataB[市场 B 数据源 Market Data B] --> SpreadCalc;
+MarketDataA[Mercado A Fuente de datos Market Data A] --> SpreadCalcCalculo de la diferencia de precio Spread Calculation;
+MarketDataB[Mercado B Fuente de datos Market Data B] --> SpreadCalc;
 \
 \
 \
@@ -72,8 +72,8 @@ MarketDataB[市场 B 数据源 Market Data B] --> SpreadCalc;
 \
 mermaid
 graph TD
-MarketDataA[市场 A 数据源 Market Data A] --> SpreadCalc[价差计算 Spread Calculation];
-MarketDataB[市场 B 数据源 Market Data B] --> SpreadCalc;
+MarketDataA[Mercado A Fuente de datos Market Data A] --> SpreadCalc[Calculo de la diferencia de precio Spread Calculation];
+MarketDataB[Mercado B Fuente de datos Market Data B] --> SpreadCalc;
 \
 \
 \
@@ -87,7 +87,7 @@ MarketDataB[市场 B 数据源 Market Data B] --> SpreadCalc;
 \
 mermaid
 graph TD
-RiskCheck -- "Passed" --> Concurrency并发执行 Concurrent Execution;
+RiskCheck -- "Passed" --> ConcurrencyEjecucion concurrente Concurrent Execution;
 \
 \
 \
@@ -97,7 +97,7 @@ RiskCheck -- "Passed" --> Concurrency并发执行 Concurrent Execution;
 \
 mermaid
 graph TD
-RiskCheck -- "Passed" --> Concurrency[并发执行 Concurrent Execution];
+RiskCheck -- "Passed" --> Concurrency[Ejecucion concurrente Concurrent Execution];
 \
 \
 \
@@ -111,7 +111,7 @@ RiskCheck -- "Passed" --> Concurrency[并发执行 Concurrent Execution];
 \
 mermaid
 graph TD
-OrderA --> AckA确认成交 A?;
+OrderA --> AckAConfirmar transaccion A?;
 \
 \
 \
@@ -121,7 +121,7 @@ OrderA --> AckA确认成交 A?;
 \
 mermaid
 graph TD
-OrderA --> AckA[确认成交 A?];
+OrderA --> AckA[Confirmar transaccion A?];
 \
 \
 \
@@ -150,7 +150,7 @@ C --> D;
 \
 mermaid
 graph TD
-A --> B错误 Error;
+A --> BError Error;
 C --> D[Correct];
 E --> F;
 \
@@ -162,7 +162,7 @@ E --> F;
 \
 mermaid
 graph TD
-A --> B[错误 Error];
+A --> B[Error Error];
 C --> D[Correct];
 E --> F;
 \

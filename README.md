@@ -5,7 +5,7 @@
 
 # Notemd Plugin for Obsidian
 
-[English](./README.md) | [简体中文](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [繁體中文](./README_zh_Hant.md) | [日本語](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
+[English](./README.md) | [Chino simplificado](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [chino tradicional](./README_zh_Hant.md) | [japones](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
 
 Read docs in more languages: [Language Hub](./docs/i18n/README.md)
 Browse repository docs: [Docs Hub](./docs/README.md)
@@ -433,7 +433,7 @@ Access plugin settings via:
     *   **Disabled**: Leaves generated Mermaid output untouched unless you run `Batch Mermaid Fix` manually or add it to a custom workflow.
 -   **Output Language**: (New) Select the desired output language for "Generate from Title" and "Batch Generate from Title" tasks.
     *   **English (Default)**: Prompts are processed and output in English.
-    *   **Other Languages**: The LLM is instructed to perform its reasoning in English but provide the final documentation in your selected language (e.g., Español, Français, 简体中文, 繁體中文, العربية, हिन्दी, etc.).
+    *   **Other Languages**: The LLM is instructed to perform its reasoning in English but provide the final documentation in your selected language (e.g., Español, Français, Chino simplificado, chino tradicional, العربية, हिन्दी, etc.).
 -   **Change Prompt Word**: (New)
     *   **Change Prompt Word**: Allows you to change the prompt word for a specific task.
     *   **Custom Prompt Word**: Enter your custom prompt word for the task.
@@ -758,9 +758,9 @@ Contributions are welcome! Please refer to the GitHub repository for guidelines:
 ## Maintainer Docs
 
 - [Release Workflow (English)](./docs/maintainer/release-workflow.md)
-- [Release Workflow (简体中文)](./docs/maintainer/release-workflow.zh-CN.md)
+- [Release Workflow (Chino simplificado)](./docs/maintainer/release-workflow.zh-CN.md)
 - [CLI Capability Matrix](./docs/maintainer/notemd-cli-capability-matrix.md)
-- [CLI Capability Matrix (简体中文)](./docs/maintainer/notemd-cli-capability-matrix.zh-CN.md)
+- [CLI Capability Matrix (Chino simplificado)](./docs/maintainer/notemd-cli-capability-matrix.zh-CN.md)
 - Repo-local CLI helper: `npm run cli:help`
 - Repo-local maintainer invoke example: `npm run cli:invoke -- --vault docs --operation content.split-note-by-chapters --input-json '{"sourcePath":"index.zh-CN.md","splitHeadingLevel":"h2"}' --pretty`
 - For `--vault docs`, JSON path inputs stay vault-relative: use `index.zh-CN.md` and `maintainer`, not `docs/index.zh-CN.md` or `docs/maintainer`.
@@ -787,4 +787,4 @@ _Last refreshed for release tag `1.9.2` on 2026-06-06. Latest commit date: 2026-
 
 
 ![Star History Chart](https://api.star-history.com/svg?repos=Jacobinwwey/obsidian-NotEMD&type=Date)
-#### Friendly Links: [Linux DO：学AI，上L站！](https://linux.do/)
+#### Friendly Links: [Linux DO：estudiarAI，superiorLpararse！](https://linux.do/)

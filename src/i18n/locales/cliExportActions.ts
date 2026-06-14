@@ -131,20 +131,20 @@ export const CLI_EXPORT_ACTION_LOCALE_EXTENSIONS: Record<string, DeepPartial<Not
     },
     ja: {
         commands: {
-            exportProviderProfilesRedacted: '秘匿化したプロバイダープロファイルをエクスポート',
-            exportCliCapabilityManifest: 'CLI 機能マニフェストをエクスポート',
-            exportCliInvocationContract: 'CLI 呼び出し契約をエクスポート',
-            exportCliPublicSurface: '公開 CLI サーフェスをエクスポート'
+            exportProviderProfilesRedacted: 'Anonimizacionしたプロバイダープロファイルをエクスポート',
+            exportCliCapabilityManifest: 'CLI Funcionマニフェストをエクスポート',
+            exportCliInvocationContract: 'CLI LlamarびFueraしContratoをエクスポート',
+            exportCliPublicSurface: 'Publicacion CLI サーフェスをエクスポート'
         },
         settings: {
             providerConfig: {
-                exportRedactedSuccess: '秘匿化したプロバイダー設定を {path} にエクスポートしました'
+                exportRedactedSuccess: 'AnonimizacionしたプロバイダーConfiguracionを {path} にエクスポートしました'
             }
         },
         notices: {
-            cliCapabilityManifestExported: 'CLI 機能マニフェストを {path} にエクスポートしました',
-            cliInvocationContractExported: 'CLI 呼び出し契約を {path} にエクスポートしました',
-            cliPublicSurfaceExported: '公開 CLI サーフェスを {path} にエクスポートしました'
+            cliCapabilityManifestExported: 'CLI Funcionマニフェストを {path} にエクスポートしました',
+            cliInvocationContractExported: 'CLI LlamarびFueraしContratoを {path} にエクスポートしました',
+            cliPublicSurfaceExported: 'Publicacion CLI サーフェスを {path} にエクスポートしました'
         }
     },
     ko: {

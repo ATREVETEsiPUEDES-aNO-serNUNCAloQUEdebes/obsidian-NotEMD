@@ -4,15 +4,15 @@ last_updated: 2026-05-25
 topic: mainline-progress-audit-1-8-9-and-next-direction
 ---
 
-# 1.8.9 之后的主线进展审计：深度对比、当前状态与后续方向
+# 1.8.9 Auditoria posterior del progreso de la linea principal: comparacion en profundidad, estado actual y direccion de seguimiento
 
-> 历史边界说明：本文记录的是 `1.8.9` 发布切点视角下的审计结果，时间早于 2026-05-24 的 force-rewrite recovery 以及随后在当前主线上的 bounded recovery。要查看 recovery 之后的当前状态与 next-level 方案，请改看 `docs/brainstorms/2026-05-25-post-bounded-recovery-audit-and-next-level-direction.zh-CN.md`。
+> Descripcion de los limites historicos: este articulo registra `1.8.9` Publicar los resultados de la auditoria desde la perspectiva del punto de corte, antes de 2026-05-24 de force-rewrite recovery Y posteriormente en la linea principal actual. bounded recovery。Para ver recovery El estado actual despues de eso es el mismo que next-level Planifica, leelo de nuevo. `docs/brainstorms/2026-05-25-post-bounded-recovery-audit-and-next-level-direction.zh-CN.md`。
 
-## 1. 范围与基线
+## 1. Alcance y linea de base
 
-本文档用于落盘 `1.8.9` 发布边界之后的主线状态审计，并把当前代码真值与先前主线计划逐条对齐。
+Este documento es para colocacion. `1.8.9` Audite el estado de la linea principal despues del limite de lanzamiento y alinee el valor de verdad del codigo actual con el plan de la linea principal anterior uno por uno.。
 
-主要对比来源：
+Principales fuentes de comparacion：
 
 1. `.trellis/tasks/05-07-sync-main-progress-audit/prd.md`
 2. `docs/superpowers/plans/2026-05-03-mainline-stabilization-next-batch.zh-CN.md`
@@ -20,54 +20,54 @@ topic: mainline-progress-audit-1-8-9-and-next-direction
 4. `docs/brainstorms/2026-05-08-packaging-semantic-convergence-progress-and-next-steps.zh-CN.md`
 5. `docs/brainstorms/2026-05-12-release-chronicle-ci-hardening-progress-and-architecture-alignment.zh-CN.md`
 6. `docs/brainstorms/2026-05-12-sidebar-api-observability-progress-and-architecture-alignment.zh-CN.md`
-7. 已发货 release 真值：`docs/releases/1.8.9.zh-CN.md`、`change.md`、`README_zh.md`、`src/ui/welcomeReleaseNotes.ts`
+7. enviado release Valor de verdad：`docs/releases/1.8.9.zh-CN.md`、`change.md`、`README_zh.md`、`src/ui/welcomeReleaseNotes.ts`
 
-本次审计目标：
+Objetivos de esta auditoria：
 
-1. 区分哪些是已经落地的收敛事实，哪些仍是未开始的架构工作；
-2. 防止进度文档继续高估 packaging/runtime 推进程度；
-3. 基于当前 `main` 代码库，落盘一份具体后续方向。
+1. Distinguir cuales son hechos de convergencia que se han implementado y cuales aun son obras arquitectonicas que aun no se han iniciado.；
+2. Evitar que se sobreestimen los documentos de progreso packaging/runtime Grado de avance；
+3. Basado en la actualidad `main` Base del codigo, escriba una direccion de seguimiento especifica。
 
-## 2. 当前代码真值快照
+## 2. Instantanea del valor de verdad del codigo actual
 
-### 2.1 图表预览边界
+### 2.1 Borde de vista previa del grafico
 
-当前预览行为已经明显强于此前“已保存产物兜底预览”的基线：
+El comportamiento de vista previa actual es significativamente mas solido que la linea base anterior de "Vista previa del producto guardado".：
 
-1. `src/operations/diagramCommandHostAdapter.ts` 现在让 `Preview diagram` 走 canonical 直接预览路径，不再默认回退到重新生成。
-2. `src/ui/DiagramPreviewModal.ts` 现在已经是可复用的预览壳层，而不只是“生成后弹一次”的一次性窗口：
-   - 垂直 action rail
-   - 历史面板
-   - frame-safe 布局，避免无必要的横向滚动
-3. `src/ui/diagramPreviewHistory.ts` 现在提供有上限的内存态预览历史（`MAX_DIAGRAM_PREVIEW_HISTORY = 12`），并按“已保存源真值”而不是简单弹窗顺序建 key。
-4. `src/tests/diagramPreviewModal.test.ts`、`src/tests/diagramCommandHostAdapter.test.ts`、`src/tests/diagramCommandExecution.test.ts` 已锁定直接预览与再次打开行为。
+1. `src/operations/diagramCommandHostAdapter.ts` Deja ahora `Preview diagram` ir canonical Obtenga una vista previa de la ruta directamente y ya no recurra a la regeneracion de forma predeterminada.。
+2. `src/ui/DiagramPreviewModal.ts` Ahora es un shell de vista previa reutilizable, no solo una ventana unica que "aparece una vez despues de generarse".：
+   - Verticales action rail
+   - Panel de historia
+   - frame-safe Diseno para evitar desplazamientos horizontales innecesarios.
+3. `src/ui/diagramPreviewHistory.ts` Ahora proporciona un limite superior del historial de vista previa de la memoria.（`MAX_DIAGRAM_PREVIEW_HISTORY = 12`），Y haga clic en "Valor verdadero de fuente guardada" en lugar de simplemente crear la secuencia de ventanas emergentes. key。
+4. `src/tests/diagramPreviewModal.test.ts`、`src/tests/diagramCommandHostAdapter.test.ts`、`src/tests/diagramCommandExecution.test.ts` Vista previa directa bloqueada y comportamiento de reapertura。
 
-必须明确的非结论：
+No conclusiones que deben quedar claras：
 
-- 这是预览表面的收敛，不是新的 renderer/runtime 拓扑。
-- 当前代码依旧没有证明 heavy-runtime packaging isolation，也没有证明独立预览资产拆分已经完成。
+- Esta es la convergencia de la superficie de vista previa, no nueva renderer/runtime Topologia。
+- El codigo actual aun no tiene pruebas. heavy-runtime packaging isolation，Tampoco hay pruebas de que se haya completado la division de activos preliminar independiente.。
 
-### 2.2 Release chronicle / repo-saga 加固边界
+### 2.2 Release chronicle / repo-saga Reforzar los limites
 
-发布后 follow-up 加固已经不止是一次性重试逻辑：
+Despues de la publicacion follow-up El endurecimiento es mas que una simple logica de reintento unico：
 
-1. `scripts/release/commit-chronicle-refresh.js` 已经负责 tracked/untracked chronicle 工件的收口与有界 push 恢复。
-2. `scripts/lib/repo-saga-execution-lock.js` 现在为 repo-saga chronicle 操作新增了可执行的串行锁。
-3. `scripts/repo-saga/update-quarterly-saga.mjs` 现在在操作共享 repo-saga cache 根目录前会先拿这把锁。
-4. `src/tests/repoSagaExecutionLock.test.ts` 锁定了：
-   - 首次 acquire 成功
-   - 活跃锁拒绝
-   - stale lock 清理与重新 acquire
-5. `docs/maintainer/release-workflow*.md` 与 `AGENTS.md` 现在把 `chronicle:sync-repo-saga` 和 `chronicle:update` 明确视为串行 gate，而不再只是操作经验。
+1. `scripts/release/commit-chronicle-refresh.js` Ya responsable tracked/untracked chronicle Cierre y delimitacion de piezas push Recuperacion。
+2. `scripts/lib/repo-saga-execution-lock.js` Ahora para repo-saga chronicle Se agrego un bloqueo serial ejecutable a la operacion.。
+3. `scripts/repo-saga/update-quarterly-saga.mjs` Ahora operando compartiendo repo-saga cache Este bloqueo se realizara antes de ingresar al directorio raiz.。
+4. `src/tests/repoSagaExecutionLock.test.ts` Bloqueado：
+   - Primera vez acquire Exito
+   - Bloqueo activo denegado
+   - stale lock Limpiar y refrescar acquire
+5. `docs/maintainer/release-workflow*.md` con `AGENTS.md` Ahora pon `chronicle:sync-repo-saga` y `chronicle:update` Tratada explicitamente como una serie gate，Ya no solo experiencia operativa。
 
-必须明确的非结论：
+No conclusiones que deben quedar claras：
 
-- 这并不意味着 repo-saga 已经变成 parallel-safe。
-- 它做的是把原本就应该串行的规则变成“运行时可执行 + 文档显式要求”的硬约束。
+- Esto no significa repo-saga se ha convertido parallel-safe。
+- Lo que hace es convertir las reglas que deben serializarse en "ejecutables en tiempo de ejecucion". + Restricciones estrictas "requeridas explicitamente por el documento"。
 
-### 2.3 Release 真值同步边界
+### 2.3 Release Limite de sincronizacion de la verdad
 
-`1.8.9` 的发布边界现在内部一致：
+`1.8.9` Los limites de las versiones ahora son coherentes internamente：
 
 1. `docs/releases/1.8.9.md`
 2. `docs/releases/1.8.9.zh-CN.md`
@@ -76,326 +76,326 @@ topic: mainline-progress-audit-1-8-9-and-next-direction
 5. `README_zh.md`
 6. `src/ui/welcomeReleaseNotes.ts`
 
-这套对齐现在同时覆盖两类真值：
+Este conjunto de alineamientos ahora cubre ambos tipos de valores de verdad.：
 
-1. 已保存 Mermaid 再次打开预览时，不再与首次预览内容漂移；
-2. 欢迎弹窗中的“最近两次发布摘要”已经推进到 `1.8.9` / `1.8.8`。
+1. Guardado Mermaid Cuando abras la vista previa nuevamente, ya no se desplazara con el contenido de la primera vista previa.；
+2. El "Resumen de los dos ultimos lanzamientos" en la ventana emergente de bienvenida se ha avanzado a `1.8.9` / `1.8.8`。
 
-## 3. 相对先前方案轨道的深度对比
+## 3. Comparacion en profundidad con orbitas del esquema anterior.
 
-### 3.1 对 `mainline-stabilization-next-batch` 的对比
+### 3.1 Correcto `mainline-stabilization-next-batch` Comparacion de
 
-该计划要求：
+Requisitos del programa：
 
-1. 优先做边界加固，而不是范围蔓延；
-2. 代码、测试、文档必须同批落地；
-3. 已落地稳定化与未来 packaging 工作必须诚实区分。
+1. Priorizar el refuerzo de los limites en lugar del desplazamiento del alcance；
+2. El codigo, las pruebas y los documentos deben implementarse en el mismo lote.；
+3. Estabilizacion implementada y futuro. packaging El trabajo debe dividirse con honestidad。
 
-当前 `main` 已证明：
+Actual `main` Probado：
 
-1. 预览真值收敛已经落地，而不是停留在计划层；
-2. release follow-up 恢复与 repo-saga 串行安全都已 repo-owned 并被回归测试锁定；
-3. release 版本真值、preview UX 真值与 welcome modal 真值都已在 `1.8.9` 边界同步。
+1. Se ha implementado la convergencia del valor real de vista previa en lugar de permanecer en el nivel de planificacion.；
+2. release follow-up Recuperacion y recuperacion repo-saga La seguridad serial desaparecio repo-owned Y quedar atrapado en las pruebas de regresion；
+3. release Valor de verdad de la version、preview UX Verdad vs. welcome modal Los valores de la verdad estan todos ahi. `1.8.9` Sincronizacion de limites。
 
-仍然开放的点：
+Puntos aun abiertos：
 
-1. Stage-B2 -> Stage-C packaging 工作仍然是实际上的下一关键路径；
-2. 当前 preview 进展不应再被误读成“可以继续推迟 packaging/semantic convergence”。
+1. Stage-B2 -> Stage-C packaging Aun se esta trabajando en el siguiente camino critico de facto；
+2. Actual preview Los avances ya no deben malinterpretarse como “pueden seguir retrasandose” packaging/semantic convergence”。
 
-结论：
+Conclusion：
 
-- `1.8.9` 是一次边界收敛 release。
-- 它不是一次 renderer 扩张 release。
+- `1.8.9` Es una convergencia de limites. release。
+- No fue ni una sola vez renderer Expansion release。
 
-### 3.2 对 `diagram-rendering-platform-roadmap` 的对比
+### 3.2 Correcto `diagram-rendering-platform-roadmap` Comparacion de
 
-路线图要求：
+Requisitos de la hoja de ruta：
 
-1. canonical preview 入口；
-2. 可复用的 preview/render host 表面；
-3. 对已支持 preview/export 目标的真值表达；
-4. runtime-boundary isolation 必须等到 contract/pipeline 收敛后再推进。
+1. canonical preview Entrada；
+2. Reutilizable preview/render host Superficie；
+3. apoyado preview/export Expresion veraz del objetivo.；
+4. runtime-boundary isolation Tienes que esperar contract/pipeline Avance tras la convergencia。
 
-当前代码已证明：
+El codigo actual esta probado.：
 
-1. canonical preview 入口已经真实复用到已保存产物的预览路径；
-2. `DiagramPreviewModal` 已从“最小平台骨架”推进到产品可用的 host shell；
-3. 历史切换与 frame-safe controls 已纳入 preview 边界，而不再依赖外部绕行；
-4. 路线图里“support is explicit, not universal”的约束依旧成立。
+1. canonical preview La entrada se ha reutilizado en la ruta de vista previa del producto guardado.；
+2. `DiagramPreviewModal` Ha avanzado desde un “esqueleto de plataforma minimo” hasta estar listo para el producto. host shell；
+3. Cambio de historial y frame-safe controls incorporado preview Limites en lugar de depender de desvios externos；
+4. En la hoja de ruta“support is explicit, not universal”Las limitaciones de todavia se mantienen。
 
-仍然开放的点：
+Puntos aun abiertos：
 
-1. 还没有 dedicated render-host asset bundle；
-2. 还没有 multi-entry packaging topology；
-3. 任何新文档都不应暗示 universal renderer parity 或 detached heavy-runtime delivery 已完成。
+1. Todavia no dedicated render-host asset bundle；
+2. Todavia no multi-entry packaging topology；
+3. Cualquier documentacion nueva no debe implicar universal renderer parity o detached heavy-runtime delivery Completado。
 
-结论：
+Conclusion：
 
-- Task 4 / Task 5 风格的 preview 收敛已经实质推进。
-- Stage-C runtime-boundary 工作在代码真值里仍然没有开始。
+- Task 4 / Task 5 elegante preview La convergencia ha avanzado sustancialmente。
+- Stage-C runtime-boundary El trabajo aun no comienza con el codigo verdadero。
 
-### 3.3 对 `packaging-semantic-convergence` 的对比
+### 3.3 Correcto `packaging-semantic-convergence` Comparacion de
 
-该轨道要求：
+Los requisitos de la pista.：
 
-1. 保持当前 `main.js + inline srcdoc` 真值显式；
-2. 在 helper/docs/tests 加固阶段不要重开 operation 边界；
-3. runtime packaging 必须等 contract-definition gates 写清并锁定后再推进。
+1. Mantengase actualizado `main.js + inline srcdoc` Valor de verdad explicito；
+2. en helper/docs/tests No reiniciar durante la fase de refuerzo. operation Limites；
+3. runtime packaging Tienes que esperar contract-definition gates Escribe claramente y bloquea antes de presionar。
 
-当前 `main` 已证明：
+Actual `main` Probado：
 
-1. `1.8.9` 的 preview/release 工作没有与当前 packaging 真值冲突；
-2. 仓库仍然是 single-entry bundling；
-3. release 与 preview 收敛切片没有意外夸大 runtime isolation。
+1. `1.8.9` de preview/release El trabajo no es relevante para la situacion actual. packaging Conflicto de valores de verdad；
+2. El almacen todavia esta single-entry bundling；
+3. release con preview El corte convergente no se exagera accidentalmente runtime isolation。
 
-仍然开放的点：
+Puntos aun abiertos：
 
-1. Stage-B2 的 packaging-contract promotion 仍需把当前文档化意图进一步转成更紧的 implementation-readiness 工件；
-2. Stage-C runtime 工作仍按设计被这些契约前置条件阻塞。
+1. Stage-B2 de packaging-contract promotion Todavia es necesario transformar aun mas la intencion documentada actual en una politica mas estricta. implementation-readiness Artefactos；
+2. Stage-C runtime El trabajo todavia esta bloqueado por estas condiciones previas del contrato tal como estan disenadas.。
 
-结论：
+Conclusion：
 
-- packaging 轨道仍然是正确的下一阶段。
-- 除非出现回归，否则 preview 与 release 加固现在不应继续占用这条关键路径。
+- packaging El camino todavia esta bien para la siguiente fase。
+- Salvo una regresion, preview con release El refuerzo no deberia seguir ocupando este camino critico ahora.。
 
-### 3.4 对 release-chronicle / CI hardening 的对比
+### 3.4 Correcto release-chronicle / CI hardening Comparacion de
 
-更早一轮 chronicle 加固解决了：
+Una ronda antes chronicle Refuerzo resuelto：
 
-1. 远端 `500` 失败下的有界 push retry 与 rebase 恢复；
-2. 用 repo-owned helper 替代内联 shell commit/push 逻辑。
+1. remoto `500` Limitacion ante el fracaso push retry con rebase Recuperacion；
+2. uso repo-owned helper Alternativa a en linea shell commit/push Logica。
 
-当前代码在此基础上新增：
+El codigo actual se agrega en base a esto.：
 
-1. repo-saga chronicle 命令现在有可执行的串行锁，而不只是 prose 警告；
-2. maintainer workflow 指南与 AGENTS 级 guardrail 已明确编码串行要求；
-3. 当前加固同时覆盖了：
+1. repo-saga chronicle Los comandos ahora tienen bloqueos de serie ejecutables en lugar de solo prose Advertencia；
+2. maintainer workflow Directrices y AGENTS nivel guardrail Se aclaran los requisitos de serie codificados；
+3. El refuerzo actual tambien cubre：
    - release follow-up push recovery
    - shared-cache mutation safety
 
-结论：
+Conclusion：
 
-- release-chronicle 轨道已经从 transport recovery 推进到了 concurrency-risk containment。
+- release-chronicle La pista se ha movido de transport recovery Avanzando hacia concurrency-risk containment。
 
-## 4. 架构推进评估
+## 4. Evaluacion de la promocion de la arquitectura.
 
-### 4.1 真正推进了什么
+### 4.1 Lo que realmente avanza
 
-1. **预览真值从短暂内存态推进到已保存源真值**
-   手动 `Preview diagram` 现在会重新打开已保存 Mermaid 源路径，而不是依赖陈旧的内存态 artifact 假设。
-2. **预览 UI 已成为可复用的操作面**
-   该 modal 现在支持重复检查与切换，而不是“生成后只看一次”。
-3. **Release chronicle 安全性从操作习惯升级为执行约束**
-   repo-saga 串行执行现在既有代码防护，也有 maintainer workflow 规则。
+1. **Los valores de verdad de la vista previa se pasan del estado de memoria efimera a los valores de verdad de la fuente guardados.**
+   manuales `Preview diagram` Los archivos guardados ahora se volveran a abrir. Mermaid Rutas de origen en lugar de depender del estado de memoria obsoleto artifact Suposiciones。
+2. **Vista previa UI Se ha convertido en una superficie operativa reutilizable.**
+   el modal Ahora admite comprobaciones y cambios repetidos, en lugar de "mirar solo una vez despues de generar"”。
+3. **Release chronicle La seguridad se actualiza desde habitos operativos hasta restricciones de ejecucion.**
+   repo-saga La ejecucion en serie ahora tiene proteccion de codigo y maintainer workflow Reglas。
 
-### 4.2 没有推进什么，且必须继续写清楚
+### 4.2 No se adelanta nada y debe seguir escribiendose con claridad.
 
-1. heavy-runtime packaging isolation 依然没有落地；
-2. multi-entry output topology 依然没有落地；
-3. preview history 仍然只是内存态 session 状态，不是跨会话持久化目录；
-4. repo-saga concurrency 仍然是“被禁止”，而不是“通过隔离 cache 或 parallel-safe 设计被解决”。
+1. heavy-runtime packaging isolation Aun no implementado；
+2. multi-entry output topology Aun no implementado；
+3. preview history Aun solo estado de memoria session Directorio de persistencia de estado, no entre sesiones；
+4. repo-saga concurrency Todavia “prohibido” en lugar de “por cuarentena” cache o parallel-safe El diseno esta resuelto”。
 
-## 5. 风险与控制
+## 5. Riesgos y controles
 
-1. **风险：** 后续文档把 preview 收敛误写成 runtime-boundary 路线图已基本完成。
-   **控制：** 在所有 packaging-facing 文档里继续显式写清 `main.js + inline srcdoc` 真值。
-2. **风险：** 维护者未来因为“锁通常能兜住”而在 CI 中并行 repo-saga 步骤。
-   **控制：** 将串行规则同时保留在 `AGENTS.md`、release-workflow 文档与运行时锁 helper 中；三者不能只改其一。
-3. **风险：** preview-history UX 在没有明确契约的前提下演变成持久化状态。
-   **控制：** 在出现明确 PRD 之前，继续把历史保持为内存态。
-4. **风险：** 通用 Mermaid fixer 再次被接回 preview reopening，导致非 flowchart 图表重复损坏。
-   **控制：** 保持当前 type-aware preview 路径，不要把广义 fixer 再塞回已保存预览 reopening，除非对应 subtype 有回归测试锁定。
+1. **Riesgos：** Documentacion de seguimiento preview Convergencia esta incorrectamente escrita como runtime-boundary La hoja de ruta esta basicamente completa.。
+   **controlar：** En absoluto packaging-facing Continue escribiendo claramente en el documento. `main.js + inline srcdoc` Valor de verdad。
+2. **Riesgos：** Los mantenedores estaran aqui en el futuro porque “las cerraduras normalmente aguantan” CI Paralelismo medio repo-saga Pasos。
+   **controlar：** Mantenga las reglas en serie al mismo tiempo. `AGENTS.md`、release-workflow Bloqueos de documentos y tiempo de ejecucion helper En el medio; No se puede cambiar solo uno de los tres.。
+3. **Riesgos：** preview-history UX Evolucionar hacia un estado persistente sin un contrato claro。
+   **controlar：** En presencia de claro PRD Antes, continua manteniendo el historial en estado de memoria.。
+4. **Riesgos：** generales Mermaid fixer Para ser recogido nuevamente preview reopening，Conducir a la no- flowchart Corrupcion repetida del grafico。
+   **controlar：** Mantengase actualizado type-aware preview Camino, no lo tomes en sentido amplio fixer Cosas guardadas en vistas previas reopening，A menos que corresponda subtype Tener las pruebas de regresion bloqueadas。
 
-## 6. 具体后续方向
+## 6. Instrucciones de seguimiento especificas
 
-### 优先级 1：回到 packaging / semantic 关键路径
+### Prioridad 1：Volver a packaging / semantic Camino critico
 
-1. 基于已经落地的 semantic helper 真值，继续推进 Stage-B2 implementation-readiness contracts；
-2. 除非出现新的用户可见回归，否则不要再重开 preview UI 工作；
-3. 未来所有 packaging claim 继续受限于 `esbuild.config.mjs`、审计脚本与测试真正能证明的边界。
+1. Basado en lo que ya se ha implementado semantic helper Valor verdadero, sigue adelante Stage-B2 implementation-readiness contracts；
+2. No vuelva a abrir a menos que haya nuevas regresiones visibles para el usuario. preview UI Trabajo；
+3. Todo en el futuro packaging claim Continuar estando sujeto a `esbuild.config.mjs`、Los limites de lo que realmente pueden demostrar los guiones y pruebas de auditoria。
 
-### 优先级 2：把 preview 视为收敛维护面，而不是无边界扩张面
+### Prioridad 2：poner preview Tratelo como una superficie de mantenimiento de convergencia en lugar de una superficie de expansion ilimitada.
 
-1. 只有在真实跨会话工作流需要时，才考虑持久化 preview history；
-2. 保持 command/sidebar/workflow 三个表面的 preview 入口持续 canonical；
-3. 除非出现具体回归，不要按 artifact subtype 再次分叉 preview 主路径。
+1. Considere la persistencia solo si es necesaria para flujos de trabajo reales entre sesiones preview history；
+2. mantener command/sidebar/workflow Tres superficies preview La entrada dura canonical；
+3. A menos que ocurra una regresion especifica, no presione artifact subtype Bifurcacion De Nuevo preview Camino principal。
 
-### 优先级 3：继续保守处理 repo-saga 加固
+### Prioridad 3：Continue siendo conservador repo-saga Refuerzo
 
-1. 对共享 cache 的 chronicle 命令继续保持串行执行；
-2. 如果未来确实需要并行，先拆 cache roots，再讨论放宽锁粒度；
-3. 对任何会写回仓库的 release follow-up step，继续坚持 helper-first + regression-locked。
+1. Para compartir cache de chronicle Los comandos continuan ejecutandose en serie.；
+2. Si realmente se necesita el paralelismo en el futuro, desmantelarlo primero cache roots，Analicemos nuevamente la relajacion de la granularidad del bloqueo；
+3. Para cualquier cosa que se devuelva al almacen. release follow-up step，Sigue adelante helper-first + regression-locked。
 
-## 7. 对当前主线状态的解释
+## 7. Explicacion del estado actual de la linea principal.
 
-这次审计应当被理解为：
+Esta auditoria debe entenderse como：
 
-1. `1.8.9` 在 `main` 上收口了真实的 preview-truth / preview-UX / release-truth 切片；
-2. repo-saga 的串行防报错规则现在已经同时具备文档约束与可执行约束；
-3. 仓库在产品边界与 release-ops 边界上的收敛程度，相比 `1.8.8` 已进一步提高；
-4. 下一步真正有意义的架构推进仍然是 packaging-boundary convergence，而不是继续做更广泛的 UI 摇摆。
+1. `1.8.9` en `main` Cierra lo real preview-truth / preview-UX / release-truth rebanada；
+2. repo-saga Las reglas de prevencion de errores en serie ahora tienen restricciones de documentos y restricciones de ejecucion.；
+3. Almacen en la frontera del producto y release-ops Grado de convergencia en el limite, en comparacion con `1.8.8` Se ha mejorado aun mas.；
+4. El siguiente paso hacia un avance arquitectonico verdaderamente significativo aun esta por llegar. packaging-boundary convergence，En lugar de seguir haciendo mas extensas UI Columpio。
 
-## 8. 2026-05-19 校正与追加进展
+## 8. 2026-05-19 Correccion y progreso adicional.
 
-这份 2026-05-13 审计文档现在有两处必须显式校正，否则会继续误导后续判断：
+esto 2026-05-13 Hay dos lugares en el documento de auditoria que deben corregirse explicitamente, de lo contrario seguira induciendo a juicios posteriores a error.：
 
-1. 文中 `还没有 dedicated render-host asset bundle` 与 `仓库仍然是 single-entry bundling` 已经不再成立；
-2. 当前代码真值早已进入受控的 `main.js` + `render-host.mjs` Stage-C runtime lane，这一点已被：
+1. En el texto `Todavia no dedicated render-host asset bundle` con `El almacen todavia esta single-entry bundling` Ya no establecido；
+2. El valor de verdad del codigo actual ya ha entrado en el control `main.js` + `render-host.mjs` Stage-C runtime lane，Este punto ha sido：
    - `npm run audit:render-host`
-   - render-host bundle 审计测试
-   - release/manual-install 资产要求
+   - render-host bundle Pruebas de auditoria
+   - release/manual-install Requisitos de activos
    - semantic helper / maintainer docs
-   共同锁定。
+   Co-bloqueo。
 
-在此基础上，主线又新增了一条产品收敛切片：
+Sobre esta base, se ha agregado una nueva porcion de convergencia de productos a la linea principal：
 
-1. 本地知识库检索
-   - 适用面：`从标题批量生成`、`研究并总结`、`生成图形`
-   - 实现形态：plugin-native MiniSearch + heading-aware section chunking
-   - 约束：prompt augmentation only，不引入 daemon / cloud / vector DB / GPU
-2. 章节拆分
-   - 适用面：active-file command / sidebar / workflow surface
-   - 输出真值：`<basename>_chapters`、`<basename>_TOC.md`、`.notemd-chapter-split.json`
-   - 目标：在原文件相邻路径下完成 heading-based split + TOC extraction，并清理旧生成物
+1. Busqueda en la base de conocimientos local
+   - Aplicabilidad：`Generacion por lotes a partir de titulos.`、`Investigar y resumir`、`Generar graficos`
+   - Formulario de implementacion：plugin-native MiniSearch + heading-aware section chunking
+   - Restricciones：prompt augmentation only，No introducido daemon / cloud / vector DB / GPU
+2. Division del capitulo
+   - Aplicabilidad：active-file command / sidebar / workflow surface
+   - Generar valor verdadero：`<basename>_chapters`、`<basename>_TOC.md`、`.notemd-chapter-split.json`
+   - Objetivo: completar en una ruta adyacente al archivo original heading-based split + TOC extraction，Y limpiar viejas creaciones.
 
-对当前主线的正确解释应更新为：
+La explicacion correcta de la linea principal actual debe actualizarse para：
 
-1. Stage-C runtime lane 已经存在，但仍然是受控的 dedicated render-host lane，而不是泛化 topology 完成；
-2. 新增的本地知识库检索与章节拆分属于产品能力收敛，不构成新的 runtime-boundary claim；
-3. 下一关键路径仍然是 packaging / semantic-verification convergence，而不是把轻量本地检索错误升级成新的运行时架构方向。
+1. Stage-C runtime lane Ya existen, pero aun estan controlados. dedicated render-host lane，En lugar de generalizar topology completo；
+2. La busqueda en la base de conocimiento local y la division de capitulos recientemente agregadas pertenecen a la convergencia de capacidades del producto y no constituyen novedades. runtime-boundary claim；
+3. El proximo camino critico aun esta packaging / semantic-verification convergence，En lugar de actualizar los errores de recuperacion local livianos a la nueva direccion de arquitectura de tiempo de ejecucion。
 
-## 9. 2026-05-19 真实文件与 CLI 落盘验证
+## 9. 2026-05-19 Documentos reales vs. CLI Verificacion de ubicacion
 
-在上述校正之外，还需要把这批 Stage-B2/C/D 相关功能的真实文件验证显式落盘，否则“已支持 CLI / 已完成收口”仍然会停留在口头层。
+Ademas de la correccion anterior, este lote de Stage-B2/C/D La verificacion de archivos reales de funciones relacionadas se coloca explicitamente; de lo contrario, "ya es compatible" CLI / "El cierre se ha completado" seguira estando en el nivel verbal.。
 
-### 真实 vault 验证范围
+### real vault Alcance de la validacion
 
-活动 vault：`/home/jacob/obsidian-NotEMD/docs`
+Actividades vault：`/home/jacob/obsidian-NotEMD/docs`
 
-真实测试根：`docs/__e2e_manual_cli_1779194979/`
+Raiz de prueba real：`docs/__e2e_manual_cli_1779194979/`
 
-调用入口：
+Entrada de llamada：
 
 - `node scripts/invoke-maintainer-cli-operation.js`
-- 底层仍是 `obsidian-cli native ... eval`
-- 当前只支持四个有界 operation：
+- La capa inferior todavia esta `obsidian-cli native ... eval`
+- Actualmente solo cuatro acotados operation：
   1. `content.batch-generate-from-titles`
   2. `content.split-note-by-chapters`
   3. `research.summarize-topic`
   4. `diagram.generate`
 
-### 真实结果
+### Resultados reales
 
 1. `content.batch-generate-from-titles`
-   - 使用 `regex + basename + includeSubfolders=exclude`
-   - 真实命中 1 个文件
-   - 日志确认已注入 local-KB context
-   - 真实 DeepSeek 往返成功
-   - 当前代码真值：若 complete 目录已有同名目标，则保守跳过 move，不做覆盖
+   - uso `regex + basename + includeSubfolders=exclude`
+   - Golpe verdadero 1 archivos
+   - Se ha inyectado la confirmacion del registro. local-KB context
+   - real DeepSeek Viaje de ida y vuelta exitoso
+   - Valor de verdad del codigo actual: si complete Si el directorio ya tiene un destino con el mismo nombre, se omitira de forma conservadora. move，Sin cobertura
 2. `content.split-note-by-chapters`
-   - 从 `roadmap.md` 成功生成 2 个章节文件
-   - 产出 `roadmap_TOC.md` 与 `.notemd-chapter-split.json`
-   - 返回契约与磁盘产物一致
+   - de `roadmap.md` Generado con exito 2 Archivos de capitulos
+   - Salida `roadmap_TOC.md` con `.notemd-chapter-split.json`
+   - El contrato de devolucion es consistente con el producto del disco.
 3. `research.summarize-topic`
-   - Tavily API key 为空时，web research 路径失败但不会中断整条链
-   - local-KB 单独可继续完成总结
+   - Tavily API key Cuando esta vacio，web research Fallo del camino sin romper toda la cadena.
+   - local-KB Puedes continuar completando el resumen solo
    - `sourceLabel=Local KB`、`researchContextUsed=false`、`localKnowledgeContextUsed=true`、`appended=true`
 4. `diagram.generate`
-   - 显式 override `requestedIntent=flowchart`、`compatibilityMode=best-fit`、`targetLanguage=zh-CN` 已进入 `operationInput`
-   - 日志确认 diagram artifact 路径已注入 local-KB context
-   - 真实 Mermaid artifact 已落盘到 `diagram-input_summ.md`
+   - Explicito override `requestedIntent=flowchart`、`compatibilityMode=best-fit`、`targetLanguage=zh-CN` Entro `operationInput`
+   - Confirmacion de registro diagram artifact Camino inyectado local-KB context
+   - real Mermaid artifact El pedido ha sido realizado. `diagram-input_summ.md`
 
-### 解释边界
+### Explicar los limites
 
-1. 这证明“新功能已支持 CLI”在当前主线上的正确表述应是：**已存在 repo-local、maintainer-grade、bounded 的 CLI 调用桥**；
-2. 它**不等于**公共 CLI 表面已经扩大，也不等于可以对外承诺稳定用户向 typed CLI API；
-3. 下一步如果要继续推进 CLI，只应在保持 public-safe slice 继续收窄声明的前提下，增量扩大 maintainer bridge 或继续做 contract-hardening，而不是反向夸大完成度。
+1. Esto demuestra que "se admiten nuevas funciones CLI”La declaracion correcta en la linea principal actual debe ser：**Ya existe repo-local、maintainer-grade、bounded de CLI Puente de llamadas**；
+2. eso**No es igual a**publico CLI Se ha ampliado la superficie, lo que no significa que podamos hacer promesas externas para estabilizar la orientacion del usuario. typed CLI API；
+3. Si quieres seguir avanzando en el siguiente paso CLI，Solo debe mantenerse public-safe slice Bajo la premisa de seguir reduciendo la declaracion, se ampliara el incremento. maintainer bridge O sigue haciendolo contract-hardening，En lugar de exagerar el grado de finalizacion。
 
-## 10. 2026-05-20 RAG 真值校正与下一步
+## 10. 2026-05-20 RAG Correccion del valor real y siguiente paso
 
-还需要把“本地知识库检索”的能力边界继续钉死，否则后续很容易把它误读成已经完成的通用 RAG 平台：
+Tambien es necesario seguir fijando los limites de la capacidad de la "recuperacion de la base de conocimientos local", de lo contrario sera facil malinterpretarlo mas adelante como un proposito general completado. RAG Plataforma：
 
-1. 当前代码真值仍然是：
+1. El valor de verdad del codigo actual sigue siendo：
    - plugin-native MiniSearch
    - heading-aware section chunking
    - lexical retrieval
    - prompt augmentation only
-   - 没有 embedding / reranker / vector DB / daemon / GPU
-2. 本批次新增的滑动窗口设置，只解决一个非常具体的问题：
-   - 用户可以配置每个命中片段前后额外带多少个相邻 section
-   - 这缓和了 section 命中后上下文切断过硬的问题
-   - 它**不是**语义检索升级，也**不是**评测体系补齐
-3. 如果拿 `ragas` / `RAGPerf` 这种参考系来衡量，当前差距依旧明确：
-   - 没有 faithfulness / correctness 类离线评估
-   - 没有 hit-rate / precision@k / miss diagnostics
-   - 没有检索链路 latency 分解
-   - 没有 freshness / update workload 基准
-4. 这不意味着方案错误，反而说明当前工程取舍是克制的：
-   - 对当前 Obsidian 插件边界而言，这条 MiniSearch + section-window 路径是正确的局部最优
-   - 下一步优先补的应是 maintainer-grade evaluation / telemetry，而不是急于引入更重的 runtime
+   - Ninguno embedding / reranker / vector DB / daemon / GPU
+2. La nueva configuracion de ventana deslizante en este lote solo resuelve un problema muy especifico.：
+   - El usuario puede configurar cuantos vecinos adicionales hay antes y despues de cada fragmento de impacto. section
+   - Esto facilita section Problema con el contexto cortado despues del golpe
+   - eso**No**Actualizacion de recuperacion semantica, tambien**No**Complementar el sistema de evaluacion
+3. Si tomas `ragas` / `RAGPerf` Medida con este sistema de referencia, la brecha actual sigue siendo clara：
+   - Ninguno faithfulness / correctness Evaluacion de clase fuera de linea
+   - Ninguno hit-rate / precision@k / miss diagnostics
+   - Sin enlace de busqueda latency Descomposicion
+   - Ninguno freshness / update workload Punto de referencia
+4. Esto no significa que el plan sea incorrecto, pero muestra que las opciones actuales en materia de proyectos son limitadas.：
+   - Por el momento Obsidian En terminos de limites de complementos, esto MiniSearch + section-window El camino es el optimo local correcto.
+   - La proxima prioridad deberia ser complementar maintainer-grade evaluation / telemetry，En lugar de apresurarse a introducir mas runtime
 
-因此，当前进展的更准确解释应更新为：
+Por lo tanto, se debe actualizar una explicacion mas precisa del progreso actual para：
 
-1. 本地知识库检索已经从“纯命中 section 拼接”推进到“可调相邻窗口”的 bounded local retrieval；
-2. 这提高了实际效果，但仍然只是轻量 local-KB augmentation，不应夸大为成熟 RAG 平台；
-3. 后续优先级应转向：
+1. La recuperacion de la base de conocimientos local ha pasado de ser “puras visitas” a section Empuje "Costura" a "Ventana adyacente ajustable" bounded local retrieval；
+2. Esto mejora el rendimiento, pero sigue siendo ligero local-KB augmentation，No se debe exagerar la madurez RAG Plataforma；
+3. Las prioridades posteriores deberian pasar a：
    - retrieval telemetry
-   - 小型 golden-set 评估
-   - 章节拆分 / TOC anchor 语义加固
-   而不是先引入新一轮重量级检索栈。
+   - pequeno golden-set Evaluacion
+   - Division del capitulo / TOC anchor Refuerzo semantico
+   En lugar de introducir primero una nueva ronda de pila de busqueda pesada。
 
-## 11. 2026-05-20 章节拆分 next-level 加固
+## 11. 2026-05-20 Division del capitulo next-level Refuerzo
 
-还需要把另一条容易被“功能已落地”掩盖的事实写清楚：章节拆分虽然已经可用，但它之前仍然偏向 heuristic v1，而不是足够稳的 managed-artifact surface。
+Es necesario indicar claramente otro hecho que se oculta facilmente con "la funcion se ha implementado": aunque la division de capitulos ya esta disponible, todavia estaba sesgada. heuristic v1，Mas que lo suficientemente estable managed-artifact surface。
 
-本轮代码真值相对先前计划要求又前进了一步：
+Esta ronda de valor de verdad del codigo es un paso adelante en comparacion con los requisitos del plan anterior.：
 
-1. 相比“只要能按标题拆开并生成 TOC 即可”的初始要求，当前实现已经明确补上了两个高价值稳态点：
-   - 设置项中新增 `章节拆分 -> 拆分标题层级`，支持 `Auto` / `H1`-`H6`
-   - 输出文件名不再把大量 CJK 标题退化成 `chapter-01` 一类 fallback slug，而会尽量保留 Unicode-safe 标题语义
-2. 这两个点解决的是先前代码里的真实产品缺口，而不是抽象洁癖：
-   - mixed heading notes 缺少 operator control，用户无法稳定指定按 H2 还是 H3 拆
-   - 中文/Unicode 标题在章节文件名里语义丢失，导致生成物可读性与可维护性偏弱
-3. 当前行为边界也更明确了：
-   - 若显式指定的拆分层级在笔记中不存在，当前实现会直接失败，而不是静默回退到别的层级
-   - 这是刻意选择的 deterministic 行为，目的是避免用户以为自己按 H3 拆了，实际却偷偷按 H1/H2 生成
+1. Comparado con "Siempre que se pueda desmontar y generar segun el titulo TOC Requisito inicial de "eso es todo". La implementacion actual claramente ha agregado dos puntos de estado estable de alto valor.：
+   - Agregado en elementos de configuracion. `Division del capitulo -> Dividir la jerarquia de titulos`，Apoyo `Auto` / `H1`-`H6`
+   - El nombre del archivo de salida ya no contiene una gran cantidad de CJK El titulo degenera en `chapter-01` Clase I fallback slug，Y tratara de retener Unicode-safe Semantica del titulo
+2. Estos dos puntos abordan lagunas reales del producto en el codigo anterior, no errores abstractos.：
+   - mixed heading notes Desaparecido operator control，El usuario no puede especificar de forma estable el boton. H2 Todavia H3 desmantelar
+   - chino/Unicode La semantica del titulo se pierde en el nombre del archivo del capitulo, lo que dificulta la legibilidad y el mantenimiento del producto.
+3. Los limites conductuales actuales tambien son mas claros：
+   - Si el nivel de division especificado explicitamente no existe en la nota, la implementacion actual fallara directamente en lugar de volver silenciosamente a otros niveles.
+   - Esta es una eleccion deliberada deterministic Comportamiento, el proposito es evitar que los usuarios piensen que presionaron H3 Lo quitaron pero en realidad lo presionaron en secreto. H1/H2 Generar
 
-但这仍然不等于章节拆分已经完全成熟：
+Pero esto todavia no significa que la division de capitulos este completamente madura.：
 
-1. 还没有完成 repeated-heading anchor collision 语义加固；
-2. 还没有完成“用户手改生成章节文件后再次 rerun”的 overwrite-policy 收口；
-3. 还没有扩展到 setext heading / richer metadata / batch split。
+1. Aun no hecho repeated-heading anchor collision Refuerzo semantico；
+2. Aun no completado "El usuario modifico manualmente el archivo del capitulo para generarlo nuevamente. rerun”de overwrite-policy De cerca；
+3. Aun no ampliado a setext heading / richer metadata / batch split。
 
-因此，章节拆分的更准确进展解释应更新为：
+Por lo tanto, se debe actualizar una explicacion mas precisa de la progresion de la division de capitulos para：
 
-1. 它已经从“能拆”推进到“可控且对中文标题更友好”的 bounded v2；
-2. 它仍然是 heading-based materialization workflow，而不是语义章节理解器；
-3. 下一阶段若继续推进，应优先补：
+1. Ha avanzado de "desmontable" a "titulos controlables y mas amigables con los chinos". bounded v2；
+2. Todavia es heading-based materialization workflow，En lugar de un entendidor de capitulos semanticos.；
+3. Si la siguiente etapa continua avanzando, se debe dar prioridad a complementar：
    - anchor collision tests + semantics
    - managed-artifact overwrite policy
    - TOC/front-matter metadata
-   而不是急于扩展 folder-batch split 或引入更重解析栈。
+   En lugar de apresurarse a expandirse folder-batch split O introduzca una pila de analisis mas pesada。
 
-## 12. 2026-05-20 命名 file-selection profile 收口校正
+## 12. 2026-05-20 Nombrar file-selection profile Correccion de cierre
 
-还需要把文件夹筛选线的当前进展再校正一次，否则后续很容易把“保存的路径”误读成“绑定的执行路径”：
+Tambien es necesario corregir el progreso actual de la linea de filtrado de carpetas; de lo contrario, sera facil interpretar erroneamente la "ruta guardada" como la "ruta de ejecucion vinculada" mas adelante.”：
 
-1. 当前代码真值已经从“只有全局默认筛选”推进到“全局默认筛选 + 可复用命名档案”：
-   - 持久化设置：`folderTaskFileSelectionProfiles`
-   - 每个档案包含 filter mode/pattern/target、大小写、反向匹配、子文件夹范围，以及可选 `folderPathHint`
-2. 但这里最关键的约束不是“能保存路径”，而是“路径只作 hint，不作 binding”：
-   - `folderPathHint` 只用于 interactive picker 的预填充
-   - 实际运行时 folder 仍允许用户手动改选
-   - 这是刻意的稳定性设计，用来避免陈旧档案路径 silently hijack 后续运行
-3. 当前优先级模型也已明确且锁定：
-   - `单次运行显式 override > 已保存档案 > 全局默认值`
-4. 这一模型现在已贯通：
+1. El valor de verdad del codigo actual se ha avanzado de "Solo filtrado predeterminado global" a "Filtrado predeterminado global". + Archivos con nombre reutilizables”：
+   - Configuracion de persistencia：`folderTaskFileSelectionProfiles`
+   - Cada archivo contiene filter mode/pattern/target、Caso, coincidencia inversa, rango de subcarpetas y opcional `folderPathHint`
+2. Pero la restriccion mas critica aqui no es "el camino se puede salvar", sino "el camino solo se puede salvar". hint，No hacer nada binding”：
+   - `folderPathHint` Solo para interactive picker Prepoblacion
+   - Tiempo de ejecucion real folder Seguir permitiendo a los usuarios cambiar las selecciones manualmente
+   - Este es un diseno de estabilidad deliberado para evitar rutas de archivos obsoletas. silently hijack Operaciones posteriores
+3. El modelo de prioridades actual tambien es claro y esta asegurado：
+   - `Ejecucion unica explicita override > Archivo guardado > Impagos globales`
+4. Este modelo ahora funciona a traves de：
    - selector helper
    - interactive host adapter
-   - maintainer CLI bridge 中的 `fileSelectionProfileId` / `fileSelectionProfileName`
+   - maintainer CLI bridge en `fileSelectionProfileId` / `fileSelectionProfileName`
 
-因此，对当前架构推进状态的更准确表述应更新为：
+Por lo tanto, se debe actualizar una representacion mas precisa del estado actual del avance arquitectonico para：
 
-1. 这是一条 selector-layer consistency hardening，而不是新的 runtime/product topology 扩张；
-2. 它提升了文件夹任务可复用性，但没有把执行语义变成“档案驱动的隐式路径绑定”；
-3. 下一步若继续推进，应优先做 profile-surface contract hardening，而不是先做更大的 CLI/public-surface promotion。
+1. Este es un selector-layer consistency hardening，en lugar de nuevo runtime/product topology Expansion；
+2. Mejora la reutilizacion de las tareas de carpetas, pero no cambia la semantica de ejecucion a "vinculacion de ruta implicita basada en archivos".”；
+3. Si continuas avanzando en el siguiente paso, deberas priorizar profile-surface contract hardening，En lugar de construir primero uno mas grande CLI/public-surface promotion。

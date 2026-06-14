@@ -31,12 +31,12 @@ describe('render webview page', () => {
                 mimeType: 'text/vnd.mermaid',
                 sourceIntent: 'flowchart'
             },
-            previewTitle: 'Mermaid 预览',
+            previewTitle: 'Mermaid Vista previa',
             theme: 'light',
             resolvedTheme: 'light'
         });
 
-        expect(html).toContain('<header class="notemd-render-header">Mermaid 预览</header>');
+        expect(html).toContain('<header class="notemd-render-header">Mermaid Vista previa</header>');
     });
 
     test('escapes mermaid source content before embedding it into srcdoc', () => {

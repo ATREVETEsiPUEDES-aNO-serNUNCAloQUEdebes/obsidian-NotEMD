@@ -4,187 +4,187 @@ last_updated: 2026-05-12
 topic: sidebar-api-observability-progress-and-architecture-alignment
 ---
 
-# Sidebar API 可观测性：深度对比、当前进展与后续方向
+# Sidebar API Observabilidad: comparacion en profundidad, progreso actual y direcciones de seguimiento
 
-## 1. 范围与需求基线
+## 1. Linea base de alcance y requisitos
 
-本文档用于落盘 sidebar API 可观测性切片的具体方案、已落地实现真值与下一阶段方向评估。
+Este documento es para colocacion. sidebar API Planes especificos para el corte de observabilidad, implementacion real y evaluacion de direcciones de la siguiente etapa.。
 
-主要需求来源：
+Principales fuentes de demanda：
 
-1. 产品侧要求在 footer `Log output` 区域直接提供快捷 `Deep debug` 开关
-2. 产品侧要求在 ready/progress 卡片中提供可见的 API 测活状态，包括：
-   - 等待 API 输出
-   - 正常接收输出
-   - 30 秒后的长任务健康提示
-   - 成功收到响应
-   - 输出中断
-3. 明确要求在增加功能时优先保证既有已发布路径稳定，不允许为“看起来更丰富”的状态牺牲鲁棒性
-4. 仓库既有稳定化纪律，来源于 `docs/superpowers/plans/2026-05-03-mainline-stabilization-next-batch.en.md`
+1. Los requisitos del lado del producto son footer `Log output` Entrega directa regional `Deep debug` cambiar
+2. Los requisitos del lado del producto son ready/progress Proporcionar visible en la tarjeta. API Estado de las pruebas, incluido：
+   - Espera API Salida
+   - Recibir salida normalmente
+   - 30 Recordatorio de salud de tareas largas despues de unos segundos
+   - Respuesta recibida con exito
+   - Interrupcion de salida
+3. Se requiere claramente que al agregar funciones, se de prioridad a garantizar la estabilidad de las rutas publicadas existentes, y no se permita sacrificar la solidez por un estado "de apariencia mas rica".
+4. El almacen tiene disciplina de estabilizacion, que proviene de `docs/superpowers/plans/2026-05-03-mainline-stabilization-next-batch.en.md`
 
-本切片交付目标：
+Objetivos de entrega de esta porcion：
 
-1. 用更直接的 sidebar 反馈缓解用户对 provider 是否“卡住”的焦虑
-2. 让 deep debug 不再依赖“先离开侧边栏 -> 打开设置页 -> 再返回”的低效路径
-3. 保持 transport 语义诚实：不能夸大 buffered / 非流式 provider 所能证明的实时健康状态
-4. 覆盖单文件、批处理、文件夹与重试链路，避免仅在 happy-path 单请求场景有效
+1. Utilice mas directo sidebar La retroalimentacion alivia las preocupaciones de los usuarios. provider Ansiedad por saber si estas “atascado”
+2. deja deep debug Ya no dependas mas de "dejar la barra lateral primero" -> Abra la pagina de configuracion. -> Camino ineficiente de "retorno"
+3. mantener transport Honestidad semantica: sin exagerar buffered / Sin transmision provider Estado de salud demostrable en tiempo real
+4. Cubra archivos individuales, lotes, carpetas y enlaces de reintento para evitar solo happy-path Valido en escenario de solicitud unica
 
-## 2. 改动前现状与根因分析
+## 2. Estado actual y analisis de la causa raiz antes de los cambios.
 
-在本切片之前，插件已经具备一定的 debug 与 progress 基础能力，但与真实支持/排障流程仍然存在明显断层：
+Antes de esta porcion, el complemento ya tenia ciertos debug Con progress Habilidades basicas, pero con apoyo real./Todavia existen lagunas evidentes en el proceso de solucion de problemas.：
 
-- `enableApiErrorDebugMode` 只存在于设置页，无法支撑实时排障
-- sidebar 虽然能展示通用任务进度，但无法回答用户最关心的问题：“provider 现在到底有没有回东西，还是任务挂了？”
-- retry 尝试失败与最终失败在 UI 边界上缺少明确区分
-- batch / folder 流程会为每个文件包装 mini-reporter，如果新观测通道不显式透传，很容易在真实路径中静默丢失
+- `enableApiErrorDebugMode` Solo existe en la pagina de configuracion y no puede admitir la solucion de problemas en tiempo real.
+- sidebar Aunque puede mostrar el progreso de las tareas generales, no puede responder las preguntas que mas preocupan a los usuarios.：“provider ¿Has devuelto algo ahora o la tarea ha fallado?？”
+- retry Los intentos fallidos y el fracaso final residen en UI Falta de una distincion clara en los limites
+- batch / folder El proceso envuelve cada archivo. mini-reporter，Si el nuevo canal de observacion no se transmite explicitamente y de forma transparente, es facil perderse silenciosamente en el camino real.
 
-根因总结：
+Resumen de las causas fundamentales：
 
-1. **debug 可达性过低**
-   诊断开关存在，但不在用户查看实时日志的工作面上
-2. **provider 响应观测停留在 runtime 层**
-   transport 能知道响应时机，但 sidebar 没有契约去接收和渲染这些事实
-3. **失败语义过粗**
-   一次可重试失败与最终中断，在没有 retry-aware 状态的前提下都容易被 UI 渲染成“错误”
-4. **并发/批处理引入聚合脆弱性**
-   如果仍用单一全局状态字段，多个请求并发时非常容易出现提前结束或误判
+1. **debug La accesibilidad es demasiado baja**
+   El interruptor de diagnostico existe, pero no esta en la superficie de trabajo donde los usuarios pueden ver los registros en tiempo real.
+2. **provider La observacion de la respuesta permanece en runtime Capas**
+   transport Puedo saber el tiempo de respuesta, pero sidebar No existe ningun contrato para recibir y rendir estos hechos.
+3. **La semantica del fracaso es demasiado tosca**
+   Un fallo reintentable con interrupcion final, sin retry-aware Bajo la premisa del Estado, es facil ser UI Representar como "Error”
+4. **Concurrencia/El procesamiento por lotes introduce una vulnerabilidad de agregacion**
+   Si todavia utiliza un unico campo de estado global, es muy facil finalizar antes de tiempo o juzgar mal cuando hay varias solicitudes simultaneas.
 
-## 3. 实现映射（需求 -> 代码证据）
+## 3. Implementar mapeo (requisitos -> Evidencia del codigo）
 
-| 需求 / 问题 | 代码证据 | 状态 |
+| Demanda / Pregunta | Evidencia del codigo | Estado |
 |---|---|---|
-| Sidebar 快捷 `Deep debug` 开关 | `src/ui/NotemdSidebarView.ts` footer log header toggle | 已落地 |
-| 开关需写回真实插件设置 | `enableApiErrorDebugMode` 通过 `plugin.saveSettings()` 持久化 | 已落地 |
-| 成功路径也输出原始响应调试信息，而非仅错误路径 | `src/llmUtils.ts` 中的 `logSuccessfulApiDebug()` | 已落地 |
-| 复用现有脱敏 debug schema，而不是再造第二套 | `getDebugInfo()` + shared runtime debug attempts | 已落地 |
-| Sidebar API 测活事件契约 | `src/types.ts` 中 `ApiLivenessEvent` / `ProgressReporter.updateApiLiveness()` | 已落地 |
-| 在重试链路中保持稳定的逻辑请求身份 | `src/llmUtils.ts` 中 request-scoped reporter 绑定 + `src/types.ts` 中 `requestId` | 已落地 |
-| 区分请求已被接受 / 已拿到响应头 与 正文接收 | direct transport 路径中的 `response-headers` 发射 + `src/ui/NotemdSidebarView.ts` 中 accepted 状态渲染 | 已落地 |
-| 在不继续扩张 footer 状态的前提下暴露结构化 per-request 观测证据 | `src/llmUtils.ts` 中 request-scoped deep debug liveness logging | 已落地 |
-| 为 per-request 可观测性提供首个一等消费面，而不是反向解析日志 | `src/ui/NotemdSidebarView.ts` 中的 sidebar request activity summary + export report | 已落地 |
-| 提供 inline per-request 下钻，而不只是导出报告 | `src/ui/NotemdSidebarView.ts` 中 active/recent request sections + inline history rows | 已落地 |
-| 流式链路在真实收到 chunk 时发测活事件 | `src/llmUtils.ts` 中 `requestViaWebFetch*StreamTransport` 与 `requestViaDesktopHttp*StreamTransport` | 已落地 |
-| 非流式 provider 走保守型“响应已到达”测活语义 | `executeAnthropicApi`、`executeGoogleApi`、`executeAzureOpenAIApi`、`executeOllamaApi` 与 OpenAI-compatible 成功路径 | 已落地 |
-| 区分可重试失败与最终中断 | `callApiWithRetry()` 发出带 `retrying: true/false` 的 `request-error` | 已落地 |
-| 防止并发请求把 sidebar 过早翻成 completed/error | `src/ui/NotemdSidebarView.ts` 中基于 `requestId` 的请求状态表 | 已落地 |
-| batch/folder mini-reporter 透传测活事件 | `src/fileUtils.ts` 与 `src/operations/noteProcessingCommandHostAdapter.ts` | 已落地 |
-| 新 sidebar 文案具备 i18n 覆盖 | `src/i18n/locales/en.ts`、`zh_cn.ts`、`zh_tw.ts` | 已落地 |
-| 聚焦回归测试锁定行为 | `src/tests/sidebarDomButtonClicks.test.ts`、`llmUtilsProviderSupport.test.ts`、`noteProcessingCommandHostAdapter.test.ts` | 已落地 |
+| Sidebar rapido `Deep debug` cambiar | `src/ui/NotemdSidebarView.ts` footer log header toggle | Ya implementado |
+| El conmutador necesita volver a escribir la configuracion real del complemento. | `enableApiErrorDebugMode` Pase `plugin.saveSettings()` Persistencia | Ya implementado |
+| Las rutas de exito tambien generan informacion de depuracion de respuesta sin procesar, no solo rutas de error. | `src/llmUtils.ts` en `logSuccessfulApiDebug()` | Ya implementado |
+| Reutilizar la desensibilizacion existente debug schema，En lugar de hacer un segundo set | `getDebugInfo()` + shared runtime debug attempts | Ya implementado |
+| Sidebar API Contrato de evento de prueba de vida | `src/types.ts` Medio `ApiLivenessEvent` / `ProgressReporter.updateApiLiveness()` | Ya implementado |
+| Mantener una identidad de solicitud logica estable en todos los enlaces de reintento | `src/llmUtils.ts` Medio request-scoped reporter Encuadernacion + `src/types.ts` Medio `requestId` | Ya implementado |
+| Solicitud de diferenciacion aceptada / Encabezado y cuerpo de la respuesta recibida | direct transport en el camino `response-headers` lanzamiento + `src/ui/NotemdSidebarView.ts` Medio accepted Representacion estatal | Ya implementado |
+| No habra mas expansion footer Exponer la estructura bajo la premisa del estado. per-request Evidencia observacional | `src/llmUtils.ts` Medio request-scoped deep debug liveness logging | Ya implementado |
+| para per-request La observabilidad proporciona la primera superficie de consumo de primera clase en lugar de registros de analisis inverso. | `src/ui/NotemdSidebarView.ts` en sidebar request activity summary + export report | Ya implementado |
+| Proporcionar inline per-request Profundice, no solo exporte informes | `src/ui/NotemdSidebarView.ts` Medio active/recent request sections + inline history rows | Ya implementado |
+| Se recibe el enlace de transmision. chunk Evento de prueba de vida ocasional | `src/llmUtils.ts` Medio `requestViaWebFetch*StreamTransport` Con `requestViaDesktopHttp*StreamTransport` | Ya implementado |
+| Sin transmision provider Utilice una semantica de prueba conservadora de "ha llegado la respuesta" | `executeAnthropicApi`、`executeGoogleApi`、`executeAzureOpenAIApi`、`executeOllamaApi` Con OpenAI-compatible Camino al exito | Ya implementado |
+| Distinguir entre fallos reintentables e interrupciones finales. | `callApiWithRetry()` Envia el cinturon `retrying: true/false` de `request-error` | Ya implementado |
+| Evite solicitudes simultaneas sidebar Traduccion prematura completed/error | `src/ui/NotemdSidebarView.ts` Basado en `requestId` Solicitar tabla de estado | Ya implementado |
+| batch/folder mini-reporter Evento de prueba de vida de transmision transparente | `src/fileUtils.ts` Con `src/operations/noteProcessingCommandHostAdapter.ts` | Ya implementado |
+| nuevo sidebar La redaccion publicitaria esta disponible i18n Cobertura | `src/i18n/locales/en.ts`、`zh_cn.ts`、`zh_tw.ts` | Ya implementado |
+| Centrarse en el comportamiento de bloqueo de las pruebas de regresion | `src/tests/sidebarDomButtonClicks.test.ts`、`llmUtilsProviderSupport.test.ts`、`noteProcessingCommandHostAdapter.test.ts` | Ya implementado |
 
-## 4. 架构推进评估
+## 4. Evaluacion del avance de la arquitectura.
 
-这个切片的价值在于“收紧观测边界”，而不是“增加更多炫目状态”：
+El valor de esta porcion radica en "estrechar el limite de observacion" en lugar de "agregar mas estados deslumbrantes".”：
 
-1. **从设置页诊断提升为运行时邻接诊断**
-   debug 控制现在位于用户查看实时日志的位置，不需要重开全局设置架构
-2. **从 transport 事实提升为显式 UI 契约**
-   provider 响应时机现在通过类型化 progress-reporter 通道进入 UI，而不是依赖日志字符串猜测
-3. **从粗粒度失败提升为 retry-aware 失败语义**
-   瞬时失败不再需要伪装成最终中断
-4. **从单请求假设提升为 request-keyed 并发聚合**
-   sidebar 测活状态现在可以精确容忍重叠请求，即使多个请求来自同一个 provider 也不会互相踩状态
-5. **从粗糙 footer 状态提升为 request-scoped 调试证据**
-   deep debug 现在会记录结构化 liveness 行（`requestId`、逻辑请求 attempt、phase、transport、已知时的 `statusCode`），而不必继续扩张终端用户状态模型
-6. **从仅调试证据提升为可复用 request activity 工作面**
-   sidebar 现在会基于同一条 live event stream 持久化 request-scoped activity 摘要与可导出的 per-request 历史，支持排障不再依赖复制原始日志后手工重建时序
-7. **从 report-only 消费面提升为 inline 下钻**
-   request-scoped 历史现在可以直接在 sidebar 内以 active/recent timeline 形式查看，降低 live run 中检查 retries 与 terminal transitions 的成本
+1. **Promovido desde el diagnostico de la pagina de configuracion al diagnostico de adyacencia en tiempo de ejecucion**
+   debug Los controles ahora estan ubicados donde los usuarios ven los registros en tiempo real, sin la necesidad de volver a abrir la arquitectura de configuracion global.
+2. **De transport Hechos promovidos a explicitos. UI Contrato**
+   provider Ahora se escribe el tiempo de respuesta. progress-reporter Entrada al canal UI，En lugar de confiar en adivinar cadenas de registro
+3. **Pasar del fracaso general al retry-aware Semantica del fracaso**
+   Ya no es necesario disfrazar las fallas transitorias como interrupciones finales
+4. **Actualizacion del supuesto de solicitud unica al request-keyed Agregacion concurrente**
+   sidebar El estado de prueba en vivo ahora puede tolerar con precision solicitudes superpuestas, incluso si varias solicitudes provienen del mismo provider Tampoco pisaran el estatus del otro.
+5. **De aspero footer Estado mejorado a request-scoped Evidencia de depuracion**
+   deep debug Estructurado ahora se registrara liveness Esta bien（`requestId`、Solicitudes logicas attempt、phase、transport、conocido `statusCode`），Sin tener que seguir ampliando el modelo de estado de usuario final
+6. **Pasar de evidencia de depuracion unicamente a evidencia reutilizable request activity Superficie de trabajo**
+   sidebar Ahora basado en lo mismo live event stream Persistencia request-scoped activity Resumen y Exportable per-request Historial, admite la resolucion de problemas y ya no depende de copiar el registro original y reconstruir manualmente la sincronizacion
+7. **De report-only El nivel de consumo aumento a inline Profundizar**
+   request-scoped El historial ahora esta disponible directamente en sidebar Dentro active/recent timeline Vista de formulario, inferior live run Inspeccion media retries Con terminal transitions Costo de
 
-本切片**没有**做的事情：
+Esta rebanada**No**Cosas que hacer：
 
-1. 没有做 per-provider 实时时间线，也没有在 footer 中直接暴露原始 transport metadata
-2. 没有声称 buffered / 非流式 provider 在完整响应对象到达之前就能证明“正在持续输出正文”
-3. 没有改变 provider 协议语义，也没有扩展到 packaging/runtime 拓扑改造
+1. No hecho per-provider La linea de tiempo en tiempo real no esta disponible. footer Exponga directamente el original. transport metadata
+2. Sin reclamaciones buffered / Sin transmision provider Demuestre que "generar texto continuamente" antes de que llegue el objeto de respuesta completo”
+3. Sin cambios provider La semantica del protocolo no se extiende a packaging/runtime Transformacion de topologia
 
-## 5. 相对先前方案轨道的深度对比
+## 5. Comparacion en profundidad con las orbitas del esquema anterior.
 
-### 5.1 对 `mainline-stabilization-next-batch` 的对齐
+### 5.1 Derecha `mainline-stabilization-next-batch` Alineacion de
 
-一致点：
+Puntos de acuerdo：
 
-1. 这是一个稳定性/可运维性加固切片，而不是投机性产品扩张
-2. 它沿用了计划中既有的落地规则：类型化契约 -> 聚焦测试 -> 全量门禁 -> 文档同步
-3. 它强化了已发布支持/排障路径，但没有重开无关的 runtime-packaging 决策
+1. Esta es una estabilidad/Endurecer las porciones para lograr operatividad, no para una expansion especulativa del producto
+2. Sigue las reglas de implementacion existentes en el plan: contratos tipificados -> Centrarse en las pruebas -> Control de acceso total -> Sincronizacion de documentos
+3. Mejora el soporte publicado./Solucion de problemas, pero sin reabrir los irrelevantes runtime-packaging Toma de decisiones
 
-差异点：
+Diferencias：
 
-- 本切片推进的是产品侧观测边界，而不是 packaging/release 边界
+- Lo que esta seccion promueve es el limite de observacion en el lado del producto, en lugar de packaging/release Limites
 
-### 5.2 对 release-chronicle / CI 加固工作的对齐
+### 5.2 Derecha release-chronicle / CI Alineacion de los trabajos de refuerzo.
 
-一致点：
+Puntos de acuerdo：
 
-1. 同样沿用了 anti-drift 模式：把真值集中到仓库代码，再用聚焦测试锁定
-2. 同样保持 evidence-first 收口规则：全量 build/test/audit/diff/Obsidian wrapper 检查全部保留
+1. Lo mismo se aplica anti-drift Patron: concentre los valores verdaderos en el codigo del almacen y luego utilice pruebas enfocadas para bloquearlo.
+2. Sigue igual evidence-first Normas de cierre: importe total build/test/audit/diff/Obsidian wrapper Marcar todo Mantener
 
-差异点：
+Diferencias：
 
-- 本切片提升的是用户侧运行时可观测性；release-chronicle 切片提升的是维护者侧发布恢复能力
+- Esta porcion mejora la observabilidad del tiempo de ejecucion del lado del usuario.；release-chronicle La segmentacion mejora las capacidades de recuperacion de versiones del mantenedor.
 
-### 5.3 对 packaging / semantic-verification convergence 轨道的对齐
+### 5.3 Derecha packaging / semantic-verification convergence Alineacion de pistas
 
-一致点：
+Puntos de acuerdo：
 
-1. 二者都属于 boundary-hardening 工作
-2. 二者都显式避免夸大当前架构能力
-3. 二者都把 docs/tests/code 视为同一真值面
+1. Ambos boundary-hardening Trabajo
+2. Ambos evitan explicitamente exagerar las capacidades de la arquitectura actual.
+3. Ambos docs/tests/code Considerada como la misma superficie de verdad.
 
-差异点：
+Diferencias：
 
-- 本切片不启动 Stage-C packaging 拓扑实现
-- 不能把它误读为 heavy-runtime isolation 或 per-request semantic verification 已经解决
+- Este segmento no comienza Stage-C packaging Implementacion de topologia
+- No debe malinterpretarse como heavy-runtime isolation o per-request semantic verification Resuelto
 
-## 6. 非流式输出的语义真值
+## 6. Valores de verdad semantica para resultados sin transmision
 
-这是当前实现中最需要在文档和后续工作里保持清晰的点。
+Este es el punto de la implementacion actual que debe quedar claro en la documentacion y el trabajo de seguimiento.。
 
-### 6.1 流式 provider / transport
+### 6.1 Transmision provider / transport
 
-对于流式路径，`response-chunk` 的含义是：runtime 确实已经从 provider transport 收到了响应字节 / chunk。
+Para rutas de transmision，`response-chunk` significa：runtime De hecho ha sido provider transport Byte de respuesta recibido / chunk。
 
-这是一个真实的 liveness 信号。
+Esta es una verdad liveness Senal。
 
-### 6.2 Buffered / 非流式 provider
+### 6.2 Buffered / Sin transmision provider
 
-对于 buffered / 非流式路径，runtime 通常无法在完整响应对象到达前证明“provider 正在持续生成正文输出”。
+Para buffered / Ruta sin transmision，runtime Por lo general, no se puede probar antes de que llegue el objeto de respuesta completo.“provider Generacion continua de resultados de texto”。
 
-当前行为是刻意保守的：
+El comportamiento actual es deliberadamente conservador：
 
-1. `request-start` 使 sidebar 进入 waiting
-2. 如果 direct transport 真的在正文到达前暴露了响应头，runtime 可以发出 `response-headers`，UI 将其渲染为“请求已接受 / 等待正文”
-3. 如果没有这种 transport 证据，UI 会继续停留在 waiting
-4. 当完整 response object 或正文字节真正可用后，runtime 才发出保守型“响应已到达”事件（`response-chunk`）并继续 complete
+1. `request-start` hacer sidebar Ingrese waiting
+2. Si direct transport Exponga realmente el encabezado de respuesta antes de que llegue el cuerpo.，runtime Se puede emitir `response-headers`，UI Representarlo como "Solicitud aceptada / Espere el mensaje de texto”
+3. Si no existe tal transport Evidencia，UI Seguira quedandose en waiting
+4. Cuando este completo response object O despues de que los bytes de texto esten realmente disponibles.，runtime Emitir unicamente eventos conservadores de "llego la respuesta"（`response-chunk`）y continuar complete
 
-这意味着：
+Esto significa：
 
-- 对流式路径，绿色“正常输出中……”是强语义成立的
-- 当前蓝色 accepted 状态只代表“transport 已接受请求且暴露了 headers”，不代表“正文已经在持续输出”
-- 对 requestUrl-only 或其他没有 header timing 证据的 buffered 路径，当前实现只会在响应对象已到达时声称“收到响应”；不会在等待阶段伪造“服务端仍然健康持续输出中”的结论
+- Ruta convectiva, “salida normal” verde……”Esta establecido por una fuerte semantica.
+- Azul actual accepted El estado solo representa“transport Solicitud aceptada y expuesta headers”，No significa que "el texto se haya publicado continuamente”
+- Derecha requestUrl-only O ninguno header timing Probatorio buffered Ruta, la implementacion actual solo reclamara "respuesta recibida" cuando haya llegado el objeto de respuesta; no forjara la conclusion de que "el servidor todavia esta en buen estado y continua funcionando" durante la fase de espera.
 
-这是当前阶段正确的取舍。任何更强的结论都需要额外协议证据，例如 request ID、response headers timing，或服务端主动 heartbeat。
+Esta es la eleccion correcta en esta etapa. Cualquier conclusion mas solida requeriria pruebas adicionales de acuerdo, p. request ID、response headers timing，O el servidor toma la iniciativa heartbeat。
 
-## 7. 风险清单与控制措施
+## 7. Lista de riesgos y medidas de control.
 
-1. **风险：** 可重试失败闪成终局错误，误导用户。
-   **控制：** `request-error` 现在带 `retrying`，sidebar 会把可重试失败挡在最终红态之外。
-2. **风险：** 某个请求先完成，错误地结束另一个仍在运行的请求的测活状态，尤其是多个请求来自同一 provider 时。
-   **控制：** sidebar 现在基于 `requestId` 状态表推导 UI，而不是依赖 provider 名称或纯计数聚合。
-3. **风险：** batch/folder mini-reporter 丢失新测活通道。
-   **控制：** mini-reporter 透传已经显式打通，并有 host-adapter 回归锁定。
-4. **风险：** 文档或 UI 文案夸大 buffered / 非流式健康语义。
-   **控制：** 本文档与代码都把非流式行为定义为“保守型响应到达”，而不是猜测式“健康输出进行中”。
-5. **风险：** 未来 transport 重构击穿观测行为，但表面功能仍“看起来能跑”。
-   **控制：** provider/transport 支持测试现在直接断言 liveness 事件，而不是只看最终返回文本。
-6. **风险：** deep debug 日志在流式输出下过于嘈杂，反而淹没有效信息。
-   **控制：** 结构化 liveness logging 会对同一逻辑 attempt 内重复的 `response-chunk` 做去重，每个 attempt 只保留一条 chunk-transition 线。
-7. **风险：** UI 导出/下钻面与 live liveness 模型分叉，开始讲述与 footer 不一致的状态故事。
-   **控制：** 导出报告现在直接消费驱动 sidebar 聚合的同一份 request-scoped record store，而不是从复制日志中重建状态。
-8. **风险：** inline timeline 截断得太狠，导致支持最需要看的转换状态被静默丢掉。
-   **控制：** 可视 history 窗口保持小而足够覆盖 retries + acceptance + terminal states；复制报告仍保留更完整的 retained history。
+1. **Riesgos：** Un reintento fallido puede convertirse en un error final, enganando a los usuarios.。
+   **controlar：** `request-error` Trae ahora `retrying`，sidebar Mantendra los fallos reintentables fuera del estado rojo final.。
+2. **Riesgos：** Una determinada solicitud se completa primero, lo que finaliza erroneamente el estado de prueba de otra solicitud que aun se esta ejecutando, especialmente cuando varias solicitudes provienen de la misma solicitud. provider horas。
+   **controlar：** sidebar Ahora basado en `requestId` Derivacion de la tabla de estados UI，En lugar de confiar en provider Nombre o agregacion de conteo puro。
+3. **Riesgos：** batch/folder mini-reporter Perdio el nuevo canal de medicion de actividad.。
+   **controlar：** mini-reporter La transmision transparente se ha abierto explicitamente, y hay host-adapter Volver a bloquear。
+4. **Riesgos：** Documentacion o UI Exageracion en la redaccion publicitaria buffered / Semantica de salud sin transmision。
+   **controlar：** Tanto este documento como el codigo definen el comportamiento sin transmision como "llegada de respuesta conservadora" en lugar de adivinar "salida saludable en progreso".”。
+5. **Riesgos：** Futuro transport Reconstruya el comportamiento de observacion de la averia, pero la funcion de superficie todavia "parece ejecutarse"”。
+   **controlar：** provider/transport Las pruebas de soporte ahora afirman directamente liveness Evento en lugar de simplemente mirar el texto de devolucion final。
+6. **Riesgos：** deep debug Los registros son demasiado ruidosos en la salida de streaming, lo que ahoga la informacion valida.。
+   **controlar：** Estructura liveness logging Usara la misma logica. attempt Repetido dentro `response-chunk` Haz remocion de peso, cada uno attempt Quedate solo con uno chunk-transition Linea。
+7. **Riesgos：** UI Exportar/Superficie de perforacion y live liveness El modelo se bifurca y comienza a contar la historia sobre footer Historias de estatus inconsistentes。
+   **controlar：** Los informes de exportacion ahora estan directamente impulsados por el consumo. sidebar La misma porcion del agregado request-scoped record store，En lugar de reconstruir el estado a partir de registros replicados。
+8. **Riesgos：** inline timeline El truncamiento es demasiado severo, lo que hace que el estado de conversion que mas se necesita se descarte silenciosamente.。
+   **controlar：** visible history Mantenga la ventana lo suficientemente pequena como para cubrir retries + acceptance + terminal states；Copiar el informe aun conserva una imagen mas completa. retained history。
 
-## 8. 验证证据
+## 8. Verificacion de pruebas
 
-已执行并通过：
+Ejecutado y aprobado：
 
 1. `npm run build`
 2. `npm test -- --runInBand`
@@ -194,49 +194,49 @@ topic: sidebar-api-observability-progress-and-architecture-alignment
 6. `obsidian help`
 7. `obsidian-cli help`
 
-新增 / 更新的聚焦回归包括：
+nuevo / Los retornos de enfoque actualizados incluyen：
 
-1. sidebar 测活状态流转、accepted 与 receiving 区分、长等待提示与快捷 debug toggle 持久化
-2. provider runtime 支持测试中的 retry-aware liveness 事件断言，以及 `requestId` 在重试链路中的稳定连续性
-3. deep debug 结构化 liveness logging 对 `requestAttempt`、`statusCode` 与跨 attempt retry 连续性的覆盖
-4. batch concept extraction 路径下 per-file liveness 事件向主 reporter 的透传
-5. sidebar request-activity 渲染与无日志解析的报告导出覆盖
-6. sidebar active/recent timeline section 与 inline history row 覆盖
+1. sidebar Transferencia del estado de la actividad de prueba、accepted Con receiving Distinguir, indicaciones de larga espera y atajos debug toggle Persistencia
+2. provider runtime Soporte bajo prueba retry-aware liveness Afirmaciones de eventos, y `requestId` Continuidad estable en los enlaces de reintento.
+3. deep debug Estructura liveness logging Derecha `requestAttempt`、`statusCode` con cruz attempt retry Cobertura continua
+4. batch concept extraction Debajo del camino per-file liveness Acontecimientos al Senor reporter Transmision transparente
+5. sidebar request-activity Representacion e informes de cobertura de exportacion sin analisis de registros
+6. sidebar active/recent timeline section Con inline history row Cobertura
 
-## 9. 当前进展与后续方向
+## 9. Progresos actuales y direcciones futuras
 
-本切片落地后，`main` 上的状态是：
+Despues de que aterrice este trozo，`main` El estado anterior es：
 
-1. quick deep debug 已经可以从实时日志工作面直接触达
-2. sidebar 测活现在能表达 waiting / accepted / receiving / healthy-long-running / received / interrupted
-3. retry 语义与并发请求聚合现在已经收紧到 `requestId` 粒度，而不是只停留在计数粒度
-4. deep debug 现在包含结构化 per-request liveness 证据，不再强迫支持排障只能从泛化 progress log 里反推阶段
-5. sidebar 现在已经提供首个 request-scoped API activity 工作面，并可基于同一份 live liveness 记录导出报告
-6. sidebar 现在也提供了首个 inline active/recent request timeline，用户不复制日志也能直接看到近期 phase transition
-7. batch/folder 工作流不再静默丢失测活信号
+1. quick deep debug Ya se puede acceder directamente desde la superficie de trabajo de registro en tiempo real.
+2. sidebar La prueba en vivo ahora puede expresar waiting / accepted / receiving / healthy-long-running / received / interrupted
+3. retry La semantica y la agregacion de solicitudes simultaneas ahora se han ajustado para `requestId` Granularidad, no solo contar granularidad
+4. deep debug Ahora incluye estructuracion. per-request liveness La evidencia ya no obliga a respaldar que la solucion de problemas solo puede basarse en la generalizacion. progress log Etapa de retroceso
+5. sidebar Ahora disponible por primera vez request-scoped API activity Superficie de trabajo, pudiendo basarse en la misma. live liveness Informe de exportacion de registros
+6. sidebar Ahora tambien ofreciendo la primera inline active/recent request timeline，Los usuarios pueden ver directamente los eventos recientes sin copiar registros. phase transition
+7. batch/folder El flujo de trabajo ya no pierde silenciosamente las senales de actividad de prueba.
 
-建议的下一阶段方向：
+Proximos pasos sugeridos：
 
-1. **继续扩展 per-request 结构化证据深度，而不是继续加全局状态**
-2. **保持 preview fallback 与 observability 在 release 表面的对齐**
-   1.8.8 已把紧凑 API activity 与 direct saved-artifact preview fallback 打包在同一轮发布中。后续产品表面工作应继续保持这层收敛：sidebar 要在不挤掉日志的前提下展示有用的 transport 真值，而 diagram preview 要继续能在不重新进入生成链路的前提下检查受支持的已保存产物。
-   export/report 与 inline drill-down 都已落地；如果下一段还要继续做支持工具，应优先走保留策略、可保存诊断或更丰富的 per-request timing metadata，而不是继续在 footer 级别堆条件分支
-2. **继续保持非流式 provider 的保守结论**
-   除非 transport 真有证据，否则不要把非流式长等待升级成绿色“任务健康输出中”
-3. **只有在 transport 真能暴露 acceptance 证据时才扩大 accepted 语义**
-   requestUrl-only 等路径在代码无法安全证明更早 acceptance 之前，应继续停留在 waiting
+1. **Sigue expandiendote per-request Estructurar la profundidad de la evidencia en lugar de continuar agregando al estado global**
+2. **mantener preview fallback Con observability en release Alineacion de superficies.**
+   1.8.8 Ya compacto API activity Con direct saved-artifact preview fallback Empaquetado en la misma ronda de lanzamiento. El trabajo posterior en la superficie del producto debe continuar manteniendo esta capa de convergencia.：sidebar Muestre informacion util sin saturar los registros. transport valor de verdad, mientras diagram preview Para seguir pudiendo verificar los productos guardados compatibles sin volver a ingresar el enlace de compilacion。
+   export/report Con inline drill-down Todos han sido implementados; Si continuamos desarrollando herramientas de soporte en la siguiente etapa, se debe dar prioridad a las estrategias de retencion, los diagnosticos guardables o herramientas mas completas. per-request timing metadata，En lugar de continuar en footer Rama condicional del monton de nivel
+2. **Mantengase sin transmitir provider Conclusion conservadora**
+   A menos que transport Si hay evidencia real, de lo contrario no actualice la espera larga sin transmision al "Resultado de estado de la tarea" verde”
+3. **Solo si transport Realmente revelador acceptance Solo ampliar cuando haya evidencia accepted Semantica**
+   requestUrl-only Esperando rutas en el codigo que no se pueden probar de forma segura antes acceptance Antes, deberia seguir quedandose en waiting
 
-## 10. 本次结论
+## 10. Esta conclusion
 
-这个切片之所以值得上 `main`，不是因为它“多了几个状态”，而是因为它让状态更接近真实：
+Por que vale la pena esta porcion `main`，No porque tenga “unos cuantos estados mas”, sino porque acerca al estado a la realidad.：
 
-- deep debug 更快可达
-- retry 不再伪装成最终失败
-- 并发请求不再过早清空 footer 状态，即使同一 provider 上有重叠请求也能稳定表达
-- 请求已被接受 / 已收到响应头 不再被误报为“正在输出正文”
-- deep debug 现在携带 request-scoped liveness 证据，而不必再从泛化日志里推测 retry/phase
-- sidebar 现在可以直接从 live records 导出 request-scoped API activity，而不必再复制原始日志后手工还原链路
-- sidebar 现在也直接提供了首个 inline active/recent timeline，不离开面板就能看到近期重试与终局转换
-- 非流式 provider 被保守处理，而不是被戏剧化“脑补健康”
+- deep debug Llega mas rapido
+- retry No mas pretensiones de fracaso final
+- Las solicitudes simultaneas ya no se aclaran prematuramente footer Estado, aunque sea el mismo provider Expresion estable incluso si hay solicitudes superpuestas
+- Solicitud aceptada / Se recibio el encabezado de respuesta y ya no se informara falsamente como "texto de salida".”
+- deep debug Ahora lleva request-scoped liveness Evidencia en lugar de conjeturas a partir de registros de generalizacion retry/phase
+- sidebar Ahora puedes acceder directamente al live records Exportar request-scoped API activity，En lugar de copiar el registro original y restaurar manualmente el enlace
+- sidebar Ahora el primero tambien se proporciona directamente. inline active/recent timeline，Puedes ver los reintentos recientes y las transiciones finales sin salir del panel.
+- Sin transmision provider Ser tratado de manera conservadora en lugar de dramatizar "La salud que estimula el cerebro"”
 
-这使它在今天的 `main` 上可维护、可支持，同时为未来更深的 per-request observability 留出了干净演进路径，而不会夸大当前运行时真值。
+Esto lo convierte en el de hoy. `main` Es sostenible y sustentable y, al mismo tiempo, proporciona la base para un mayor desarrollo en el futuro. per-request observability Permite un camino de evolucion limpio sin inflar los valores de verdad del tiempo de ejecucion actual.。

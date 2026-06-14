@@ -12,7 +12,7 @@ export const SUPPORTED_UI_LOCALES: UiLocaleOption[] = [
     { code: 'fr', name: 'Français' },
     { code: 'id', name: 'Bahasa Indonesia' },
     { code: 'it', name: 'Italiano' },
-    { code: 'ja', name: '日本語' },
+    { code: 'ja', name: 'japones' },
     { code: 'ko', name: '한국어' },
     { code: 'nl', name: 'Nederlands' },
     { code: 'pl', name: 'Polski' },
@@ -23,8 +23,8 @@ export const SUPPORTED_UI_LOCALES: UiLocaleOption[] = [
     { code: 'tr', name: 'Türkçe' },
     { code: 'uk', name: 'Українська' },
     { code: 'vi', name: 'Tiếng Việt' },
-    { code: 'zh-CN', name: '简体中文' },
-    { code: 'zh-TW', name: '繁體中文' }
+    { code: 'zh-CN', name: 'Chino simplificado' },
+    { code: 'zh-TW', name: 'Chino tradicional' }
 ];
 
 export const SUPPORTED_UI_LOCALE_CODES = SUPPORTED_UI_LOCALES.map(locale => locale.code);

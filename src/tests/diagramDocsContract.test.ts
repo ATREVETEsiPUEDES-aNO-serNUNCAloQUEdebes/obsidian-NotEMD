@@ -25,9 +25,9 @@ describe('diagram documentation contract', () => {
         expect(releaseNotes).toContain('Generated Mermaid artifacts are validated before they enter preview/export flows');
         expect(releaseNotes).toContain('HTML fallback previews now follow the resolved Obsidian preview theme');
         expect(releaseNotes).toContain('planner now seeds preferred Vega-Lite chart templates');
-        expect(releaseNotesZh).toContain('HTML 图表产物现在具备专门的 fallback 预览路径');
-        expect(releaseNotesZh).toContain('生成的 Mermaid 产物会先通过校验，再进入预览/导出链路');
-        expect(releaseNotesZh).toContain('HTML fallback 预览现在也会跟随解析后的 Obsidian 预览主题');
-        expect(releaseNotesZh).toContain('规划器现在会为 Vega-Lite 图表预填首选模板');
+        expect(releaseNotesZh).toContain('HTML Los productos graficos ahora se han especializado fallback Vista previa de la ruta');
+        expect(releaseNotesZh).toContain('Generado Mermaid El producto pasara primero la verificacion y luego ingresara a la vista previa./Enlace de exportacion');
+        expect(releaseNotesZh).toContain('HTML fallback La vista previa ahora tambien seguira el analisis. Obsidian Vista previa del tema');
+        expect(releaseNotesZh).toContain('El planificador ahora Vega-Lite Los graficos estan precargados con las plantillas preferidas.');
     });
 });

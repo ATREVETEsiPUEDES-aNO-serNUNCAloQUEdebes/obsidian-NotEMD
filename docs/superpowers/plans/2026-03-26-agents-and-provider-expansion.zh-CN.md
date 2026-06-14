@@ -1,158 +1,158 @@
-# AGENTS 与 Provider 扩展执行计划
+# AGENTS con Provider Ampliar el plan de ejecucion
 
-> **给代理执行者：** 必须使用 `superpowers:subagent-driven-development`（推荐）或 `superpowers:executing-plans`，按任务逐步执行本计划。步骤继续使用复选框 `- [ ]` 语法跟踪。
+> **Al agente albacea：** Debe usar `superpowers:subagent-driven-development`（Recomendado) o `superpowers:executing-plans`，Implementar este plan paso a paso segun las tareas. Pasos para seguir usando casillas de verificacion `- [ ]` Seguimiento gramatical。
 
-**目标：** 新增项目级 `AGENTS.md`，补强 Doubao 设置校验，并为 Notemd 扩展 `Baidu Qianfan` 与 `SiliconFlow` provider 支持。
+**Metas：** Agregar nivel de proyecto `AGENTS.md`，Refuerzo Doubao Establezca la suma de comprobacion y Notemd Extension `Baidu Qianfan` con `SiliconFlow` provider Apoyo。
 
-**架构：** 继续将 provider 元数据集中在 `src/llmProviders.ts`，保持 `src/llmUtils.ts` 的 transport-driven runtime dispatch，并新增一个小型纯函数 validation helper，为设置页 warning 提供支撑。仓库工作流规则写入新的根级 `AGENTS.md`，但不修改 `GEMINI.md`。
+**Arquitectura：** Continue provider Los metadatos estan centralizados en `src/llmProviders.ts`，mantener `src/llmUtils.ts` de transport-driven runtime dispatch，Y agrega una pequena funcion pura validation helper，Para la pagina de configuracion warning Brinde apoyo. Las reglas del flujo de trabajo del almacen se escriben en el nuevo nivel raiz. `AGENTS.md`，Pero no lo modifiques `GEMINI.md`。
 
-**技术栈：** TypeScript、Jest、Obsidian 插件设置页界面、GitHub 发布流程
-
----
-
-## 进度对齐更新（2026-05-08）
-
-这份计划已交付完成，当前主要用于历史追踪。
-
-已落地结果：
-
-- 项目级 `AGENTS.md` 已存在，并持续演进为执行规范入口。
-- Doubao 模型字段校验与设置页 warning/连接测试门禁已落地，并由 `src/tests/providerValidation.test.ts` 覆盖。
-- `Baidu Qianfan` 与 `SiliconFlow` 预设元数据已落地到 `src/llmProviders.ts`。
-- 该批 Provider 的运行时路由与连接测试覆盖已由 `src/tests/llmProviders.test.ts` 和 `src/tests/llmUtilsProviderSupport.test.ts` 锁定。
-- README / README_zh 的 Provider 使用说明已和已交付行为同步。
-
-超出原计划范围、现已落地：
-
-- 更多中国区导向预设也已发布，包括 `Qwen Code`、`Z AI`、`Huawei Cloud MaaS`、`Xiaomi MiMo`。
-- Provider 扩展继续保持 transport-driven，共享 OpenAI-compatible 运行时路径，而不是按 provider 名称分叉实现。
-
-真实剩余缺口：
-
-1. 随着预设继续扩张，持续防止 provider 元数据 / 文档 / 测试漂移。
-2. 将 packaging/semantic-verification convergence 作为独立轨道持续推进，不与 provider 扩展混线。
+**Pila de tecnologia：** TypeScript、Jest、Obsidian Interfaz de la pagina de configuracion del complemento、GitHub Proceso de publicacion
 
 ---
 
-### 任务 1：新增项目级 AGENTS 指南
+## Actualizacion de alineacion de progreso（2026-05-08）
 
-**文件：**
-- 创建：`AGENTS.md`
-- 测试/验证：`README.md`、`README_zh.md`、本地 git 历史中的发布工作流
+Este plan se ha entregado y actualmente se utiliza principalmente para el seguimiento historico.。
 
-- [ ] **步骤 1：起草指南内容**
-编写一份简洁但具权威性的 `AGENTS.md`，覆盖项目概览、关键文件、构建/测试命令、发布步骤、文档同步、Provider 扩展规则以及 Git 安全规则。
+Resultados implementados：
 
-- [ ] **步骤 2：明确发布资产规则**
-文档中必须写清 GitHub 发布资产需要包含 `main.js`、`manifest.json`、`styles.css` 与 `README.md`。
+- Nivel de proyecto `AGENTS.md` Ya existe y continua evolucionando hasta convertirse en un punto de entrada para las especificaciones de ejecucion.。
+- Doubao Pagina de configuracion y verificacion del campo del modelo warning/Se ha implementado el control de acceso a la prueba de conexion y esta `src/tests/providerValidation.test.ts` Cobertura。
+- `Baidu Qianfan` con `SiliconFlow` Se han implementado metadatos predeterminados. `src/llmProviders.ts`。
+- El lote Provider La cobertura de prueba de conectividad y enrutamiento en tiempo de ejecucion ha sido proporcionada por `src/tests/llmProviders.test.ts` y `src/tests/llmUtilsProviderSupport.test.ts` Bloqueo。
+- README / README_zh de Provider Las instrucciones de uso se han sincronizado con el comportamiento entregado.。
 
-- [ ] **步骤 3：自审避免重复**
-确认该指南足以支撑代理执行，同时不要无意义地重复 `GEMINI.md` 内容。
+Mas alla del alcance del plan original, ahora implementado：
 
-### 任务 2：先补 Doubao 校验测试
+- Tambien se han lanzado mas ajustes preestablecidos orientados a China, incluidos `Qwen Code`、`Z AI`、`Huawei Cloud MaaS`、`Xiaomi MiMo`。
+- Provider La expansion continua transport-driven，Compartir OpenAI-compatible Ruta de ejecucion en lugar de presionar provider Implementacion de bifurcacion de nombres。
 
-**文件：**
-- 创建：`src/tests/providerValidation.test.ts`
-- 修改：`src/llmProviders.ts`
+Brecha real restante：
 
-- [ ] **步骤 1：编写失败测试**
-新增测试，描述 Doubao 使用占位符或明显无效的 endpoint 式 model 值时应出现警告，以及看起来有效的配置不应出现警告。
+1. A medida que los incumplimientos sigan aumentando, seguir previniendo provider Metadatos / Documentacion / Deriva de la prueba。
+2. voluntad packaging/semantic-verification convergence Continuar avanzando como pista independiente sin provider Mezcla extendida。
 
-- [ ] **步骤 2：跑定向测试确认失败**
-执行：`npm test -- --runInBand src/tests/providerValidation.test.ts`
-预期：FAIL，因为 validation helper 还不存在。
+---
 
-- [ ] **步骤 3：实现最小校验 helper**
-在 `src/llmProviders.ts` 中新增一个小型纯函数 helper，基于 provider 配置返回警告。
+### Tareas 1：Agregar nivel de proyecto AGENTS Directrices
 
-- [ ] **步骤 4：重新运行定向测试**
-执行：`npm test -- --runInBand src/tests/providerValidation.test.ts`
-预期：PASS。
+**Documentacion：**
+- crear：`AGENTS.md`
+- Pruebas/Verificacion：`README.md`、`README_zh.md`、locales git Flujo de trabajo de publicacion en la historia.
 
-### 任务 3：在设置页展示 Doubao 校验结果
+- [ ] **Pasos 1：Contenido de la guia de redaccion**
+Escribe un texto conciso pero autorizado. `AGENTS.md`，Cubre la descripcion general del proyecto, los archivos clave y la construccion./Comandos de prueba, pasos de publicacion, sincronizacion de documentos.、Provider Reglas de extension y Git Normas de seguridad。
 
-**文件：**
-- 修改：`src/ui/NotemdSettingTab.ts`
-- 修改：`styles.css`
+- [ ] **Pasos 2：Reglas claras para publicar activos.**
+Debe estar escrito claramente en el documento. GitHub Los activos publicados deben incluir `main.js`、`manifest.json`、`styles.css` con `README.md`。
 
-- [ ] **步骤 1：如有需要，新增失败的界面导向测试或 `helper` 调用方测试**
-如果纯界面测试过重，就补一条 `helper` 级断言，再配一条围绕连接测试门禁的聚焦行为测试。
+- [ ] **Pasos 3：Autoauditoria para evitar duplicaciones**
+Confirmar que la guia es suficiente para respaldar la ejecucion del agente sin repetirla sin sentido. `GEMINI.md` Contenido。
 
-- [ ] **步骤 2：实现警告渲染**
-当当前 provider 存在校验警告时，渲染一个可见的警告提示块。
+### Tareas 2：Maquillate primero Doubao Prueba de verificacion
 
-- [ ] **步骤 3：对明显无效的 Doubao 配置阻断连接测试**
-如果当前 provider 存在警告，则显示 `Notice`，并跳过远端测试请求。
+**Documentacion：**
+- crear：`src/tests/providerValidation.test.ts`
+- Modificacion：`src/llmProviders.ts`
 
-- [ ] **步骤 4：重跑相关测试**
-运行覆盖 provider validation 与设置页行为的相关 Jest 测试。
+- [ ] **Pasos 1：Escribe pruebas que fallen**
+Agregar prueba y descripcion. Doubao Uso de marcadores de posicion o obviamente no validos endpoint Formula model Deberia aparecer una advertencia cuando se utiliza el valor y no deberia aparecer una advertencia para una configuracion que parece ser valida.。
 
-### 任务 4：先补 Qianfan 与 SiliconFlow 测试
+- [ ] **Pasos 2：No se pudo ejecutar la prueba de orientacion para confirmar**
+Ejecucion：`npm test -- --runInBand src/tests/providerValidation.test.ts`
+Expectativas：FAIL，Porque validation helper Aun no existe。
 
-**文件：**
-- 修改：`src/tests/llmProviders.test.ts`
-- 修改：`src/tests/llmUtilsProviderSupport.test.ts`
+- [ ] **Pasos 3：Implementar una verificacion minima helper**
+en `src/llmProviders.ts` Agregue una pequena funcion pura en helper，Basado en provider Advertencia de devolucion de configuracion。
 
-- [ ] **步骤 1：扩展注册表测试**
-新增失败断言，检查 `Baidu Qianfan` 与 `SiliconFlow` 的 provider 存在性和元数据。
+- [ ] **Pasos 4：Vuelva a ejecutar la prueba dirigida.**
+Ejecucion：`npm test -- --runInBand src/tests/providerValidation.test.ts`
+Expectativas：PASS。
 
-- [ ] **步骤 2：扩展运行时 / API 测试**
-新增失败测试，断言这两个 provider 都走 `openai-compatible` 运行时，并使用优先 `chat` 的 API 探测。
+### Tareas 3：Mostrar en la pagina de configuracion. Doubao Resultados de la verificacion
 
-- [ ] **步骤 3：跑定向测试确认失败**
-执行：`npm test -- --runInBand src/tests/llmProviders.test.ts src/tests/llmUtilsProviderSupport.test.ts`
-预期：FAIL，直到 provider 定义被补齐。
+**Documentacion：**
+- Modificacion：`src/ui/NotemdSettingTab.ts`
+- Modificacion：`styles.css`
 
-### 任务 5：实现 Provider Registry 与运行时支持
+- [ ] **Pasos 1：Si es necesario, agregue pruebas fallidas orientadas a la interfaz o `helper` Prueba de llamadas**
+Si las pruebas de interfaz puras son demasiado pesadas, agregue una mas `helper` Asercion de nivel, junto con una prueba de comportamiento centrada en el control de acceso de la prueba de conexion.。
 
-**文件：**
-- 修改：`src/llmProviders.ts`
-- 修改：`src/llmUtils.ts`
-- 修改：`src/ui/NotemdSettingTab.ts`
+- [ ] **Pasos 2：Implementar la representacion de advertencias**
+Cuando sea actual provider Cuando haya una advertencia de verificacion, muestre un bloque de advertencia visible.。
 
-- [ ] **步骤 1：新增 provider 定义**
-新增 `Baidu Qianfan` 与 `SiliconFlow`，补齐官方 `base URL`、代表性 `model ID`、元数据以及优先 `chat` 的 API 测试模式。
+- [ ] **Pasos 3：Para cosas que obviamente son ineficaces Doubao Configurar la prueba de conexion de bloqueo**
+Si actualmente provider Si hay una advertencia, se mostrara `Notice`，Y omitir la solicitud de prueba remota。
 
-- [ ] **步骤 2：复用 `transport-driven` 运行时**
-确保两个 provider 都继续走现有 `openai-compatible` 运行时与连接测试路径。
+- [ ] **Pasos 4：Vuelva a ejecutar las pruebas relacionadas**
+Cobertura de carrera provider validation Relacionado con el comportamiento de la pagina de configuracion Jest Pruebas。
 
-- [ ] **步骤 3：如有需要，更新设置页文案**
-在设置页提示块或相关 provider 描述中体现扩展后的 provider 覆盖范围。
+### Tareas 4：Maquillate primero Qianfan con SiliconFlow Pruebas
 
-- [ ] **步骤 4：重跑定向 provider 测试**
-执行：`npm test -- --runInBand src/tests/llmProviders.test.ts src/tests/llmUtilsProviderSupport.test.ts`
-预期：PASS。
+**Documentacion：**
+- Modificacion：`src/tests/llmProviders.test.ts`
+- Modificacion：`src/tests/llmUtilsProviderSupport.test.ts`
 
-### 任务 6：更新文档
+- [ ] **Pasos 1：Pruebas de registro ampliadas**
+Se agrego una nueva afirmacion y verificacion de falla. `Baidu Qianfan` con `SiliconFlow` de provider Existencia y metadatos。
 
-**文件：**
-- 修改：`README.md`
-- 修改：`README_zh.md`
+- [ ] **Pasos 2：Ampliar el tiempo de ejecucion / API Pruebas**
+Agregue una nueva prueba de falla para afirmar estos dos provider Todos se van `openai-compatible` Tiempo de ejecucion y prioridad de uso `chat` de API Deteccion。
 
-- [ ] **步骤 1：更新 provider 列表与配置说明**
-补充 `Baidu Qianfan` 与 `SiliconFlow`，并明确 Doubao endpoint-ID 的配置提示。
+- [ ] **Pasos 3：No se pudo ejecutar la prueba de orientacion para confirmar**
+Ejecucion：`npm test -- --runInBand src/tests/llmProviders.test.ts src/tests/llmUtilsProviderSupport.test.ts`
+Expectativas：FAIL，Hasta provider Definicion completada。
 
-- [ ] **步骤 2：如有必要，更新发布流程说明**
-确保仓库文档与新的 `AGENTS.md` 发布资产规则保持一致。
+### Tareas 5：Implementacion Provider Registry Con soporte de tiempo de ejecucion
 
-### 任务 7：最终验证
+**Documentacion：**
+- Modificacion：`src/llmProviders.ts`
+- Modificacion：`src/llmUtils.ts`
+- Modificacion：`src/ui/NotemdSettingTab.ts`
 
-**文件：**
-- 验证：仓库根目录及所有变更过的源码/测试/文档文件
+- [ ] **Pasos 1：nuevo provider Definicion**
+nuevo `Baidu Qianfan` con `SiliconFlow`，Completa el oficial. `base URL`、Representatividad `model ID`、Metadatos y priorizacion `chat` de API Modo de prueba。
 
-- [ ] **步骤 1：运行构建**
-执行：`npm run build`
-预期：PASS。
+- [ ] **Pasos 2：Reutilizar `transport-driven` Tiempo de ejecucion**
+Asegurate de que dos provider Sigamos como estamos `openai-compatible` Rutas de prueba de conexion y tiempo de ejecucion。
 
-- [ ] **步骤 2：运行完整测试套件**
-执行：`npm test -- --runInBand`
-预期：PASS；若已知 Jest open-handle warning 仍存在，只能在未恶化的前提下接受。
+- [ ] **Pasos 3：Si es necesario, actualice la copia de la pagina de configuracion.**
+Bloqueo rapido o relacionado en la pagina de configuracion provider La descripcion refleja la ampliacion. provider Cobertura。
 
-- [ ] **步骤 3：检查 `git diff` 质量**
-执行：`git diff --check`
-预期：PASS。
+- [ ] **Pasos 4：Volver a ejecutar la orientacion provider Pruebas**
+Ejecucion：`npm test -- --runInBand src/tests/llmProviders.test.ts src/tests/llmUtilsProviderSupport.test.ts`
+Expectativas：PASS。
 
-- [ ] **步骤 4：提交实现**
+### Tareas 6：Actualizar documentacion
+
+**Documentacion：**
+- Modificacion：`README.md`
+- Modificacion：`README_zh.md`
+
+- [ ] **Pasos 1：Actualizacion provider Listado e instrucciones de configuracion.**
+Suplementario `Baidu Qianfan` con `SiliconFlow`，Sea claro Doubao endpoint-ID Consejos de configuracion para。
+
+- [ ] **Pasos 2：Actualice la descripcion del proceso de lanzamiento si es necesario**
+Asegurese de que la documentacion del repositorio este actualizada con la nueva `AGENTS.md` Mantenga coherentes las reglas de publicacion de activos。
+
+### Tareas 7：Verificacion final
+
+**Documentacion：**
+- Verificacion: directorio raiz del almacen y todo el codigo fuente modificado/Pruebas/Archivos de documentacion
+
+- [ ] **Pasos 1：Ejecute la compilacion**
+Ejecucion：`npm run build`
+Expectativas：PASS。
+
+- [ ] **Pasos 2：Ejecute el conjunto de pruebas completo.**
+Ejecucion：`npm test -- --runInBand`
+Expectativas：PASS；Si se sabe Jest open-handle warning Todavia existe y solo puede aceptarse si no se deteriora.。
+
+- [ ] **Pasos 3：Inspeccion `git diff` Calidad**
+Ejecucion：`git diff --check`
+Expectativas：PASS。
+
+- [ ] **Pasos 4：Presentar implementacion**
 ```bash
 git add AGENTS.md docs/superpowers/specs/2026-03-26-agents-and-provider-expansion-design.md docs/superpowers/plans/2026-03-26-agents-and-provider-expansion.en.md docs/superpowers/plans/2026-03-26-agents-and-provider-expansion.zh-CN.md README.md README_zh.md src/llmProviders.ts src/llmUtils.ts src/ui/NotemdSettingTab.ts src/tests/llmProviders.test.ts src/tests/llmUtilsProviderSupport.test.ts src/tests/providerValidation.test.ts styles.css
 git commit -m "feat: add agent guide and expand provider presets"

@@ -3,11 +3,11 @@ date: 2026-05-04
 topic: progress-audit-next-direction
 ---
 
-# 进展审计与后续方向 (v1.8.3+)
+# Auditoria de progreso y direccion de seguimiento (v1.8.3+)
 
-## 当前状态：代码 vs 方案要求
+## Estado actual: codigo vs Requisitos del programa
 
-参考文档：
+Documentacion de referencia：
 - `docs/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.zh-CN.md`
 - `docs/brainstorms/2026-04-14-diagram-platform-phase-2-requirements.zh-CN.md`
 - `docs/brainstorms/2026-05-01-llm-backward-compat-and-progress-audit.zh-CN.md`
@@ -15,144 +15,144 @@ topic: progress-audit-next-direction
 - `docs/brainstorms/2026-05-03-drawnix-feasibility-and-integration-direction.zh-CN.md`
 - `docs/brainstorms/2026-05-07-cli-next-phase-planning.zh-CN.md`
 
-## 仓库事实校正（2026-05-05）
+## Correccion de hechos de almacen.（2026-05-05）
 
-这次审计重点不是重新设计 diagram platform，而是把“代码真实状态、远端 workflow、进度文档、外部参考项目结论”重新对齐。以下几项必须明确写清：
+El objetivo de esta auditoria no es el rediseno diagram platform，En cambio, “el estatus real del codigo, el control remoto workflow、Realineacion del documento de progreso, conclusion del proyecto de referencia externa ". Los siguientes elementos deben escribirse claramente：
 
-1. **远端 `main` 当前没有常规 push/PR CI。**
-   `.github/workflows/release.yml` 只在数字 `x.x.x` tag push 或 `workflow_dispatch` 时运行。截至 `2026-05-04`，`main` 指向 `dd77126`（`fix(diagram): land command surface and verification runbook`），该分支本身仍没有普通 push/PR workflow。最近的红灯来自 `1.8.3` 发布流，随后已被 `2026-05-03` 的 `1.8.4` 成功 release run（`25274341984`）覆盖。
+1. **remoto `main` No hay rutina por el momento push/PR CI。**
+   `.github/workflows/release.yml` Solo en numeros `x.x.x` tag push o `workflow_dispatch` Al correr. A partir de `2026-05-04`，`main` Senalando `dd77126`（`fix(diagram): land command surface and verification runbook`），La sucursal en si aun no tiene comun push/PR workflow。La luz roja mas cercana viene de `1.8.3` Publicar una transmision que posteriormente haya sido `2026-05-03` de `1.8.4` Exito release run（`25274341984`）Cobertura。
 
-2. **`main` 上的 commit-status `pending` 不是一个真实失败检查。**
-   截至 `2026-05-04`，`commits/main/status` 仍返回 `state: pending` 且 `statuses: []`，同时 `main` 没有 branch protection，也没有普通分支级 required checks。这个模式在 `main@dd77126` 上也继续成立：零 status、零 check suite 并不等于“主分支有真实失败流水线”。对这个仓库来说，当 release-driven checks 存在时，GitHub Actions runs 才是远端 CI 真值源，单独看 commit-status API 会误判。
+2. **`main` en commit-status `pending` No es una verdadera verificacion de fallas。**
+   A partir de `2026-05-04`，`commits/main/status` Todavia regresa `state: pending` y `statuses: []`，al mismo tiempo `main` No branch protection，Tampoco existe un nivel de sucursal ordinario required checks。Este modelo es `main@dd77126` Lo anterior tambien se mantiene: cero status、cero check suite Esto no significa que "la rama principal tenga una verdadera linea de fallas". Para este almacen, cuando release-driven checks Cuando este presente，GitHub Actions runs Es el extremo remoto CI Fuente de la verdad, tomada sola commit-status API Juzgara mal。
 
-3. **release workflow 在最新成功 run 后仍带有未来失效风险。**
-   更早那次成功的 `1.8.3` 修复 run（`25215799596`）仍携带 GitHub 官方的 Node 20 JavaScript-action 弃用告警，指向 `actions/checkout@v4` 与 `actions/setup-node@v4`。当前 `.github/workflows/release.yml` 已固定为 `actions/checkout@v6` 与 `actions/setup-node@v6`，而新的 `1.8.4` release run（`25274341984`）已在这条加固后的路径上成功完成。
+3. **release workflow En el ultimo exito run Todavia conlleva el riesgo de un fracaso futuro.。**
+   El que tuvo exito antes `1.8.3` Reparacion run（`25215799596`）Todavia llevando GitHub Oficial Node 20 JavaScript-action Advertencia de obsolescencia, que apunta a `actions/checkout@v4` con `actions/setup-node@v4`。Actual `.github/workflows/release.yml` Fijado como `actions/checkout@v6` con `actions/setup-node@v6`，Y lo nuevo `1.8.4` release run（`25274341984`）Completado con exito en este camino reforzado.。
 
-4. **“8 种图表意图实时验证”目前不是仓库内受控门槛。**
-   相关 live test 文件（如 `src/tests/liveAllDiagramIntents.test.ts`）已在 `92d3ad3` 以“accidentally committed live test files”名义移出主线。2026-05-02 的 DeepSeek 实时验证应视为一次本地历史证据，而不是当前仓库能持续执行、CI 能强制覆盖的门槛。
+4. **“8 La "verificacion en tiempo real de la intencion del grafico" no es actualmente un umbral controlado en el almacen.。**
+   Relevante live test Documentos (p. ej. `src/tests/liveAllDiagramIntents.test.ts`）Ya aqui `92d3ad3` a“accidentally committed live test files”Movimiento nominal fuera de la linea principal。2026-05-02 de DeepSeek La verificacion en tiempo real debe considerarse como una evidencia historica local, en lugar de la ejecucion continua del almacen actual.、CI Umbral de cobertura obligatoria。
 
-5. **运行时支持 8 种意图，不等于 UI 首选项全部暴露。**
-   `SUPPORTED_DIAGRAM_INTENTS` 仍覆盖 `mindmap / flowchart / sequence / classDiagram / erDiagram / stateDiagram / canvasMap / dataChart`，但设置页与侧边栏当前只暴露 `auto + flowchart + sequence + classDiagram + erDiagram + stateDiagram + dataChart`。`mindmap` 与 `canvasMap` 仍属运行时能力，不是当前 UI 首选图表选择器的一部分。
+5. **Soporte de tiempo de ejecucion 8 Una intencion no es igual a UI Todas las preferencias quedan expuestas。**
+   `SUPPORTED_DIAGRAM_INTENTS` Todavia Cubierto `mindmap / flowchart / sequence / classDiagram / erDiagram / stateDiagram / canvasMap / dataChart`，Pero la pagina de configuracion y la barra lateral actualmente solo estan expuestas `auto + flowchart + sequence + classDiagram + erDiagram + stateDiagram + dataChart`。`mindmap` con `canvasMap` Sigue siendo una capacidad de tiempo de ejecucion, no la actual UI Parte del selector de graficos preferido.。
 
-6. **命令编排“部分统一”，不是“完全统一”。**
-   `generateExperimentalDiagramCommand` 与 legacy Mermaid 保存命令仍经过共享 `generateDiagramCommand` 编排，但 `previewExperimentalDiagramCommand` 现在直接读取当前 Markdown 中的 `vega-lite` 围栏并本地预览，不再走共享 LLM 生成路径。这是为了匹配当前 `dataChart` 产物以 Markdown fenced block 保存的现实，而不是最终命令收口形态。
+6. **La disposicion del mando esta "parcialmente unificada", no "completamente unificada"”。**
+   `generateExperimentalDiagramCommand` con legacy Mermaid El comando de guardar todavia se comparte. `generateDiagramCommand` Arreglo, pero `previewExperimentalDiagramCommand` Ahora lee directamente la corriente. Markdown en `vega-lite` Adjunte y obtenga una vista previa local, ya no comparta LLM Generar camino. Esto es para que coincida con la actual. `dataChart` El producto es Markdown fenced block Preservacion de la realidad y no forma definitiva de cierre de la orden。
 
-7. **`diagram.generate` 被标成 `safe`，不等于当前出货 diagram 命令就是 `safe`。**
-   截至 2026-05-07，`src/operations/registry.ts` 是刻意把 `diagram.generate` 作为宿主无关 generation core（`sourceMarkdown -> DiagramGenerationResult`）导出，并赋予 `safe` / `read-only` 语义；但映射过去的 command binding 仍继续如实携带来自 `src/workflowButtons.ts` 的 `requires-active-file` / `write-file` 元数据。所以下一阶段真正要补的是 core 之下的 typed follow-through，而不是重命名当前出货命令表面。
+7. **`diagram.generate` marcado como `safe`，No es igual al envio actual diagram El comando es `safe`。**
+   A partir de 2026-05-07，`src/operations/registry.ts` Es deliberadamente `diagram.generate` No relevante como anfitrion generation core（`sourceMarkdown -> DiagramGenerationResult`）Exportar y asignar `safe` / `read-only` Semantica; pero mapeando el pasado command binding Aun asi continuar llevando informacion veraz de `src/workflowButtons.ts` de `requires-active-file` / `write-file` Metadatos. Entonces, lo que realmente necesitamos compensar en la siguiente etapa es core Abajo typed follow-through，En lugar de cambiar el nombre de la superficie de comando de envio actual。
 
-## 路线图任务状态
+## Estado de la tarea de la hoja de ruta
 
-| 任务 | 方案目标 | 当前实际 | 差距 |
+| Tareas | Objetivos del programa | Actual Real | Brecha |
 |---|---|---|---|
-| 任务 0 | 构建与打包底座 | 已交付（有限制）。`srcdoc` 宿主在 `main.js` 中，`audit:render-host` 烟雾门已存在。 | 真正的多入口 / 重型运行时隔离尚未开始。 |
-| 任务 1 | 图表领域模型 | 已交付。`DiagramIntent`、`DiagramSpec`、验证器、规划器已进入主线。 | 无。 |
-| 任务 2 | 规格优先管道 | 部分完成。共享执行器已存在，但公共命令表面仍保留 3 个 ID，preview 路径也已针对 `vega-lite` fenced artifact 做局部分叉。`promptUtils.ts` 旧版 Mermaid 提示仍在。 | 命令收口 + 旧提示退役；且必须保留原 Mermaid 场景可用性。 |
-| 任务 3 | Mermaid 适配器 V2 | 部分完成。6 个 Mermaid 子类型 adapter 已落地，`legacyFixerUtils.ts` 已抽出一部分职责。 | `mermaidProcessor.ts` 仍过重；每个拆分子任务都需要真实 Obsidian 图像核验。 |
-| 任务 4 | 渲染平台 | 已交付。registry / service / cache / preview modal / inline + iframe host 已落地。 | 无。 |
-| 任务 5 | JSON Canvas | 已交付。`.canvas` 产物、基础 layout、保存与预览链路已可用。 | 无。 |
-| 任务 6 | Vega-Lite | 已交付（有限制）。`dataChart` 使用 iframe-host 预览，保存产物为 Markdown fenced `vega-lite`。 | 仍依赖单入口主 bundle bridge；重型运行时未独立打包。 |
-| 任务 7 | 主题 / 导出 / release | 已交付，并已补当前加固。主题、SVG/PNG/source 导出、release 资产约束与 workflow action pin 已存在。 | 没有重大产品差距，但普通 `main` CI 仍是刻意缺失状态。 |
-| 任务 8 | 高级引擎 | 按设计推迟（R10）。 | 评估门未满足。 |
+| Tareas 0 | Construyendo y empaquetando la base. | Entregado (con restricciones）。`srcdoc` El anfitrion esta presente. `main.js` medio，`audit:render-host` Las puertas antihumo ya existen。 | Verdaderas entradas multiples / El aislamiento intensivo del tiempo de ejecucion aun no ha comenzado。 |
+| Tareas 1 | Modelo de dominio de diagrama | Entregado。`DiagramIntent`、`DiagramSpec`、El validador y el planificador han ingresado a la linea principal.。 | Ninguno。 |
+| Tareas 2 | Las especificaciones priorizan la canalizacion | Parcialmente completado. El ejecutor compartido existe, pero la superficie de comando publica permanece 3  ID，preview El camino tambien ha sido apuntado `vega-lite` fenced artifact Haz una bifurcacion parcial。`promptUtils.ts` Version antigua Mermaid El mensaje sigue ahi。 | Orden de callarse + Se eliminaron las indicaciones antiguas; y se deben conservar las indicaciones originales. Mermaid Disponibilidad de escenarios。 |
+| Tareas 3 | Mermaid Adaptador V2 | Parcialmente completado。6  Mermaid Subtipos adapter Ya aterrice，`legacyFixerUtils.ts` Le ha quitado algunas responsabilidades。 | `mermaidProcessor.ts` Todavia demasiado pesado; cada subtarea dividida debe ser verdadera Obsidian Verificacion de imagen。 |
+| Tareas 4 | Plataforma de renderizado | Entregado。registry / service / cache / preview modal / inline + iframe host Ya aterrice。 | Ninguno。 |
+| Tareas 5 | JSON Canvas | Entregado。`.canvas` Producto, base. layout、Hay enlaces para guardar y obtener una vista previa disponibles.。 | Ninguno。 |
+| Tareas 6 | Vega-Lite | Entregado (con restricciones）。`dataChart` uso iframe-host Obtenga una vista previa y guarde el producto como Markdown fenced `vega-lite`。 | Todavia confiando en el maestro de entrada unica bundle bridge；El tiempo de ejecucion pesado no se empaqueta de forma independiente。 |
+| Tareas 7 | Tema / Exportar / release | Se entrega con el refuerzo actual anadido. Tema、SVG/PNG/source Exportar、release Restricciones de activos y workflow action pin Ya existe。 | No hay lagunas importantes en el producto, pero si en la media `main` CI Todavia desaparecido deliberadamente。 |
+| Tareas 8 | motor avanzado | Pospuesto por diseno（R10）。 | La puerta de evaluacion no esta satisfecha.。 |
 
-## Roadmap 长周期交叉印证
+## Roadmap Corroboracion cruzada a largo plazo
 
-如果把 `docs/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.en.md` 视为一份中长期路线图来读，当前剩余工作已经清晰分成三层：
+Si `docs/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.en.md` Considerado como una hoja de ruta a mediano y largo plazo, el trabajo pendiente actual se ha dividido claramente en tres niveles.：
 
-1. **平台底座已交付**
-   `DiagramSpec`、renderer registry/service、Mermaid 子类型 adapters、JSON Canvas、Vega-Lite 预览、theme/export 对齐，以及 release 加固，都不再是“未来目标”，而是主线现实。它们应被视为已完成底座，而不是待建能力。
+1. **Se ha entregado la base de la plataforma.**
+   `DiagramSpec`、renderer registry/service、Mermaid Subtipos adapters、JSON Canvas、Vega-Lite Vista previa、theme/export Alineacion y release El refuerzo ya no es un "objetivo futuro", sino una realidad fundamental. Deben verse como bases terminadas y no como capacidades por construir.。
 
-2. **仍待完成的边界加固**
-   路线图里真正还活着的技术债，现在集中在命令表面 canonical 化、维护者本地语义核验、以及重型运行时的真实打包隔离。这三类问题仍然阻碍“平台成熟度”，但已经不再阻碍“平台是否存在”。
+2. **Aun no se ha completado el refuerzo de los limites**
+   La deuda tecnica que realmente esta viva en la hoja de ruta se concentra ahora en la superficie de mando. canonical , verificacion semantica local del mantenedor y verdadero aislamiento de empaquetado para tiempos de ejecucion de servicio pesado. Estos tres tipos de problemas todavia obstaculizan la "madurez de la plataforma", pero ya no obstaculizan "si la plataforma existe".”。
 
-3. **更长期的可选扩展**
-   服务层拆分、更完整的 board-style export、以及高级引擎探索，仍然是有效方向，但它们已经后置于上述稳定化工作，不应再与当前批次争夺优先级。
+3. **Prorrogas opcionales a mas largo plazo**
+   Divida la capa de servicio y hagala mas completa. board-style export、Ademas de la exploracion avanzada de motores, siguen siendo direcciones validas, pero han quedado relegadas a los trabajos de estabilizacion antes mencionados y ya no deberian competir con el lote actual por prioridad.。
 
-这意味着，这份路线图不应再被解读为“继续建设平台”，而应被解读为“先把平台硬化完成，再决定要不要向外扩展”。
+Esto significa que esta hoja de ruta ya no debe interpretarse como "continuar construyendo la plataforma", sino como "fortalecer la plataforma primero y luego decidir si expandirse hacia afuera".”。
 
-## notebook-navigator 交叉参考完成情况
+## notebook-navigator Estado de finalizacion de la referencia cruzada
 
-| # | 模式 | 状态 | 说明 |
+| # | Patron | Estado | Descripcion |
 |---|---|---|---|
-| 1 | 服务层 + DI | 延期 | 属于架构重构，不阻塞当前交付 |
-| 2 | LLM 响应缓存 | ✓ | 已落地到 `src/llmUtils.ts` |
-| 3 | 逐项设置同步开关 | ✓ | 已有 `localOnly` 隔离 |
-| 4 | 批量管道含中断恢复 | ✓ | `src/batchProgressStore.ts` 已落地 |
-| 5 | 架构总览文档 | ✓ | `docs/architecture.md` 与 `docs/architecture.zh-CN.md` |
+| 1 | Capa de servicio + DI | Aplazamiento | Es una reconstruccion arquitectonica y no bloquea la entrega actual. |
+| 2 | LLM Almacenamiento en cache de respuestas | ✓ | Ha aterrizado en `src/llmUtils.ts` |
+| 3 | Configure el interruptor de sincronizacion elemento por elemento | ✓ | Ya tengo `localOnly` Aislamiento |
+| 4 | Canalizacion por lotes con recuperacion de interrupciones | ✓ | `src/batchProgressStore.ts` Ya aterrice |
+| 5 | Documento de descripcion general de la arquitectura | ✓ | `docs/architecture.md` con `docs/architecture.zh-CN.md` |
 
-## v1.8.3+ 已落地主能力
+## v1.8.3+ Principales capacidades implementadas.
 
-| 功能 | 状态 | 备注 |
+| Funcion | Estado | Observaciones |
 |---|---|---|
-| 欢迎弹窗（首次安装） | ✓ | 22 种语言 |
-| 欢迎弹窗最近更新摘要 | ✓ | 首次打开时展示最近两个版本摘要，支持滚动查看 |
-| 赞助方支持（GitHub Star + ko-fi） | ✓ | 设置页 + 欢迎弹窗 + README |
-| Cline 对齐令牌解析 | ✓ | 未知模型默认 8192 改为 provider 决策 |
-| 图表边缘字段规范化 | ✓ | `source/target/sourceId/targetId/start/end -> from/to` |
-| Xiaomi MiMo Provider 预设 | ✓ | 继续复用共享 OpenAI-compatible 运行时，并补齐直连 chat 探测 |
-| 批量提取特定原始内容 | ✓ | 侧边栏 / 工作流动作现已支持文件夹级 `.md` / `.txt` 提取 |
-| 概念笔记路径引导弹窗 | ✓ | 添加链接 / 提取概念流程可跳转设置，也可本次或永久忽略 |
-| 设置输入框焦点稳定性 | ✓ | 剩余输入过程中重绘的字段现已改为 blur / Enter 提交 |
-| 更安全的概念 / Mermaid 默认值 | ✓ | 概念笔记路径与 Mermaid 错误检测现默认开启 |
-| 首选图表类型选择器 | 部分完成 | 当前 UI 暴露子集，不等于全部运行时意图 |
-| README i18n 对齐合约测试 | ✓ | 仓库内稳定门槛 |
-| 8 意图实时 API 验证 | 仅本地历史证据 | 当前不属于仓库内可持续执行门槛 |
+| Ventana emergente de bienvenida (instalacion por primera vez).） | ✓ | 22 idiomas |
+| Ventana emergente de bienvenida con resumen de actualizaciones recientes | ✓ | Muestra el resumen de las dos versiones mas recientes cuando se abre por primera vez y admite la visualizacion con desplazamiento. |
+| Apoyo del patrocinador（GitHub Star + ko-fi） | ✓ | Pagina de configuracion + Ventana emergente de bienvenida + README |
+| Cline Analisis del token de alineacion | ✓ | Modelo predeterminado desconocido 8192 Cambiar a provider Toma de decisiones |
+| Normalizacion del campo del borde del grafico | ✓ | `source/target/sourceId/targetId/start/end -> from/to` |
+| Xiaomi MiMo Provider Predeterminado | ✓ | Continuar reutilizando acciones. OpenAI-compatible Al ejecutar, complete la conexion directa. chat Deteccion |
+| Extraiga contenido original especifico en lotes | ✓ | Barra lateral / Las acciones del flujo de trabajo ahora admiten el nivel de carpeta `.md` / `.txt` Extraccion |
+| Ventana emergente de guia de ruta de nota conceptual | ✓ | Agregar enlaces / El proceso de extraccion de conceptos puede saltarse o ignorarse esta vez o de forma permanente. |
+| Establecer la estabilidad del enfoque del cuadro de entrada | ✓ | Los campos que se vuelven a dibujar durante el proceso de entrada restante ahora se cambian a blur / Enter Enviar |
+| Un concepto mas seguro / Mermaid Valor predeterminado | ✓ | Ruta de la nota conceptual y Mermaid La deteccion de errores ahora esta habilitada de forma predeterminada |
+| Selector de tipo de grafico preferido | Parcialmente completado | Actual UI Exponer subconjuntos, no iguales a todas las intenciones de tiempo de ejecucion |
+| README i18n Prueba del contrato de alineacion | ✓ | Umbral de estabilidad en almacen |
+| 8 Intencion en tiempo real API Verificacion | Solo evidencia historica local | Actualmente no se encuentra dentro del umbral de ejecucion sostenible dentro del almacen. |
 
-## 架构推进现状
+## Estado actual del avance de la arquitectura.
 
-**LLM 层：**
-- 响应缓存已落地，可减少重复 API 成本。
-- 未知模型输出 token 决策已与 Cline 对齐。
-- 提供商配置支持本地隔离，不强制所有敏感配置参与同步。
-- OpenAI-compatible endpoint 现在支持归一化已包含 `/chat/completions` 与 `/models` 的文档地址，减少自定义 Provider 时的路径拼接错误。
-- 中国区 OpenAI-compatible 预设面也已扩展到 `Xiaomi MiMo`，且没有引入额外 transport 分支。
+**LLM Capas：**
+- Se ha implementado el almacenamiento en cache de respuestas para reducir la duplicacion. API Costo。
+- Salida del modelo desconocido token Se han tomado decisiones con Cline Alineacion。
+- La configuracion del proveedor admite el aislamiento local y no obliga a todas las configuraciones confidenciales a participar en la sincronizacion.。
+- OpenAI-compatible endpoint Ahora se incluye el soporte a la normalizacion. `/chat/completions` con `/models` Direccion del documento para reducir la personalizacion. Provider Error de empalme de ruta cuando。
+- Distrito Chino OpenAI-compatible La superficie predeterminada tambien se ha ampliado a `Xiaomi MiMo`，Sin introducir adicionales transport Sucursal。
 
-**图表平台：**
-- 运行时仍支持 8 种图表意图。
-- `DiagramSpec -> adapter -> renderer` 的主链已经成立，核心扩展点不再绑死在 Mermaid 文本。
-- `dataChart` 已经不再只是“保存 JSON”，而是保存为 Markdown fenced `vega-lite` 并支持本地预览。
-- `canvasMap` 是已支持但未在当前 UI 中首选暴露的目标，说明“运行时能力”和“产品默认表面”已开始分层。
+**Plataforma de graficos：**
+- El tiempo de ejecucion aun es compatible 8 Intencion del grafico。
+- `DiagramSpec -> adapter -> renderer` Se ha establecido la cadena principal y los puntos de extension centrales ya no estan vinculados a Mermaid Texto。
+- `dataChart` Ya no se trata solo de “ahorrar JSON”，En su lugar, guardelo como Markdown fenced `vega-lite` Y admite vista previa local。
+- `canvasMap` Si, es compatible, pero actualmente no UI Los objetivos expuestos preferidos en , que indican que las "capacidades de tiempo de ejecucion" y las "superficies predeterminadas del producto" han comenzado a superponerse。
 
-**基础设施：**
-- 进度状态持久化、架构文档、release workflow、README 对齐测试都在主线。
-- release 路径现在还多了一条维护要求：GitHub 官方 workflow actions 的 major 版本要跟上支持窗口，不能等弃用告警演变成真实失败。
-- 当前真正缺的是“secret-free / machine-free”的 live verification harness，而不是更多单元测试框架。
-- 本地工作流状态卫生也已明确：`.trellis/` 现被视为应保留的本地状态，并通过忽略策略避免在同步或发布准备时被误删。
+**Infraestructura：**
+- Persistencia del estado del progreso y documentacion de la arquitectura.、release workflow、README Las pruebas de alineacion estan todas en la linea principal.。
+- release El camino ahora tiene un requisito de mantenimiento adicional.：GitHub Oficial workflow actions de major La version debe mantenerse al dia con la ventana de soporte y no puede esperar a que las advertencias de obsolescencia se conviertan en fallas reales.。
+- Lo que realmente falta ahora es“secret-free / machine-free”de live verification harness，En lugar de mas marcos de pruebas unitarias。
+- Tambien se ha aclarado la higiene del estado del flujo de trabajo local.：`.trellis/` Ahora se considera un estado local que debe conservarse y esta protegido contra una eliminacion accidental durante la sincronizacion o la preparacion de la version al ignorar la politica.。
 
-**CLI 扩展性：**
-- 本机上的稳定包装器 `obsidian-cli` 仍主要是调试/桌面入口，但底层官方 `obsidian` CLI 现在已经支持 `commands` 与 `command id=<command-id>`，可列出并触发插件注册命令。
-- Notemd 里真正有 CLI 潜力的 seam 在更低层：`src/providerDiagnostics.ts`、`src/diagram/diagramGenerationService.ts`、`src/workflowButtons.ts`、`src/batchProgressStore.ts`，以及 `localOnly` 这类设置/序列化语义。
-- 因此，项目当前仍不能把插件 command IDs 或 sidebar actions 直接当成稳定工程 CLI 表面。必须先抽宿主无关 operation，再在 command-trigger 层之上定义类型化 CLI 调用契约。
-- 第一批具体交付已经落地在 provider diagnostics：现在已有共享 operation-input builder，并新增了开发者诊断命令，因此同一实现路径已经可被命令面板、快捷键绑定、设置页按钮和官方 CLI 命令触发共同复用。
-- 抽取链路现在已经更具体：`src/operations/types.ts`、`src/operations/registry.ts`、`src/operations/capabilityManifest.ts` 与 `src/cliContracts.ts` 已集中承接 operation 元数据、command-binding mapping kind、capability discovery 与类型化契约导出。
-- `diagram.generate` 不再只是计划中的 future item；它已经进入类型化 invocation contract，同一套 registry/contract 路径现在也已导出 `diagram.preview` 与 `provider.connection.test` 的 typed operation surface，同时保留它们原有的受限 automation level。
-- 第一批 MT2 host-adapter 抽离也已经落地：`src/operations/diagramGenerateOperation.ts` 负责可复用的 diagram 执行路径，`src/operations/providerDiagnosticCommand.ts` 负责 `src/main.ts` 之下的 provider diagnostic command orchestration。
-- 第二批 MT2 host-adapter slice 也已落地：`src/operations/diagramCommandHostAdapter.ts` 现在负责 Mermaid/artifact 保存收尾与直接 Vega-Lite 预览编排。
-- 第一批 config/profile slice 也已落地：`src/operations/configProfileCommands.ts` 现在承接 provider profile 导入导出与 CLI capability/contract 导出编排，设置页不再保留一套平行实现。
-- provider diagnostic report persistence 也已落地：`src/operations/providerDiagnosticReportPersistence.ts` 现在承接带冲突规避的诊断报告文件创建逻辑，`src/main.ts` 不再内联持有这套路径策略。
-- provider diagnostic host adapter 也已落地：`src/operations/providerDiagnosticCommandHostAdapter.ts` 现在承接开发者诊断命令的 settings 装载、报告落盘接线与面向用户的 notice 整形，`src/main.ts` 不再内联持有这套编排。
-- config/profile host adapter 也已落地：`src/operations/configProfileCommandHostAdapter.ts` 现在承接导入导出状态持久化、CLI 导出 notice 整形与导入导出错误映射，`src/main.ts` 也不再内联持有这组 CLI 邻接编排。
-- provider connection-test host adapter 也已落地：`src/operations/providerConnectionTestCommandHostAdapter.ts` 现在已同时承接 `test-llm-connection` 与设置页 provider 测试流，两个表面都不再各自保留平行的 `testAPI` 编排。
-- note-processing host adapter 第一批也已落地：`src/operations/noteProcessingCommandHostAdapter.ts` 现在已承接 `process-current-add-links`、`process-folder-add-links`、`batch-generate-from-titles`、`generate-from-title` 与 `research-and-summarize` 的 busy-guard、reporter 生命周期、notice/error-log 编排，`src/main.ts` 不再内联保留这批命令包装。
-- note-processing host adapter 第二批也已落地：同一文件现在已继续承接 `translate-current-file`、`batch-translate-folder`、`extract-concepts-current`、`extract-concepts-folder`、`extract-original-text` 与 `extract-concepts-and-generate-titles` 的 command-host 编排，`src/main.ts` 里的翻译/抽取 wrapper 现已收缩为 delegator。
-- 组合命令的真实行为也已对齐：`extract-concepts-and-generate-titles` 不再被外层 `isBusy` 自己拦住，也不再忽略配置中的概念目录。
-- note-processing registry onboarding 也已落地：`src/operations/registry.ts`、`src/operations/capabilityManifest.ts` 与 `src/cliContracts.ts` 现在已把 `translate.file`、`translate.folder-batch`、`concept.extract-file`、`concept.extract-folder`、`content.extract-original-text` 与 `workflow.extract-and-generate` 纳入一等 operation 元数据，而不是继续停留在零散命令描述。
-- note-processing 长尾 registry batch 也已落地：同一套 registry/manifest/contract 路径现在也已暴露 `file.process-add-links`、`file.process-folder-add-links`、`content.generate-from-title`、`content.batch-generate-from-titles` 与 `research.summarize-topic`，CLI capability matrix 里此前的 process / generate / research placeholder mapping 已转成真实 registry-backed operation。
-- selection/export registry batch 也已落地：同一套 operation surface 现在也已覆盖 `editor.create-link-and-generate`、`provider.profile.export`、`provider.profile.import`、`cli.capability-manifest.export` 与 `cli.invocation-contract.export`，旧的“selection/export surfaces 仍缺失”判断已不再是当前事实。
-- translation/extraction utility 边界也继续收口了一步：`batchTranslateFolder()` 现在已支持注入外部 reporter，不再把 `ProgressModal` 当成唯一载体；`extractOriginalText()` 现在会返回结构化结果对象，成功 notice 也已由 host adapter 显式接管。
-- 下一批 utility host adapter 也已落地：`src/operations/utilityCommandHostAdapter.ts` 现在承接 duplicate cleanup、batch Mermaid fix 与 single/batch formula fix 的 command orchestration，这些 `src/main.ts` wrapper 也已收缩为 delegator。
-- 最小剩余 write-heavy contract 批次也已落地：`src/translate.ts` 现在会返回 `TranslateFileResult` / `BatchTranslateFolderResult`，`src/formulaFixer.ts` 现在会返回 `FormulaFixFileResult` / `BatchFormulaFixResult`，host adapter 现在承接它们的成功 notice，`src/operations/registry.ts` 也已直接导出 richer 的 `translate.*` / `formula.*` result schema。
-- 第一批 `src/fileUtils.ts` contract 子切片也已落地：`processFile()` 现在返回 `ProcessFileResult`，`generateContentForTitle()` 返回 `GenerateContentForTitleResult`，`batchGenerateContentForTitles()` 返回 `BatchGenerateContentForTitlesResult`，`runProcessFolderWithNotemdCommandWithHost()` 现在会报告 `savedCount` / `errors` / `cancelled`，批量生成的无文件分支也已从 utility-owned 伪成功路径改为 host-owned notice。
-- `src/fileUtils.ts` 的剩余尾部现在也已落地：`batchFixMermaidSyntaxInFolder()` 返回 `BatchMermaidFixResult`，`checkAndRemoveDuplicateConceptNotes()` 返回 `ConceptDedupeResult`，duplicate deletion confirmation 已改为由 host 注入，`mermaid.batch-fix` / `concept.dedupe` 的 richer schema 也已进入 registry。
-- 更深层的 diagram command-core 切片现在也已落地：`src/operations/diagramCommandExecution.ts` 现在承接 `src/main.ts` 之下的 Mermaid-save 与 artifact-save 执行流程，而 `diagram.generate` 现在也会返回显式的 `followThrough` 结构（`kind`、`outputPath`、`previewOpened`、`autoFixAttempted`、`artifactTarget`），同时继续保留向后兼容的顶层 `outputPath` / `previewOpened` 字段。
-- `src/fileUtils.ts` 与 `src/extractOriginalText.ts` 现在都接受更窄的 runtime context，而不是直接依赖具体 `NotemdPlugin` 类。这说明边界已经开始从“抽 wrapper”推进到“削弱 utility 对宿主类的类型耦合”。
-- 剩余架构缺口因此再次转移：实质性的 diagram execution 已不再内联留在 `src/main.ts`，而 `diagram.generate` 之下第一层 typed follow-through 也已落地。下一批应判断这一已落地结构是否已经足够，再进入 packaging / semantic verification 的后续硬化，而不是回头重开已经落地的 write-heavy families。
-- 最新一层收紧是：这仍然是“分层问题”，而不是“命令数量问题”。应把 `diagram.generate` 保持为宿主无关 core，把其下已落地的显式 `followThrough` 结构视作当前 command-completion contract，只有后续某个分支真的证明自己足够宿主无关时，才考虑继续提升为新的 top-level operation ID。
+**CLI Escalabilidad：**
+- Envoltorio estable en maquina nativa `obsidian-cli` Todavia principalmente depurando/Entrada al escritorio, pero la capa inferior es oficial. `obsidian` CLI Ahora compatible `commands` con `command id=<command-id>`，Puede enumerar y activar comandos de registro de complementos.。
+- Notemd Realmente hay algo en ello. CLI Potencial seam En niveles inferiores：`src/providerDiagnostics.ts`、`src/diagram/diagramGenerationService.ts`、`src/workflowButtons.ts`、`src/batchProgressStore.ts`，y `localOnly` Tales configuraciones/Semantica de serializacion。
+- Por lo tanto, el proyecto todavia no puede agregar complementos. command IDs o sidebar actions Tratelo directamente como un proyecto de estabilizacion. CLI Superficie. La hostia hay que fumarla primero y no tiene nada que ver. operation，Otra vez command-trigger Definicion de escritura sobre la capa CLI Contrato de llamada。
+- El primer lote de entregas especificas se ha realizado en provider diagnostics：Ahora compartido operation-input builder，Se ha agregado un nuevo comando de diagnostico del desarrollador, por lo que el panel de comandos, las combinaciones de teclas de acceso directo, los botones de la pagina de configuracion y las funciones oficiales pueden usar la misma ruta de implementacion. CLI Comando disparador de multiplexacion comun。
+- La extraccion de enlaces ahora es mas especifica.：`src/operations/types.ts`、`src/operations/registry.ts`、`src/operations/capabilityManifest.ts` con `src/cliContracts.ts` Ya centralizado para emprender operation Metadatos、command-binding mapping kind、capability discovery Exportar con contratos tipificados。
+- `diagram.generate` Ya no es solo un plan future item；Ha entrado tipo invocation contract，Mismo conjunto registry/contract Los caminos ahora tambien se exportan `diagram.preview` con `provider.connection.test` de typed operation surface，Manteniendo sus limitaciones originales automation level。
+- Primer lote MT2 host-adapter Tambien se ha logrado el desapego：`src/operations/diagramGenerateOperation.ts` Responsable de la reutilizacion diagram Ruta de ejecucion，`src/operations/providerDiagnosticCommand.ts` Responsable `src/main.ts` Abajo provider diagnostic command orchestration。
+- Segundo lote MT2 host-adapter slice Tambien ha aterrizado：`src/operations/diagramCommandHostAdapter.ts` Hazte cargo ahora Mermaid/artifact Ahorre acabado y franqueza. Vega-Lite Disposicion previa。
+- Primer lote config/profile slice Tambien ha aterrizado：`src/operations/configProfileCommands.ts` Tomalo ahora provider profile Importar, exportar y CLI capability/contract Acuerdo de exportacion, la pagina de configuracion ya no conserva un conjunto de implementaciones paralelas。
+- provider diagnostic report persistence Tambien ha aterrizado：`src/operations/providerDiagnosticReportPersistence.ts` Ahora emprenda la logica de creacion del archivo del informe de diagnostico evitando conflictos.，`src/main.ts` Ya no mantener este conjunto de estrategias de ruta en linea。
+- provider diagnostic host adapter Tambien ha aterrizado：`src/operations/providerDiagnosticCommandHostAdapter.ts` Ahora acepta comandos de diagnostico del desarrollador. settings Carga, cableado de ubicacion de informes y orientado al usuario. notice Cirugia Plastica，`src/main.ts` Ya no mantenga este acuerdo en linea。
+- config/profile host adapter Tambien ha aterrizado：`src/operations/configProfileCommandHostAdapter.ts` Ahora emprenda la persistencia del estado de importacion y exportacion.、CLI Exportar notice Dar forma y mapear errores de importacion y exportacion，`src/main.ts` Este grupo ya no se mantiene en linea. CLI Orquestacion de adyacencia。
+- provider connection-test host adapter Tambien ha aterrizado：`src/operations/providerConnectionTestCommandHostAdapter.ts` Ahora aceptado al mismo tiempo. `test-llm-connection` Con pagina de configuracion provider Flujo de prueba, ambas superficies ya no permanecen paralelas `testAPI` Arreglo。
+- note-processing host adapter El primer lote tambien ha llegado.：`src/operations/noteProcessingCommandHostAdapter.ts` Ahora aceptado `process-current-add-links`、`process-folder-add-links`、`batch-generate-from-titles`、`generate-from-title` con `research-and-summarize` de busy-guard、reporter Ciclo de vida、notice/error-log Arreglo，`src/main.ts` Ya no mantenga este lote de paquetes de comandos en linea。
+- note-processing host adapter Tambien se ha ejecutado el segundo lote: ahora se sigue llevando a cabo el mismo expediente `translate-current-file`、`batch-translate-folder`、`extract-concepts-current`、`extract-concepts-folder`、`extract-original-text` con `extract-concepts-and-generate-titles` de command-host Arreglo，`src/main.ts` Traduccion en/Extraccion wrapper ahora se ha reducido a delegator。
+- Tambien se ha alineado el verdadero comportamiento de los comandos combinados.：`extract-concepts-and-generate-titles` No mas capas exteriores `isBusy` Detengalo usted mismo y ya no ignore el directorio de conceptos en la configuracion.。
+- note-processing registry onboarding Tambien ha aterrizado：`src/operations/registry.ts`、`src/operations/capabilityManifest.ts` con `src/cliContracts.ts` Ahora el `translate.file`、`translate.folder-batch`、`concept.extract-file`、`concept.extract-folder`、`content.extract-original-text` con `workflow.extract-and-generate` Inclusion en primera clase operation Metadatos en lugar de permanecer en descripciones de comandos fragmentadas。
+- note-processing cola larga registry batch Tambien implementado: el mismo conjunto. registry/manifest/contract El camino ahora tambien queda expuesto `file.process-add-links`、`file.process-folder-add-links`、`content.generate-from-title`、`content.batch-generate-from-titles` con `research.summarize-topic`，CLI capability matrix El anterior process / generate / research placeholder mapping Convertido a la realidad registry-backed operation。
+- selection/export registry batch Tambien implementado: el mismo conjunto. operation surface Ahora tambien cubierto `editor.create-link-and-generate`、`provider.profile.export`、`provider.profile.import`、`cli.capability-manifest.export` con `cli.invocation-contract.export`，viejo“selection/export surfaces La sentencia “aun faltante” ya no es un hecho actual.。
+- translation/extraction utility La frontera tambien se ha cerrado aun mas.：`batchTranslateFolder()` Ahora admite la inyeccion externa. reporter，No mas `ProgressModal` Como unico transportista；`extractOriginalText()` Ahora se devolvera el objeto de resultado estructurado, exito notice Tambien por host adapter Adquisicion explicita。
+- Siguiente lote utility host adapter Tambien ha aterrizado：`src/operations/utilityCommandHostAdapter.ts` Tomalo ahora duplicate cleanup、batch Mermaid fix con single/batch formula fix de command orchestration，Estos `src/main.ts` wrapper tambien ha sido contratado para delegator。
+- Resto minimo write-heavy contract El lote tambien ha sido liberado.：`src/translate.ts` Ahora regresara `TranslateFileResult` / `BatchTranslateFolderResult`，`src/formulaFixer.ts` Ahora regresara `FormulaFixFileResult` / `BatchFormulaFixResult`，host adapter Asumir su exito ahora notice，`src/operations/registry.ts` Tambien exportado directamente richer de `translate.*` / `formula.*` result schema。
+- Primer lote `src/fileUtils.ts` contract La subporcion tambien aterrizo.：`processFile()` Regresa Ahora `ProcessFileResult`，`generateContentForTitle()` Regreso `GenerateContentForTitleResult`，`batchGenerateContentForTitles()` Regreso `BatchGenerateContentForTitlesResult`，`runProcessFolderWithNotemdCommandWithHost()` Informare ahora `savedCount` / `errors` / `cancelled`，Las ramas sin archivos generadas por lotes tambien se han eliminado de utility-owned La ruta del pseudo-exito se cambia a host-owned notice。
+- `src/fileUtils.ts` La cola restante del：`batchFixMermaidSyntaxInFolder()` Regreso `BatchMermaidFixResult`，`checkAndRemoveDuplicateConceptNotes()` Regreso `ConceptDedupeResult`，duplicate deletion confirmation Cambiado a host Inyeccion，`mermaid.batch-fix` / `concept.dedupe` de richer schema Tambien entro registry。
+- Mas profundo diagram command-core La rebanada ahora tambien esta en el suelo.：`src/operations/diagramCommandExecution.ts` Tomalo ahora `src/main.ts` Abajo Mermaid-save con artifact-save Ejecutar el proceso mientras `diagram.generate` Ahora tambien devuelve explicito `followThrough` Estructura（`kind`、`outputPath`、`previewOpened`、`autoFixAttempted`、`artifactTarget`），Sin dejar de conservar la capa superior compatible con versiones anteriores `outputPath` / `previewOpened` Campos。
+- `src/fileUtils.ts` con `src/extractOriginalText.ts` Ahora se aceptan los mas estrechos. runtime context，En lugar de depender directamente de datos especificos `NotemdPlugin` Clase. Esto muestra que la frontera ha comenzado a desplazarse de "dibujarse" wrapper”Avanza hasta “Debilitar utility Acoplamiento de tipos de clases de host”。
+- La brecha arquitectonica restante vuelve a cambiar: sustancial diagram execution Ya no queda en linea `src/main.ts`，y `diagram.generate` El primer piso de abajo. typed follow-through Tambien ha aterrizado. El proximo lote debe juzgar si esta estructura implementada es suficiente antes de ingresar. packaging / semantic verification El posterior endurecimiento de la write-heavy families。
+- La ultima capa de ajuste es: esto sigue siendo un "problema de capas", no un "problema de cantidad de comando". deberia ser `diagram.generate` Sea independiente del host core，Hazlo explicito `followThrough` Estructura tratada como actual command-completion contract，Solo cuando una rama posterior realmente demuestre que es independiente del host, se considerara que continua actualizandose a una nueva. top-level operation ID。
 
-## 当前验证门
+## Puerta de verificacion actual
 
-### 仓库内可持续执行门
+### Puertas de ejecucion sostenible en almacenes.
 
-以下门槛可以在当前仓库中稳定复现，应视为主线真实门槛：
+Los siguientes umbrales se pueden reproducir de manera estable en el almacen actual y deben considerarse como los umbrales reales de la linea principal.：
 
 - `npm run build`
 - `npm test -- --runInBand`
@@ -160,93 +160,93 @@ topic: progress-audit-next-direction
 - `npm run audit:render-host`
 - `git diff --check`
 
-对应远端真值：
+Correspondiente al valor verdadero remoto：
 
-- 普通 `main` push 当前没有自动 GitHub Actions workflow
-- release-tag 真值来自 `.github/workflows/release.yml`
-- 当 `commits/<sha>/status` 只返回 `pending` 与零条 status 时，它不是这个仓库的权威 CI 信号
+- Ordinario `main` push Actualmente no existe ningun sistema automatico. GitHub Actions workflow
+- release-tag El valor de verdad proviene de `.github/workflows/release.yml`
+- Cuando `commits/<sha>/status` Solo devolucion `pending` Con barras cero status Cuando no sea la autoridad para este repositorio CI Senal
 
-### 本地历史证据，不等于当前 CI 门
+### La evidencia historica local no es igual a la actual. CI Puerta
 
-以下结论可以作为方向判断的参考，但不能再被文档表述成“仓库当前的硬性自动门槛”：
+Las siguientes conclusiones se pueden utilizar como referencia para el juicio de direccion, pero ya no se pueden describir en el documento como "el umbral automatico estricto actual del almacen".”：
 
-- 2026-05-02 曾对全部 8 种图表意图做过一次实时 DeepSeek API 验证
-- 相关 harness 已从主线删除，原因是它依赖本地 vault 路径、真实密钥和非确定性网络调用
+- 2026-05-02 Tseng para todos 8 Intencion del grafico realizada una vez en tiempo real DeepSeek API Verificacion
+- Relevante harness Eliminado de la linea principal debido a la dependencia del local. vault Rutas, claves reales y llamadas de red no deterministas.
 
-## Drawnix 外部参考结论
+## Drawnix Conclusion de referencia externa.
 
-详见：`docs/brainstorms/2026-05-03-drawnix-feasibility-and-integration-direction.zh-CN.md`
+Ver detalles：`docs/brainstorms/2026-05-03-drawnix-feasibility-and-integration-direction.zh-CN.md`
 
-短结论：
+Breve conclusion：
 
-1. **不应把 Drawnix 整体宿主嵌入 Notemd。**
-   它是 Nx monorepo + React 19 + Plait/Slate + browser-fs-access + browser storage 的完整白板应用栈，明显超出当前 Obsidian 插件边界。
+1. **No deberia Drawnix Incrustacion de todo el host Notemd。**
+   es Nx monorepo + React 19 + Plait/Slate + browser-fs-access + browser storage Una pila completa de aplicaciones de pizarra que supera significativamente la actual Obsidian Limites de los complementos。
 
-2. **真正值得借鉴的是数据边界和转换边界。**
-   Drawnix 在 `ref/drawnix/packages/drawnix/src/data/types.ts` 中定义的 `.drawnix` 导出模型、`ref/drawnix/packages/drawnix/src/data/json.ts` 中的浏览器文件导入/导出边界、`markdown-to-drawnix` / `mermaid-to-drawnix` 的惰性加载方式，以及 app shell / board / text renderer 分层思想，都有参考价值。
+2. **Lo que realmente vale la pena aprender es el limite de los datos y el limite de la transformacion.。**
+   Drawnix en `ref/drawnix/packages/drawnix/src/data/types.ts` Como se define en `.drawnix` Modelo de exportacion、`ref/drawnix/packages/drawnix/src/data/json.ts` Importacion de archivos del navegador en/Limites de exportacion、`markdown-to-drawnix` / `mermaid-to-drawnix` Metodo de carga diferida, y app shell / board / text renderer El pensamiento estratificado tiene valor de referencia。
 
-3. **如果未来要支持 board-style 导出，应该直接做 `DiagramSpec -> PlaitElement[]` 适配器，而不是 `DiagramSpec -> Mermaid -> mermaid-to-drawnix` 的绕路方案。**
-   否则会把现有 spec-first 语义层重新降级回字符串中间态。
+3. **Si quieres apoyarlo en el futuro board-style La exportacion debe realizarse directamente. `DiagramSpec -> PlaitElement[]` Adaptador en lugar de `DiagramSpec -> Mermaid -> mermaid-to-drawnix` Plan de desvio。**
+   De lo contrario, los existentes spec-first La capa semantica se degrada nuevamente al estado intermedio de cadena.。
 
-## 硬性约束（仍生效）
+## Restricciones estrictas (aun vigentes)）
 
-1. **MermaidProcessor 分解**：每个子任务必须在真实 Obsidian 中独立验证并保存图像核验。仅靠单元测试不足以推进。
-2. **旧版提示退役**：`promptUtils.ts` 原 Mermaid 提示词为旧场景专门调优，任何退役或合并都必须保留旧场景可用性。
-3. **向后兼容性**：现有 provider 配置、transport 协议和设置项不能被破坏。
+1. **MermaidProcessor Descomposicion**：Cada subtarea debe ser real Obsidian Verifique y guarde de forma independiente la verificacion de imagenes. Las pruebas unitarias por si solas no son suficientes para avanzar。
+2. **La version anterior solicita el retiro**：`promptUtils.ts` Originales Mermaid Las palabras clave estan especialmente adaptadas a los escenarios antiguos; cualquier desmantelamiento o fusion debe conservar la disponibilidad de los escenarios antiguos.。
+3. **Compatibilidad con versiones anteriores**：Existente provider Configuracion、transport Los protocolos y configuraciones no se pueden destruir.。
 
-## 后续推进方向
+## Direccion de seguimiento
 
-### 立即可推进
+### Disponible inmediatamente
 
-1. **Packaging / semantic-verification 收敛**
-   保持现有 command ID 稳定，并继续把 `diagram.generate` 视作宿主无关 generation contract，同时把新落地的 `followThrough` 结构视作其下的 command-completion 层。第一批 convergence slice 现在也已经检入：`npm run verify:diagram-semantics` 会生成带 packaging-boundary 提醒的维护者检查模板，维护者 runbook 已与之对齐，对应测试也锁定了这套文案真值。下一步不再是“如何把这层类型化”，也不再是“是否先补第一份 runbook”，而是判断这套已落地 helper/runbook 真值是否已经足够，再推进 packaging isolation，以及未来是否还有必要继续提升更大 contract boundary。
+1. **Packaging / semantic-verification Convergencia**
+   Mantenlo actualizado command ID Mantente estable y continua `diagram.generate` Tratelo como a un anfitrion y no tenga nada que ver con ello. generation contract，Al mismo tiempo, ponga las nuevas implementadas `followThrough` Las estructuras se consideran subyacentes. command-completion Capas. primer lote convergence slice Registrado ahora：`npm run verify:diagram-semantics` Generara una banda packaging-boundary Mantenedor del recordatorio para verificar la plantilla, mantenedor runbook Se ha alineado con el y la prueba correspondiente tambien ha bloqueado el verdadero valor de este conjunto de redaccion. El siguiente paso ya no es "como escribir esta capa", ni tampoco "si rellenar la primera capa". runbook”，Pero juzga que este conjunto ha sido implementado. helper/runbook Si el valor real es suficiente, entonces proceda. packaging isolation，Y si es necesario seguir mejorando aun mas en el futuro contract boundary。
 
-2. **把已检入的 live verification runbook / helper 用起来**
-   仓库现在已经有了不依赖硬编码 vault 路径或已跟踪 secrets 的可重复维护者流程。下一步更高杠杆的工作，是把这份 helper 变成 renderer 相关变更的标准发布证据路径，之后再判断是否真的需要更强的 machine-free harness。
+2. **Poner el facturado live verification runbook / helper Usalo**
+   El almacen ahora no depende de la codificacion fisica. vault Camino o seguido secrets Proceso de mantenedor repetible. El proximo trabajo de mayor apalancamiento es poner esto helper convertirse renderer Publicar la ruta estandar de evidencia para los cambios relevantes y luego determinar si realmente se necesitan cambios mas solidos. machine-free harness。
 
-3. **运行时打包（任务 0 剩余）**
-   为 Vega-Lite 等重型运行时建立真正的多入口或独立资产策略。
+3. **Empaquetado en tiempo de ejecucion (tarea 0 Resto）**
+   para Vega-Lite Cree una verdadera estrategia de activos independientes o de multiples entradas mientras espera grandes corridas.。
 
-4. **release workflow 维护**
-   将 GitHub workflow action major 版本更新视为 release 路径所有权的一部分，不要等弃用告警演变成真实失败 job。
+4. **release workflow Mantenimiento**
+   voluntad GitHub workflow action major Se consideran actualizaciones de version. release Parte de la propiedad de la ruta, no espere a que las advertencias de desuso se conviertan en fallas reales job。
 
-5. **工作区卫生保持**
-   `ref/` 与 `coverage/` 应视为本地分析 / 构建产物，而不是待提交内容。主线需要持续保持干净工作树。
+5. **Mantener la higiene en el area de trabajo.**
+   `ref/` con `coverage/` El analisis debe considerarse local. / Construya artefactos, no entregables. La linea principal necesita mantener continuamente un arbol de trabajo limpio.。
 
-6. **先落地 direct-surface wrapper 批次，再谈别的**
-   这一批现在已经落地：`testLlmConnectionCommand` 已委托给 `runInteractiveProviderConnectionTestCommandWithHost`，`generateDiagramCommand` 与 `previewExperimentalDiagramCommand` 已委托给 `runGenerateDiagramCommandWithHost` 与 `runPreviewExperimentalDiagramCommandWithHost`。provider/diagram 的公共入口现在都具备结构化 result，并由 host adapter 承接生命周期编排，不再把临时 busy/reporter 逻辑散落在 `src/main.ts` 里。
+6. **Aterrizar primero direct-surface wrapper Lote, hablemos de otras cosas**
+   Este lote ya ha llegado：`testLlmConnectionCommand` Delegado a `runInteractiveProviderConnectionTestCommandWithHost`，`generateDiagramCommand` con `previewExperimentalDiagramCommand` Delegado a `runGenerateDiagramCommandWithHost` con `runPreviewExperimentalDiagramCommandWithHost`。provider/diagram Las entradas publicas ahora estan estructuradas. result，Y por host adapter Llevar a cabo la orquestacion del ciclo de vida y dejar de tratar los problemas temporales. busy/reporter Logica esparcida por todas partes `src/main.ts` Li。
 
-7. **下一阶段越过已落地的 follow-through 层继续收敛**
-   现在剩余的高价值缺口已经不是这些公共 direct command method 本身，也不再是 `diagram.generate` 之下第一层 follow-through 的类型化。`diagram.preview` 与 `provider.connection.test` 的 typed contract 已经落地，`diagram.generate` 现在也已携带显式 `followThrough`。真正剩余的是在推进 packaging/semantic-verification 的同时，判断这一已落地结构是否已经足够，再决定未来是否还有分支值得继续提升为额外 typed boundary。这个优先级高于重开已抽离 utility family。
+7. **La siguiente etapa es cruzar el ya desembarcado. follow-through Las capas continuan convergiendo**
+   Las brechas de alto valor restantes ya no se encuentran en estos sectores publicos. direct command method En si mismo, ya no lo es `diagram.generate` El primer piso de abajo. follow-through Mecanografia de。`diagram.preview` con `provider.connection.test` de typed contract Ya aterrizo，`diagram.generate` Ahora tambien lleva explicita `followThrough`。Lo que realmente queda es el progreso packaging/semantic-verification Al mismo tiempo, juzgue si esta estructura implementada es suficiente y luego decida si hay sucursales en el futuro que valga la pena continuar actualizando con otras adicionales. typed boundary。Esta prioridad es superior a la reapertura de los paises retirados. utility family。
 
-### 建议落地顺序
+### Secuencia de aterrizaje recomendada
 
-结合 roadmap 原始长期意图与当前代码现实，最稳妥的未来落地顺序应为：
+combinar roadmap Segun la intencion original a largo plazo y la realidad actual del codigo, la secuencia de implementacion futura mas confiable deberia ser：
 
-1. 先保持这批新落地的更深层 diagram/provider command-core 分层稳定，并决定 `src/operations/diagramCommandExecution.ts` 中的内部 save/artifact 分支是继续作为当前 `diagram.generate.followThrough` contract，还是未来再提升为额外 typed operation boundary
-2. 然后继续维护者本地语义核验与重型运行时打包边界的后续硬化
-3. 在这些边界项稳定后，再继续 selection/export contract 增强与 workflow/settings packaging 清理
-4. 完成这些边界工作后，再重开 legacy prompt 退役、MermaidProcessor sunset，或更丰富的 first-class CLI command 暴露
-5. 最后才重新评估 board-style export 与高级引擎探索
+1. Primero conserve las capas mas profundas de este nuevo lote de aterrizajes. diagram/provider command-core La estratificacion es estable y determinada. `src/operations/diagramCommandExecution.ts` Dentro de save/artifact La sucursal continua como la actual. `diagram.generate.followThrough` contract，¿Deberia actualizarse a extra en el futuro? typed operation boundary
+2. Luego continue con la verificacion semantica local del mantenedor y el posterior endurecimiento de los limites del empaquetado en tiempo de ejecucion de servicio pesado.
+3. Una vez que estos terminos limite sean estables, proceda selection/export contract Mejora y workflow/settings packaging Limpiar
+4. Complete estos trabajos de limites antes de reabrir legacy prompt Jubilacion、MermaidProcessor sunset，o mas first-class CLI command Exposicion
+5. Reevaluar al final board-style export Explora con motores avanzados
 
-这个顺序既保留了 roadmap 的长期目标，也尊重了当前主线已经交付的事实。
+Esta orden preserva roadmap El objetivo a largo plazo tambien respeta el hecho de que la linea principal actual ha sido entregada。
 
-### 受硬性约束阻塞
+### Bloqueado por duras limitaciones
 
-6. **旧版提示退役**
-   必须先用真实 Obsidian 回归原 Mermaid 场景。
+6. **La version anterior solicita el retiro**
+   Primero debes usar la realidad Obsidian Volver al original Mermaid Escena。
 
 7. **MermaidProcessor sunset**
-   必须逐块拆分、逐块截图验收，不能只靠 Jest。
+   Debe dividirse bloque por bloque y tomarse capturas de pantalla bloque por bloque para su aceptacion. No puedes confiar unicamente en Jest。
 
-8. **Drawnix 集成**
-   当前只适合作为外部参考和未来导出目标候选，不应抢占主线优先级。
+8. **Drawnix Integracion**
+   Actualmente solo es adecuado como referencia externa y candidato a futuro objetivo de exportacion, y no deberia prevalecer sobre la prioridad principal.。
 
-## 验收标准：图表平台
+## Criterios de aceptacion: Plataforma de graficos
 
-发布前至少需要同时满足两层验收：
+Se deben cumplir al menos dos niveles de aceptacion antes de la liberacion.：
 
-### 层 1：仓库内硬门
+### Capas 1：Puertas duras en el almacen.
 
 - `npm run build`
 - `npm test -- --runInBand`
@@ -254,10 +254,10 @@ topic: progress-audit-next-direction
 - `npm run audit:render-host`
 - `git diff --check`
 
-### 层 2：维护者本地语义核验（当改动触及 `src/diagram/`、`src/mermaidProcessor.ts` 或实际渲染行为时）
+### Capas 2：Verificacion semantica local del mantenedor (cuando los cambios implican `src/diagram/`、`src/mermaidProcessor.ts` O cuando realmente se representa el comportamiento）
 
-- 真实 Obsidian 中抽样验证 Mermaid / JSON Canvas / Vega-Lite
-- 保存并检查输出图像或产物文件
-- 明确记录这是“本地语义核验”，而不是仓库当前自动 CI
+- verdadero Obsidian Verificacion de muestreo medio Mermaid / JSON Canvas / Vega-Lite
+- Guarde e inspeccione la imagen de salida o el archivo del producto.
+- Documente claramente que se trata de una "verificacion semantica local" y no de la verificacion automatizada actual del almacen. CI
 
-当前最需要补的不是“再写一批 live test 文件”，也不再是“先把这层核验升级为第一份可重复维护者流程”。这一步现在已经存在。真正还需要补的是持续让已检入 helper/runbook 与真实 packaging 边界保持对齐，并在此基础上再判断是否值得继续构建更强的 machine-free harness。
+Lo que mas hay que hacer ahora no es “escribir otro lote de live test "Documentar" ya no es "actualizar esta capa de verificacion al primer proceso de mantenimiento repetible". Este paso ahora existe. Lo que realmente hay que hacer es continuar registrando helper/runbook Con la verdad packaging Mantenga los limites alineados y luego juzgue si vale la pena seguir construyendo mas fuerte machine-free harness。

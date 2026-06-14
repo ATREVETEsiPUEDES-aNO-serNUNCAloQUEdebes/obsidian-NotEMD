@@ -1,51 +1,51 @@
-# Notemd CLI Operation 抽取实施计划
+# Notemd CLI Operation Extraer el plan de implementacion.
 
-> **给代理执行者：** 在干净 worktree 中执行。把官方 `obsidian` CLI 视为命令触发底座，而不是完整插件自动化协议。
+> **Al agente albacea：** en limpio worktree Ejecutado en. Poner al funcionario. `obsidian` CLI Tratada como una base de activacion de comandos en lugar de un protocolo completo de automatizacion de complementos.。
 
-**目标：** 把 Notemd 从“插件命令集合”推进成“可被官方 Obsidian CLI、未来 `obsidian-cli` 包装器以及维护者自动化共同调用的 operation 系统”，且不重复复制 orchestration 逻辑。
+**Metas：** poner Notemd Avance de "conjunto de comandos de complemento" a "puede ser oficialmente Obsidian CLI、Futuro `obsidian-cli` El contenedor y el mantenedor se llaman juntos automaticamente operation Sistema” sin copias repetidas orchestration Logica。
 
-**架构：** 强制区分四层：
+**Arquitectura：** Distincion forzada entre cuatro capas.：
 
-1. trigger 层：`obsidian command id=...`、命令面板、sidebar、workflow DSL
-2. host adapter 层：plugin UI / 官方 CLI / 维护者脚本
-3. operation 层：类型化输入、类型化输出、显式副作用
-4. contract 层：能力发现、参数 schema、结果 schema、进度语义
+1. trigger capa：`obsidian command id=...`、Panel de comando、sidebar、workflow DSL
+2. host adapter capa：plugin UI / Oficial CLI / Guion de mantenimiento
+3. operation Capas: entrada escrita, salida escrita, efectos secundarios explicitos
+4. contract Capa: descubrimiento de capacidades, parametros. schema、Resultados schema、Semantica del progreso.
 
-**技术栈：** TypeScript、Obsidian Plugin API、官方 Obsidian CLI、Jest、Markdown 文档、可选 JSON-schema 风格类型约束
-
----
-
-## 进度对齐更新（2026-05-08）
-
-这份计划现在主要是历史实施台账。文档里描述的抽取路线在 `main` 上已经大部分落地。
-
-已落地事实：
-
-- `src/operations/noteProcessingCommandHostAdapter.ts` 与 `src/operations/utilityCommandHostAdapter.ts` 已承接此前内联在 `src/main.ts` 中的 write-heavy 命令宿主副作用。
-- `src/operations/registry.ts`、`src/tests/operationsRegistry.test.ts`、`src/tests/cliCapabilityManifest.test.ts` 与 `src/tests/cliContracts.test.ts` 已覆盖 note-processing + utility operation 家族（`translate.*`、`concept.*`、`content.extract-original-text`、`workflow.extract-and-generate`、`duplicate.*`、`mermaid.batch-fix`、`formula.*`）。
-- diagram/provider command-core layering 在当前深度已显式化：`diagram.generate` 已返回类型化 `followThrough` 细节，同时 command binding 继续保持真实的 `requires-active-file` / `interactive-ui` 语义。
-
-真实剩余缺口：
-
-1. Heavy-runtime packaging isolation 仍未实现。当前可交付边界仍是单入口 `main.js` + 内联 `srcdoc` host。
-2. packaging/semantic-verification 收敛需要持续保持 helper 模板、维护者文档与 repo gate 的真值一致。
-3. workflow/settings 与 selection/export 的 contract 增强，应在 packaging 边界工作稳定后继续推进。
+**Pila de tecnologia：** TypeScript、Obsidian Plugin API、Oficial Obsidian CLI、Jest、Markdown Documentacion, opcional JSON-schema Restricciones de tipo de estilo
 
 ---
 
-## 问题界定
+## Actualizacion de alineacion de progreso（2026-05-08）
 
-官方 `obsidian` CLI 现在已经能列出并执行插件注册命令。这件事有价值，但远远不够：
+Este plan es ahora principalmente un relato historico de su implementacion. La ruta de extraccion descrita en el documento es `main` La mayoria de ellos han sido implementados.。
 
-- 当前 Notemd 命令仍大量依赖 `src/main.ts` orchestration
-- 很多流程仍绑定 `App`、`Editor`、`MarkdownView`、Notice、modal、active file
-- 命令触发层没有类型化参数面、稳定结果契约和能力元数据
+Hechos implementados：
 
-如果最终停留在“CLI 可以触发 command ID”，自动化能力仍然会很脆弱。真正的工程目标不是继续扩 command IDs，而是在命令层之下建立稳定的 operation surface。
+- `src/operations/noteProcessingCommandHostAdapter.ts` Con `src/operations/utilityCommandHostAdapter.ts` Se ha hecho cargo de la linea anterior en `src/main.ts` en write-heavy Efectos secundarios del host de comandos。
+- `src/operations/registry.ts`、`src/tests/operationsRegistry.test.ts`、`src/tests/cliCapabilityManifest.test.ts` Con `src/tests/cliContracts.test.ts` Cubierto note-processing + utility operation familia（`translate.*`、`concept.*`、`content.extract-original-text`、`workflow.extract-and-generate`、`duplicate.*`、`mermaid.batch-fix`、`formula.*`）。
+- diagram/provider command-core layering Explicito en la profundidad actual：`diagram.generate` Declaracion escrita `followThrough` Detalles, al mismo tiempo command binding Mantenlo real `requires-active-file` / `interactive-ui` Semantica。
 
-## 需求追踪
+Brecha real restante：
 
-来源文档：
+1. Heavy-runtime packaging isolation Aun no realizado. El limite actual de entregables sigue siendo de entrada unica. `main.js` + En linea `srcdoc` host。
+2. packaging/semantic-verification Es necesario mantener la convergencia continuamente helper Plantillas, documentos de mantenimiento y repo gate El valor de verdad de。
+3. workflow/settings Con selection/export de contract La mejora debe estar en packaging Continuar avanzando despues de que se estabilice el trabajo fronterizo.。
+
+---
+
+## Definicion del problema
+
+Oficial `obsidian` CLI Ahora es posible enumerar y ejecutar comandos de registro de complementos. Es valioso, pero no es suficiente.：
+
+- Actual Notemd Los comandos todavia dependen en gran medida de `src/main.ts` orchestration
+- Muchos procesos aun estan atados `App`、`Editor`、`MarkdownView`、Notice、modal、active file
+- La capa de activacion de comandos no tiene superficies de parametros escritos, contratos de resultados estables ni metadatos de capacidad.
+
+Si terminas quedandote en“CLI Puede activarse command ID”，Las capacidades de automatizacion seguiran siendo fragiles. El verdadero objetivo de la ingenieria no es seguir expandiendose. command IDs，En su lugar, construya un sistema estable bajo la capa de comando. operation surface。
+
+## Seguimiento de la demanda
+
+Documentos fuente：
 
 - `docs/brainstorms/2026-05-04-obsidian-cli-extensibility-and-notemd-capability-extraction.zh-CN.md`
 - `docs/brainstorms/2026-05-02-progress-audit-and-next-direction.zh-CN.md`
@@ -53,209 +53,209 @@
 - `docs/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.zh-CN.md`
 - `docs/maintainer/notemd-cli-capability-matrix.md`
 
-继承约束：
+Restricciones de herencia：
 
-- 不把当前 command IDs 当成稳定工程 API
-- 在抽取过程中保留现有用户侧插件命令行为
-- 第一批 CLI-grade contract 不纳入 UI-only 流程
-- 随着 CLI 方向推进，`src/main.ts` 要缩小而不是继续膨胀
+- No tomes la corriente command IDs Tratelo como un proyecto de estabilizacion. API
+- Preservar el comportamiento del comando del complemento existente del lado del usuario durante la extraccion
+- Primer lote CLI-grade contract No incluido UI-only Proceso
+- Con CLI Avance direccional，`src/main.ts` Reducir en lugar de expandirse
 
-## 当前主线状态（2026-05-08）
+## Estado actual de la linea principal（2026-05-08）
 
-- `src/operations/types.ts` 已承接共享 operation 元数据原语，不再把这些定义埋在 sidebar/workflow 代码里。
-- `src/operations/registry.ts` 现在是已抽取 operation definition、command binding、mapping kind 与部分 input/result schema 的中心事实源。
-- `src/operations/capabilityManifest.ts` 与 `src/cliContracts.ts` 现在都从这份 registry 派生，减少了一条主要元数据漂移路径。
-- `diagram.generate` 现在已经和 provider diagnostics 一样拥有类型化 invocation contract。
-- 第一批 MT2 执行层拆分已经落地：`src/operations/diagramGenerateOperation.ts` 现在承接可复用的 diagram 执行路径，`src/operations/providerDiagnosticCommand.ts` 现在承接 `src/main.ts` 之下的 provider diagnostic command orchestration。
-- 第二批 MT2 host-adapter slice 也已落地：`src/operations/diagramCommandHostAdapter.ts` 现在承接 Mermaid/artifact 保存收尾、preview 收尾以及直接 Vega-Lite 预览编排。
-- 第一批 config/profile 抽离也已落地：`src/operations/configProfileCommands.ts` 现在承接 provider profile 导入导出与 CLI capability/contract 导出编排，`src/main.ts` 与 `src/ui/NotemdSettingTab.ts` 已共用同一条命令路径。
-- provider diagnostic report persistence 也已抽离：`src/operations/providerDiagnosticReportPersistence.ts` 现在承接带冲突规避的诊断报告文件落盘逻辑。
-- provider diagnostic host adaptation 也已抽离：`src/operations/providerDiagnosticCommandHostAdapter.ts` 现在承接开发者诊断命令的 settings 装载、报告落盘接线与 notice 整形逻辑。
-- config/profile host adaptation 也已抽离：`src/operations/configProfileCommandHostAdapter.ts` 现在承接 CLI 邻接的导入导出状态持久化、notice 整形与错误映射逻辑。
-- provider connection-test host adaptation 也已抽离：`src/operations/providerConnectionTestCommandHostAdapter.ts` 现在承接共享 provider 测试的 settings 装载与 notice/report 编排逻辑，并已被命令路径与设置页共同复用。
-- note-processing host adaptation 现已继续扩到第二批：`src/operations/noteProcessingCommandHostAdapter.ts` 现在除了承接 `process-current-add-links`、`process-folder-add-links`、`batch-generate-from-titles`、`generate-from-title` 与 `research-and-summarize` 外，也继续承接 `translate-current-file`、`batch-translate-folder`、`extract-concepts-current`、`extract-concepts-folder`、`extract-original-text` 与 `extract-concepts-and-generate-titles` 的 busy-guard、reporter 生命周期与 notice/error-log 编排。
-- `src/fileUtils.ts` 与 `src/extractOriginalText.ts` 现在也已接受更窄的 runtime context，而不是直接依赖具体 `NotemdPlugin` 类。
-- 现有 Obsidian 命令仍保持注册状态，并继续支持快捷键与官方 CLI 触发，同时底层 operation 层继续演进。
+- `src/operations/types.ts` Se acepta compartir operation Primitivos de metadatos, ya no entierran estas definiciones en sidebar/workflow En el codigo。
+- `src/operations/registry.ts` Ahora esta extraido. operation definition、command binding、mapping kind Con piezas input/result schema Fuente central de hecho。
+- `src/operations/capabilityManifest.ts` Con `src/cliContracts.ts` Ahora todo empieza desde esto registry Derivado, que reduce una importante ruta de deriva de metadatos。
+- `diagram.generate` Ya y ahora provider diagnostics Tambien tiene mecanografia. invocation contract。
+- Primer lote MT2 Se ha implementado la division de la capa de ejecucion.：`src/operations/diagramGenerateOperation.ts` Ahora emprenda la reutilizacion. diagram Ruta de ejecucion，`src/operations/providerDiagnosticCommand.ts` Tomalo ahora `src/main.ts` Abajo provider diagnostic command orchestration。
+- Segundo lote MT2 host-adapter slice Tambien ha aterrizado：`src/operations/diagramCommandHostAdapter.ts` Tomalo ahora Mermaid/artifact Ahorre para los toques finales、preview Cerradora y directa Vega-Lite Disposicion previa。
+- Primer lote config/profile Tambien se ha conseguido el desapego：`src/operations/configProfileCommands.ts` Tomalo ahora provider profile Importar, exportar y CLI capability/contract Acuerdo de exportacion，`src/main.ts` Con `src/ui/NotemdSettingTab.ts` Se ha compartido la misma ruta de comando.。
+- provider diagnostic report persistence Tambien retirado：`src/operations/providerDiagnosticReportPersistence.ts` Ahora adopte la logica de colocar archivos de informes de diagnostico para evitar conflictos.。
+- provider diagnostic host adaptation Tambien retirado：`src/operations/providerDiagnosticCommandHostAdapter.ts` Ahora se aceptan comandos de diagnostico del desarrollador settings Carga, informe de cableado de colocacion y notice Dar forma a la logica。
+- config/profile host adaptation Tambien retirado：`src/operations/configProfileCommandHostAdapter.ts` Tomalo ahora CLI Persistencia del estado de importacion y exportacion adyacente、notice Logica de configuracion y mapeo de errores。
+- provider connection-test host adaptation Tambien retirado：`src/operations/providerConnectionTestCommandHostAdapter.ts` Ahora emprende el compartir provider Probado settings Carga y notice/report Organice la logica y haya sido reutilizada por la ruta de comando y la pagina de configuracion.。
+- note-processing host adaptation Ahora continua expandiendose al segundo lote.：`src/operations/noteProcessingCommandHostAdapter.ts` Ahora ademas de emprender `process-current-add-links`、`process-folder-add-links`、`batch-generate-from-titles`、`generate-from-title` Con `research-and-summarize` Ademas, seguiremos emprendiendo `translate-current-file`、`batch-translate-folder`、`extract-concepts-current`、`extract-concepts-folder`、`extract-original-text` Con `extract-concepts-and-generate-titles` de busy-guard、reporter Ciclo de vida y notice/error-log Arreglo。
+- `src/fileUtils.ts` Con `src/extractOriginalText.ts` Ahora tambien se aceptan los mas estrechos. runtime context，En lugar de depender directamente de datos especificos `NotemdPlugin` clase。
+- Existente Obsidian El comando permanece registrado y continua admitiendo teclas de acceso directo y oficiales. CLI Desencadenante, mientras subyacente operation Las capas siguen evolucionando。
 
-## 短期交付（0-2 周）
+## Entrega a corto plazo（0-2 Semana）
 
-### 目标
+### Metas
 
-在不改变产品行为的前提下，建立第一批 CLI-grade seam。
+Cree el primer lote de productos sin cambiar el comportamiento del producto. CLI-grade seam。
 
-### 工作项
+### Elementos de trabajo
 
-- 定义 operation taxonomy 与 automation-level 词汇表
-- 抽取 provider diagnostics 为宿主无关 operation surface
-- 冻结当前 `notemd:*` 命令 capability matrix
-- 为非交互能力定义第一批类型化结果契约
+- Definicion operation taxonomy Con automation-level Glosario
+- Extraccion provider diagnostics No tiene nada que ver con el anfitrion operation surface
+- Congelar la corriente `notemd:*` comando capability matrix
+- Definir los primeros contratos de resultado tipificados para capacidades no interactivas.
 
-### 实施单元
+### Unidad de implementacion
 
-**ST1. Operation contract 基础类型**
-- 创建 `src/operations/types.ts`
-- 定义：
+**ST1. Operation contract Tipos basicos**
+- crear `src/operations/types.ts`
+- Definicion：
   - `OperationDefinition`
   - `OperationContext`
   - `OperationResult`
   - `ProgressSink`
   - `AutomationLevel`
-- 保持这些类型不依赖 Obsidian UI 类
-- 实施状态：
-  - 共享原语已在 `src/operations/types.ts` 落地
-  - workflow 元数据现在改为导入这些原语，而不是在本地重复定义
+- Mantenga estos tipos libres de dependencia Obsidian UI clase
+- Estado de implementacion：
+  - La primitiva de compartir ya esta en `src/operations/types.ts` Aterrizaje
+  - workflow Los metadatos ahora importan estas primitivas en lugar de redefinirlas localmente.
 
 **ST2. Provider diagnostic operation**
-- 将当前 `src/providerDiagnostics.ts` 封装到稳定 operation 入口后面
-- 预期输入字段：
+- Cambiar la corriente `src/providerDiagnostics.ts` Paquete a la estabilidad. operation Detras de la entrada
+- Campos de entrada esperados：
   - provider name
   - model override
   - call mode
   - timeout
   - stability runs
   - optional output path
-- 预期结果字段：
+- Campos de resultados esperados：
   - success
   - report path/text
   - elapsed time
   - warnings
   - debug summary
-- 当前进展：
-  - 共享 operation-input builder 已落地
-  - 开发者诊断命令包装层已落地
-  - 同一诊断路径现在已经可被设置页按钮、命令面板、快捷键和官方 CLI 命令触发共同复用
+- Progreso actual：
+  - Compartir operation-input builder Ya implementado
+  - Se ha implementado la capa de empaquetado de comandos de diagnostico del desarrollador.
+  - Ahora se puede utilizar la misma ruta de diagnostico mediante el boton de la pagina de configuracion, el panel de comando, las teclas de acceso directo y las funciones oficiales. CLI Comando desencadenante de multiplexacion comun
 
-**ST3. Capability matrix 作为事实源**
-- 将现有插件命令分类为：
+**ST3. Capability matrix Como fuente de verdad**
+- Clasifique los comandos de complementos existentes en：
   - `safe`
   - `requires-active-file`
   - `requires-selection`
   - `interactive-ui`
-- 明确哪些命令今天就适合官方 CLI 触发，哪些不适合
+- Identificar que ordenes son apropiadas para el funcionario hoy. CLI Desencadenantes y que no hacer
 
-### 验证
+### Verificacion
 
 - `npm run build`
 - full Jest
-- provider diagnostics 相关契约测试继续为绿
-- 不出现用户侧命令回归
+- provider diagnostics Las pruebas de contratos relevantes siguen siendo verdes
+- La regresion de comandos del lado del usuario no aparece
 
-### 最佳实践
+### Mejores practicas
 
-- 优先输出文件化证据，而不是 UI Notice
-- 优先显式输入对象，而不是读取全局插件状态
-- 第一批抽取的 operation 保持小而稳
+- Priorizar la exportacion de evidencia documentada en lugar de UI Notice
+- Priorice los objetos de entrada explicitos en lugar de leer el estado global del complemento
+- El primer lote sorteado operation Mantenlo pequeno y estable
 
-### 坑点
+### Escollos
 
-- 抽了目录但仍然把 `App` 透传到处都是
-- operation 结果仍然泄露 UI 文案
-- 把“可被 CLI 调用”误判成“已经自动化就绪”
+- Se elimino el directorio pero aun se puso. `App` El paso a traves esta en todas partes
+- operation Los resultados aun se filtran UI Redaccion publicitaria
+- Pon “puede ser CLI La llamada "se juzga erroneamente como" ya lista para la automatizacion "”
 
-## 中期交付（2-6 周）
+## Entrega provisional（2-6 Semana）
 
-### 目标
+### Metas
 
-围绕最高价值能力建立真正可复用的 operation 层。
+Construir capacidades verdaderamente reutilizables en torno a las capacidades de mayor valor. operation capa。
 
-### 工作项
+### Elementos de trabajo
 
-- 抽出 diagram generation 的类型化 operation contract
-- 引入 plugin UI / 官方 CLI 的 host adapters
-- 把 workflow metadata 从 sidebar-only 配置升级为复用 registry
-- 为 CLI 复用建立 config/profile 语义边界
+- retirar diagram generation Tipificacion de operation contract
+- Introduccion plugin UI / Oficial CLI de host adapters
+- poner workflow metadata De sidebar-only Actualizacion de configuracion para reutilizar registry
+- para CLI Reutilizar la creacion config/profile Limites semanticos
 
-### 实施单元
+### Unidad de implementacion
 
 **MT1. Diagram generation operation**
-- 用稳定 operation 封装 `src/diagram/diagramGenerationService.ts`
-- 支持：
+- Utilice la estabilidad operation Encapsulacion `src/diagram/diagramGenerationService.ts`
+- Apoyo：
   - source markdown input
   - source file path input
   - requested intent
   - compatibility mode
   - output mode（`artifact` / `mermaid`）
   - save/dry-run behavior
-- 返回：
+- Regreso：
   - plan
   - spec
   - artifact metadata
   - saved path
   - render warnings
-- 实施状态：
-  - 共享 `DiagramOperationInput` 整形已落地
-  - `diagram.generate` 现在已进入 registry 驱动的类型化 invocation contract
-  - 可复用执行路径现已落在 `src/operations/diagramGenerateOperation.ts`
-  - save/preview 宿主适配逻辑现已落在 `src/operations/diagramCommandHostAdapter.ts`
-  - provider profile 导入导出与 CLI contract/capability 导出现在已落在 `src/operations/configProfileCommands.ts`
-  - provider diagnostic report persistence 现在已落在 `src/operations/providerDiagnosticReportPersistence.ts`
-  - provider diagnostic host adaptation 现在已落在 `src/operations/providerDiagnosticCommandHostAdapter.ts`
-  - config/profile host adaptation 现在已落在 `src/operations/configProfileCommandHostAdapter.ts`
-  - provider connection-test host adaptation 现在已落在 `src/operations/providerConnectionTestCommandHostAdapter.ts`
-  - note-processing host adaptation 第一批现在已落在 `src/operations/noteProcessingCommandHostAdapter.ts`
-  - 剩余缺口：在保持 operation/command 分层真实的前提下，把下一波重心转向 packaging/semantic-verification 收敛，以及后续 workflow/settings contract 增强
+- Estado de implementacion：
+  - Compartir `DiagramOperationInput` Se ha implementado la cirugia plastica.
+  - `diagram.generate` Ahora entrado registry Mecanografia del conductor invocation contract
+  - Las rutas de ejecucion reutilizables ahora caen en `src/operations/diagramGenerateOperation.ts`
+  - save/preview La logica de adaptacion del anfitrion ahora cae dentro `src/operations/diagramCommandHostAdapter.ts`
+  - provider profile Importar, exportar y CLI contract/capability La exportacion ahora cae bajo `src/operations/configProfileCommands.ts`
+  - provider diagnostic report persistence Ahora cae `src/operations/providerDiagnosticReportPersistence.ts`
+  - provider diagnostic host adaptation Ahora cae `src/operations/providerDiagnosticCommandHostAdapter.ts`
+  - config/profile host adaptation Ahora cae `src/operations/configProfileCommandHostAdapter.ts`
+  - provider connection-test host adaptation Ahora cae `src/operations/providerConnectionTestCommandHostAdapter.ts`
+  - note-processing host adaptation El primer lote ya ha caido. `src/operations/noteProcessingCommandHostAdapter.ts`
+  - Brecha residual: en espera operation/command Bajo la premisa de la realidad en capas, cambie el enfoque de la proxima ola a packaging/semantic-verification Convergencia y seguimiento workflow/settings contract Mejora
 
-**MT2. Host adapter 拆分**
-- 新增 plugin adapter，负责解析 active file、vault state、settings
-- 新增 CLI adapter，负责解析 file path、vault targeting、output path、stdout/stderr 行为
-- adapter 保持薄，业务逻辑继续留在 operations
+**MT2. Host adapter dividir**
+- nuevo plugin adapter，Responsable del analisis active file、vault state、settings
+- nuevo CLI adapter，Responsable del analisis file path、vault targeting、output path、stdout/stderr Comportamiento
+- adapter Mantenlo delgado, la logica empresarial permanece operations
 
-**MT3. Workflow/action registry 加固**
-- 把 `src/workflowButtons.ts` 提升为 metadata source，而不只是按钮配置
-- 为每个 action 增加：
+**MT3. Workflow/action registry Refuerzo**
+- poner `src/workflowButtons.ts` Promocionar a metadata source，No solo configuracion de botones
+- para cada action aumentar：
   - automation level
   - required context
   - side-effect class
   - parameter expectations
-- 实施状态：
-  - sidebar action metadata 仍是 command-surface 语义的来源
-  - 新 operation registry 现在承接跨表面的 command binding、mapping kind（`exact` / `future-target` / `legacy-alias`）以及 manifest/contract 导出输入
-  - 旧 command alias 仍保留注册以兼容现有流程，但已刻意排除在 capability-manifest 导出之外
+- Estado de implementacion：
+  - sidebar action metadata Todavia command-surface Fuente de semantica
+  - nuevo operation registry Ahora emprende la superficie transversal. command binding、mapping kind（`exact` / `future-target` / `legacy-alias`）y manifest/contract Exportar insumos
+  - viejo command alias El registro se mantiene por compatibilidad con los procesos existentes, pero se ha excluido deliberadamente. capability-manifest Mas alla de la exportacion
 
-**MT4. Config/profile 边界**
-- 将 plugin-owned state 与可导入导出的 automation profile state 分离
-- 第一批候选：
+**MT4. Config/profile Limites**
+- voluntad plugin-owned state Con importacion y exportacion automation profile state Separacion
+- Primera hornada de candidatos：
   - provider/model selection
   - `preferredDiagramIntent`
   - diagnostic mode/timeouts
   - workflow definitions
-- 在所有 export/import 设计中明确保留 `localOnly` 语义
+- En absoluto export/import Expresar reservas en el diseno. `localOnly` Semantica
 
-### 验证
+### Verificacion
 
 - full build + full Jest
-- diagram generation output contract 检查
-- 现有 command IDs 在官方 CLI 下继续可触发
+- diagram generation output contract comprobar
+- Existente command IDs En el oficial CLI Continue al lado del activador.
 
-### 最佳实践
+### Mejores practicas
 
-- 先定义 output schema，再暴露自动化入口
-- preview 关注点与 generation 关注点分离
-- 在增加更多可调用 operation 前先补 capability discovery
+- Definir primero output schema，Reexponer portales automatizados
+- preview Enfoque y generation Separacion de preocupaciones
+- Agregar mas llamadas operation Compensalo primero capability discovery
 
-### 坑点
+### Escollos
 
-- 把 preview/UI 副作用混进 generation operation
-- 在 metadata 规范化前就把 workflow DSL 暴露成公共 API
-- 混淆 command IDs 与 operation IDs
+- poner preview/UI Los efectos secundarios aparecen generation operation
+- en metadata Antes de estandarizar workflow DSL Expuesto al publico API
+- Confusion command IDs Con operation IDs
 
-## 长期交付（6 周以上）
+## Entrega a largo plazo（6 Mas de 49 semanas）
 
-### 目标
+### Metas
 
-在官方 command-trigger 层之上，暴露真正成熟的自动化集成面。
+En el oficial command-trigger Por encima de la capa, exponga la superficie de integracion de automatizacion verdaderamente madura.。
 
-### 工作项
+### Elementos de trabajo
 
-- 引入 capability-discovery command 或 manifest surface
-- 为选定 operations 增加类型化 invocation contract
-- 支持 machine-readable progress / result emission
-- 评估最终 transport 应停留在 command-based、file-based，还是演化成 local bridge
+- Introduccion capability-discovery command o manifest surface
+- Para seleccionados operations Agregar escritura invocation contract
+- Apoyo machine-readable progress / result emission
+- Evaluacion final transport Deberia quedarse en command-based、file-based，O evoluciono hacia local bridge
 
-### 实施单元
+### Unidad de implementacion
 
 **LT1. Capability discovery**
-- 发布稳定能力元数据：
+- Publicar metadatos de capacidad estable：
   - operation ID
   - version
   - required context
@@ -263,32 +263,32 @@
   - result schema
 
 **LT2. Typed invocation layer**
-- 在 raw command IDs 之上构建稳定 “invoke operation” contract
-- 支持确定性 exit codes 与 machine-readable errors
+- en raw command IDs Construya estabilidad sobre “invoke operation” contract
+- Apoyar la certeza exit codes Con machine-readable errors
 
-**LT3. 可选 richer transport**
-- 评估 command-trigger-only integration 是否已足够
-- 只有在 operation contracts 稳定后，才考虑 local REST / IPC / file bridge
+**LT3. Opcional richer transport**
+- Evaluacion command-trigger-only integration ¿Es suficiente?
+- Solo si operation contracts Considerar solo despues de la estabilizacion local REST / IPC / file bridge
 
-### 验证
+### Verificacion
 
-- 端到端维护者自动化 smoke tests
-- 继续保留 backward-compatible command trigger support
-- 对不支持的 interactive flows 做清晰文档化
+- Automatizacion del mantenedor de un extremo a otro smoke tests
+- Guardalo backward-compatible command trigger support
+- No compatible interactive flows Documente claramente
 
-### 最佳实践
+### Mejores practicas
 
-- operation contract 独立于 command label 做版本化
-- transport 选择永远次于 contract 稳定性
-- 以可维护自动化为目标，而不是追求花哨设计
+- operation contract Independiente de command label Hacer versiones
+- transport Elige siempre al lado de contract Estabilidad
+- Apunte a una automatizacion mantenible, no a un diseno sofisticado
 
-### 坑点
+### Escollos
 
-- 在 contract 稳定前先做 transport
-- 把某一台维护机的 wrapper 行为硬编码成仓库架构
-- 把插件内部对象形状直接泄露成公共自动化 API
+- en contract Hazlo antes de estabilizarte. transport
+- Quitar una determinada maquina de mantenimiento. wrapper Comportamiento codificado en la arquitectura del almacen
+- Filtre directamente la forma del objeto interno del complemento a la automatizacion publica. API
 
-## 固定落地顺序
+## Secuencia de aterrizaje fija
 
 1. provider diagnostic operation
 2. capability matrix + automation levels
@@ -298,14 +298,14 @@
 6. typed invocation layer
 7. optional richer transport
 
-进度说明：
+Descripcion del progreso：
 
-- 第 1-5 项在当前 contract 深度上已经落地，包括 note-processing + utility registry onboarding，以及类型化的 `diagram.generate.followThrough` 命令收尾元数据。
-- 下一步不再是翻译/抽取 wrapper 剥离。真实的后续缺口是先做 packaging/semantic-verification convergence 硬化，再基于 packaging 边界推进 workflow/settings 与 selection/export 的 contract 决策。
+- Capitulo 1-5 El articulo esta actualmente contract Ha aterrizado en profundidad, incluyendo note-processing + utility registry onboarding，y escrito `diagram.generate.followThrough` Metadatos finales de comando。
+- El siguiente paso ya no es la traduccion./Extraccion wrapper Despegar. La verdadera brecha en el seguimiento es hacerlo primero. packaging/semantic-verification convergence Endurecer y luego base packaging Superacion de limites workflow/settings Con selection/export de contract Toma de decisiones。
 
-## 退出标准
+## Criterios de salida
 
-- 至少有一个非交互 Notemd 能力通过宿主无关 operation contract 可调用
-- command IDs 继续兼容，但不再是唯一的集成故事
-- 维护者能明确指出哪些能力今天适合官方 CLI 触发以及原因
-- 仓库已经具备可继续推进 operation extraction 的稳定实施计划，不再需要重新争论架构方向
+- Ten al menos uno no interactivo Notemd La habilidad no tiene nada que ver con el anfitrion. operation contract Invocable
+- command IDs Compatibilidad continua, pero ya no es la unica historia de integracion
+- Los mantenedores pueden senalar claramente que capacidades son adecuadas para uso oficial en la actualidad. CLI Desencadenantes y causas
+- El almacen esta listo para seguir adelante. operation extraction Plan de implementacion estable, no es necesario volver a debatir la direccion arquitectonica

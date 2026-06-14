@@ -1,24 +1,24 @@
-# Notemd 语言支持第一性原理多阶段执行计划
+# Notemd El lenguaje respalda el plan de ejecucion de varias etapas de los primeros principios.
 
-> **给代理执行者：** 必须使用 `superpowers:subagent-driven-development`（推荐）或 `superpowers:executing-plans`，按任务逐步执行本计划。步骤继续使用复选框 `- [ ]` 语法跟踪。
+> **Al agente albacea：** Requerido `superpowers:subagent-driven-development`（Recomendado) o `superpowers:executing-plans`，Implementar este plan paso a paso segun las tareas. Pasos para seguir usando casillas de verificacion `- [ ]` Seguimiento gramatical。
 
-**目标：** 在不破坏现有功能鲁棒性的前提下，分阶段把 Notemd 从“任务输出语言配置”升级为“UI i18n + 统一语言策略 + 可回归验证”的完整语言支持体系。
+**Metas：** 在不破坏现有功能鲁棒性de前提下,分阶段把 Notemd Actualice de "Configuracion del idioma de salida de la tarea" a“UI i18n + Unificar la estrategia linguistica + Sistema completo de soporte de idiomas para "verificacion de regresion"。
 
-**架构：** 采用“语言域建模 -> i18n 基础设施 -> UI 文案迁移 -> 任务语言策略收敛 -> 回归门禁”五层架构。`UI Locale` 与 `Task Output Language` 明确分离，所有任务语言决策统一收口到策略层，所有改动按阶段执行并强制执行前后同口径比对。
+**Arquitectura：** Utilice "Modelado de dominio del lenguaje" -> i18n Infraestructura -> UI Migracion de redaccion publicitaria -> Convergencia de la estrategia del lenguaje de tareas -> Regreso a la arquitectura de cinco capas de control de acceso.。`UI Locale` Con `Task Output Language` Separacion clara, todas las decisiones sobre el lenguaje de las tareas se unifican en la capa de estrategia, todos los cambios se implementan en etapas y se comparan con el mismo calibre antes y despues de la aplicacion.。
 
-**技术栈：** TypeScript、Obsidian Plugin API、Jest、ESLint、npm scripts、Obsidian CLI（`obsidian` / `obsidian-cli`）
+**Pila de tecnologia：** TypeScript、Obsidian Plugin API、Jest、ESLint、npm scripts、Obsidian CLI（`obsidian` / `obsidian-cli`）
 
 ---
 
-## 执行状态（2026-04-09）
+## Estado de ejecucion（2026-04-09）
 
-本计划已经在 `main` 上落地，对应提交为 `88202c5`。
+Este plan ya esta en marcha `main` Al aterrizar se realiza la presentacion correspondiente `88202c5`。
 
-### 证据索引
+### Indice de evidencia
 
-- 基线与阶段日志：
+- Registro de linea base y etapa：
   - `docs/superpowers/baselines/2026-04-09-language-support/`
-- 最终验证产物：
+- Producto de verificacion final：
   - `task9-build-after-docs.txt`
   - `task9-targeted-matrix.txt`
   - `task9-full-runInBand.txt`
@@ -28,34 +28,34 @@
   - `task9-obsidian-help.txt`
   - `task9-obsidian-cli-help.txt`
 
-### 最终门禁结果
+### Resultados finales del control de acceso
 
 - `npm run build`: PASS
-- 定向回归矩阵：PASS
+- Matriz de regresion direccional：PASS
 - Full `npm test -- --runInBand`: PASS
 - `npm run regression:language-compare`: PASS
 - `git diff --check`: PASS
-- `obsidian help`：已执行，相关桌面端或本地配置限制已记录在日志中
-- `obsidian-cli help`：当前环境不可用（`command not found`），已记录在日志中
+- `obsidian help`：Se han registrado en el registro las restricciones de configuracion local o de escritorio relevantes ejecutadas.
+- `obsidian-cli help`：El entorno actual no esta disponible.（`command not found`），Registrado en el registro.
 
-## 阶段边界与鲁棒性规则（必须遵守）
+## 阶段边界Con鲁棒性规则（必须遵守）
 
-- 每个阶段都必须执行：`修改前基线 -> 最小改动 -> 修改后回归 -> 基线对比 -> 提交`。
-- 每个阶段至少保留两份日志：`*-before.txt` 与 `*-after.txt`，放到 `docs/superpowers/baselines/<date>-language-support/`。
+- Cada etapa debe ser ejecutada.：`Linea de base antes de la modificacion -> Cambios minimos -> Devolucion tras modificacion -> Comparacion de referencia -> Enviar`。
+- Mantenga al menos dos registros para cada etapa.：`*-before.txt` Con `*-after.txt`，poner `docs/superpowers/baselines/<date>-language-support/`。
 - 如果阶段回归失败，禁止进入下一阶段；先在当前阶段内修复并重新比对。
-- 对同一功能使用同一测试入口做前后对比，避免“换口径通过”。
+- Utilice la misma entrada de prueba para la misma funcion para comparar el antes y el despues para evitar "pasar cambiando de calibre"”。
 
 ---
 
-### 任务 0：冻结基线快照（当前现实）
+### Tareas 0：Congelar la instantanea de referencia (realidad actual）
 
-**文件：**
-- 创建/更新：`docs/superpowers/baselines/2026-04-09-language-support/environment-before.txt`
-- 创建/更新：`docs/superpowers/baselines/2026-04-09-language-support/build-before.txt`
-- 创建/更新：`docs/superpowers/baselines/2026-04-09-language-support/targeted-tests-before.txt`
+**Documentacion：**
+- crear/Actualizacion：`docs/superpowers/baselines/2026-04-09-language-support/environment-before.txt`
+- crear/Actualizacion：`docs/superpowers/baselines/2026-04-09-language-support/build-before.txt`
+- crear/Actualizacion：`docs/superpowers/baselines/2026-04-09-language-support/targeted-tests-before.txt`
 
-- [ ] **步骤 1：采集环境基线**
-执行：
+- [ ] **Pasos 1：Recopilar lineas de base ambientales**
+Ejecucion：
 ```bash
 cd /home/jacob/obsidian-NotEMD
 obsidian help
@@ -63,326 +63,326 @@ obsidian-cli help
 node -v
 npm -v
 ```
-预期：命令可执行（允许 Obsidian CLI 输出本地配置告警）。
+Esperado: comando ejecutable (permitir Obsidian CLI Salida de alarmas de configuracion local.）。
 
-- [ ] **步骤 2：采集构建基线**
-执行：
+- [ ] **Pasos 2：Recopilar y construir lineas de base**
+Ejecucion：
 ```bash
 cd /home/jacob/obsidian-NotEMD
 npm run build
 ```
-预期：当前基线允许失败，但必须记录失败原因（当前已知：`ref/notebook-navigator` 被 `tsconfig` include 扫入导致 `TS6059`）。
+Expectativa: La linea de base actual permite la falla, pero se debe registrar el motivo de la falla (actualmente conocido).：`ref/notebook-navigator` Ser `tsconfig` include Causas del escaneo `TS6059`）。
 
-- [ ] **步骤 3：采集定向功能基线**
-执行：
+- [ ] **Pasos 3：Recopilar la linea base de la funcion de orientacion.**
+Ejecucion：
 ```bash
 cd /home/jacob/obsidian-NotEMD
 npm test -- --runInBand src/tests/workflowButtons.test.ts src/tests/sidebarDomButtonClicks.test.ts src/tests/llmUtilsProviderSupport.test.ts src/tests/providerDiagnostics.test.ts
 ```
-预期：PASS；作为语言支持改造期间的关键行为基线。
+Anticipacion：PASS；Servir como base de comportamiento clave durante la transformacion del apoyo linguistico。
 
 ---
 
-### 任务 1：引入语言域模型（单一事实源）
+### Tareas 1：Presentacion del modelo de dominio del lenguaje (unica fuente de verdad）
 
-**文件：**
-- 创建：`src/i18n/languageContext.ts`
-- 创建：`src/i18n/taskLanguagePolicy.ts`
-- 修改：`src/types.ts`
-- 修改：`src/constants.ts`
-- 测试：`src/tests/languagePolicy.test.ts`
+**Documentacion：**
+- crear：`src/i18n/languageContext.ts`
+- crear：`src/i18n/taskLanguagePolicy.ts`
+- Modificar：`src/types.ts`
+- Modificar：`src/constants.ts`
+- Pruebas：`src/tests/languagePolicy.test.ts`
 
-- [ ] **步骤 1：编写失败测试，覆盖策略规则**
-覆盖：全局语言、按任务语言、禁用自动翻译、Translate 任务例外、Mermaid 特殊策略。
+- [ ] **Pasos 1：Escriba pruebas fallidas para cubrir las reglas de politicas.**
+Cobertura: idioma global, idioma por tarea, desactivar traduccion automatica、Translate Excepciones de tareas、Mermaid Estrategias especiales。
 
-- [ ] **步骤 2：运行测试并确认失败**
-执行：
+- [ ] **Pasos 2：Ejecute la prueba y confirme el error.**
+Ejecucion：
 ```bash
 npm test -- --runInBand src/tests/languagePolicy.test.ts
 ```
-预期：FAIL（策略层尚未实现）。
+Anticipacion：FAIL（La capa de estrategia aun no se ha implementado.）。
 
-- [ ] **步骤 3：实现最小策略层**
-实现统一入口：`resolveTaskLanguage(taskKey, settings)` 与 `resolveUiLocale(settings, obsidianLocale)`。
+- [ ] **Pasos 3：Implementar la capa de politica minima**
+Implementar entrada unificada：`resolveTaskLanguage(taskKey, settings)` Con `resolveUiLocale(settings, obsidianLocale)`。
 
-- [ ] **步骤 4：重新运行测试**
-执行：
+- [ ] **Pasos 4：Vuelva a ejecutar la prueba**
+Ejecucion：
 ```bash
 npm test -- --runInBand src/tests/languagePolicy.test.ts
 ```
-预期：PASS。
+Anticipacion：PASS。
 
-- [ ] **步骤 5：执行前后对比**
-执行：
+- [ ] **Pasos 5：Comparacion antes y despues de la ejecucion**
+Ejecucion：
 ```bash
 npm test -- --runInBand src/tests/languagePolicy.test.ts > docs/superpowers/baselines/2026-04-09-language-support/task1-after.txt 2>&1
 ```
-对比：
+Comparacion：
 ```bash
 grep -E "PASS|FAIL" docs/superpowers/baselines/2026-04-09-language-support/task1-after.txt
 ```
 
 ---
 
-### 任务 2：构建界面 i18n 基础设施（语言目录 + 回退）
+### Tareas 2：Construye la interfaz i18n Infraestructura (Directorio de Idiomas + Revertir）
 
-**文件：**
-- 创建：`src/i18n/index.ts`
-- 创建：`src/i18n/locales/en.ts`
-- 创建：`src/i18n/locales/zh_cn.ts`
-- 创建：`src/i18n/locales/zh_tw.ts`
-- 修改：`src/main.ts`
-- 测试：`src/tests/i18nFallback.test.ts`
+**Documentacion：**
+- crear：`src/i18n/index.ts`
+- crear：`src/i18n/locales/en.ts`
+- crear：`src/i18n/locales/zh_cn.ts`
+- crear：`src/i18n/locales/zh_tw.ts`
+- Modificar：`src/main.ts`
+- Pruebas：`src/tests/i18nFallback.test.ts`
 
-- [ ] **步骤 1：编写失败测试，覆盖回退链**
-覆盖：`zh-CN -> zh -> en`、缺失 key 回退、变量插值、缓存稳定性。
+- [ ] **Pasos 1：Escriba pruebas fallidas y cubra la cadena alternativa.**
+Cobertura：`zh-CN -> zh -> en`、Desaparecido key Respaldo, interpolacion variable, estabilidad de cache。
 
-- [ ] **步骤 2：确认失败**
-执行：
+- [ ] **Pasos 2：La confirmacion fallo**
+Ejecucion：
 ```bash
 npm test -- --runInBand src/tests/i18nFallback.test.ts
 ```
-预期：FAIL。
+Anticipacion：FAIL。
 
-- [ ] **步骤 3：实现 i18n 核心**
-参考：`ref/notebook-navigator/src/i18n/index.ts` 的 `LANGUAGE_MAP + deep-merge fallback` 模式，但保持 Notemd 自身简洁边界。
+- [ ] **Pasos 3：Implementacion i18n Nucleo**
+Referencia：`ref/notebook-navigator/src/i18n/index.ts` de `LANGUAGE_MAP + deep-merge fallback` Patron, pero manten Notemd Manten tus limites simples。
 
-- [ ] **步骤 4：重新运行测试**
-执行：
+- [ ] **Pasos 4：Vuelva a ejecutar la prueba**
+Ejecucion：
 ```bash
 npm test -- --runInBand src/tests/i18nFallback.test.ts
 ```
-预期：PASS。
+Anticipacion：PASS。
 
-- [ ] **步骤 5：与变更前基线对比**
-保存并对比本任务前后日志，确认 i18n 引入没有影响既有 provider/mermaid/workflow 测试。
+- [ ] **Pasos 5：Comparacion con la linea de base antes del cambio**
+Guarde y compare los registros antes y despues de esta tarea, y confirme i18n La introduccion no tiene ningun impacto en los existentes. provider/mermaid/workflow Pruebas。
 
 ---
 
-### 任务 3：将设置页界面文案迁移到 i18n（高影响表面）
+### Tareas 3：Migre la copia de la interfaz de la pagina de configuracion a i18n（Superficies de alto impacto）
 
-**文件：**
-- 修改：`src/ui/NotemdSettingTab.ts`
-- 修改：`src/i18n/locales/en.ts`
-- 修改：`src/i18n/locales/zh_cn.ts`
-- 测试：`src/tests/providerDiagnostics.test.ts`
-- 测试：`src/tests/sidebarDomButtonClicks.test.ts`
+**Documentacion：**
+- Modificar：`src/ui/NotemdSettingTab.ts`
+- Modificar：`src/i18n/locales/en.ts`
+- Modificar：`src/i18n/locales/zh_cn.ts`
+- Pruebas：`src/tests/providerDiagnostics.test.ts`
+- Pruebas：`src/tests/sidebarDomButtonClicks.test.ts`
 
-- [ ] **步骤 1：采集变更前快照（设置页相关测试）**
-执行：
+- [ ] **Pasos 1：采集变更前快照（设置页相关Pruebas）**
+Ejecucion：
 ```bash
 npm test -- --runInBand src/tests/providerDiagnostics.test.ts src/tests/sidebarDomButtonClicks.test.ts > docs/superpowers/baselines/2026-04-09-language-support/task3-before.txt 2>&1
 ```
 
-- [ ] **步骤 2：用 `strings` 访问替换硬编码界面标签**
-范围：语言设置、开发者诊断、工作流构建器、Provider 配置提示。
+- [ ] **Pasos 2：uso `strings` Reemplazo de acceso a etiquetas de interfaz codificadas**
+Alcance: Configuracion de idioma, Diagnostico del desarrollador, Generador de flujo de trabajo、Provider Consejos de configuracion。
 
-- [ ] **步骤 3：变更后运行同一组测试**
-执行：
+- [ ] **Pasos 3：Ejecute el mismo conjunto de pruebas despues de los cambios.**
+Ejecucion：
 ```bash
 npm test -- --runInBand src/tests/providerDiagnostics.test.ts src/tests/sidebarDomButtonClicks.test.ts > docs/superpowers/baselines/2026-04-09-language-support/task3-after.txt 2>&1
 ```
-预期：PASS。
+Anticipacion：PASS。
 
-- [ ] **步骤 4：执行 `diff` 对比**
-执行：
+- [ ] **Pasos 4：Ejecucion `diff` Comparacion**
+Ejecucion：
 ```bash
 diff -u docs/superpowers/baselines/2026-04-09-language-support/task3-before.txt docs/superpowers/baselines/2026-04-09-language-support/task3-after.txt | sed -n '1,200p'
 ```
-预期：只接受文案相关差异，不接受行为失败差异。
+Anticipacion：只接受文案相关差异，不接受行为失败差异。
 
 ---
 
-### 任务 4：迁移侧边栏与提示文案（运行时体验表面）
+### Tareas 4：Migrar la barra lateral y solicitar copiar (superficie de experiencia en tiempo de ejecucion)）
 
-**文件：**
-- 修改：`src/ui/NotemdSidebarView.ts`
-- 修改：`src/ui/ErrorModal.ts`
-- 修改：`src/main.ts`
-- 修改：`src/i18n/locales/en.ts`
-- 修改：`src/i18n/locales/zh_cn.ts`
-- 测试：`src/tests/sidebarDomButtonClicks.test.ts`
-- 测试：`src/tests/sidebarButtonTriggerChains.test.ts`
+**Documentacion：**
+- Modificar：`src/ui/NotemdSidebarView.ts`
+- Modificar：`src/ui/ErrorModal.ts`
+- Modificar：`src/main.ts`
+- Modificar：`src/i18n/locales/en.ts`
+- Modificar：`src/i18n/locales/zh_cn.ts`
+- Pruebas：`src/tests/sidebarDomButtonClicks.test.ts`
+- Pruebas：`src/tests/sidebarButtonTriggerChains.test.ts`
 
-- [ ] **步骤 1：记录运行时界面基线测试**
-执行：
+- [ ] **Pasos 1：Registrar las pruebas de referencia de la interfaz en tiempo de ejecucion**
+Ejecucion：
 ```bash
 npm test -- --runInBand src/tests/sidebarDomButtonClicks.test.ts src/tests/sidebarButtonTriggerChains.test.ts > docs/superpowers/baselines/2026-04-09-language-support/task4-before.txt 2>&1
 ```
 
-- [ ] **步骤 2：迁移运行时可见文案**
-包括：主标题、按钮文本、取消提示、日志操作提示、错误模态按钮文案。
+- [ ] **Pasos 2：La copia es visible cuando se ejecuta la migracion.**
+Incluye: titulo principal, texto del boton, aviso de cancelacion, aviso de operacion de registro, copia del boton modal de error。
 
-- [ ] **步骤 3：重新运行同一组测试**
-执行：
+- [ ] **Pasos 3：Vuelva a ejecutar el mismo conjunto de pruebas.**
+Ejecucion：
 ```bash
 npm test -- --runInBand src/tests/sidebarDomButtonClicks.test.ts src/tests/sidebarButtonTriggerChains.test.ts > docs/superpowers/baselines/2026-04-09-language-support/task4-after.txt 2>&1
 ```
-预期：PASS。
+Anticipacion：PASS。
 
-- [ ] **步骤 4：对比并设门禁**
-只要出现 FAIL 或 open-handle 恶化，必须回滚到本阶段内修复。
+- [ ] **Pasos 4：Comparar y establecer puertas.**
+Solo presentate FAIL o open-handle Deterioro, debe retroceder a esta etapa para su reparacion.。
 
 ---
 
-### 任务 5：统一提示词与处理链路中的任务语言决策
+### Tareas 5：Unificar palabras clave y decisiones de lenguaje de tareas en enlaces de procesamiento
 
-**文件：**
-- 修改：`src/promptUtils.ts`
-- 修改：`src/fileUtils.ts`
-- 修改：`src/searchUtils.ts`
-- 修改：`src/main.ts`
-- 修改：`src/i18n/taskLanguagePolicy.ts`
-- 测试：`src/tests/languagePolicy.test.ts`
-- 测试：`src/tests/processFile.test.ts`
-- 测试：`src/tests/workflowButtons.test.ts`
+**Documentacion：**
+- Modificar：`src/promptUtils.ts`
+- Modificar：`src/fileUtils.ts`
+- Modificar：`src/searchUtils.ts`
+- Modificar：`src/main.ts`
+- Modificar：`src/i18n/taskLanguagePolicy.ts`
+- Pruebas：`src/tests/languagePolicy.test.ts`
+- Pruebas：`src/tests/processFile.test.ts`
+- Pruebas：`src/tests/workflowButtons.test.ts`
 
-- [ ] **步骤 1：采集变更前行为测试**
-执行：
+- [ ] **Pasos 1：Recopile pruebas de comportamiento antes de los cambios.**
+Ejecucion：
 ```bash
 npm test -- --runInBand src/tests/languagePolicy.test.ts src/tests/processFile.test.ts src/tests/workflowButtons.test.ts > docs/superpowers/baselines/2026-04-09-language-support/task5-before.txt 2>&1
 ```
 
-- [ ] **步骤 2：移除分散的语言决策**
-将 `fileUtils/searchUtils/promptUtils` 内分散逻辑收敛到 `taskLanguagePolicy`。
+- [ ] **Pasos 2：Eliminar decisiones linguisticas dispersas**
+voluntad `fileUtils/searchUtils/promptUtils` La logica de dispersion interna converge a `taskLanguagePolicy`。
 
-- [ ] **步骤 3：为原本隐含的行为补充显式断言**
-确保 `disableAutoTranslation`、task-specific language、translate task 例外逻辑可测。
+- [ ] **Pasos 3：Complementar afirmaciones explicitas con comportamientos que de otro modo serian implicitos.**
+Asegurate `disableAutoTranslation`、task-specific language、translate task La logica de excepcion es comprobable。
 
-- [ ] **步骤 4：变更后运行同一组测试**
-执行：
+- [ ] **Pasos 4：Ejecute el mismo conjunto de pruebas despues de los cambios.**
+Ejecucion：
 ```bash
 npm test -- --runInBand src/tests/languagePolicy.test.ts src/tests/processFile.test.ts src/tests/workflowButtons.test.ts > docs/superpowers/baselines/2026-04-09-language-support/task5-after.txt 2>&1
 ```
-预期：PASS。
+Anticipacion：PASS。
 
-- [ ] **步骤 5：对比变更前后**
-仅允许预期日志文本差异；禁止功能路径变化导致断言减少。
+- [ ] **Pasos 5：Compara el antes y el despues de los cambios.**
+Solo se permiten diferencias en el texto de registro esperado; Se prohiben los cambios de ruta funcional que conduzcan a aserciones reducidas.。
 
 ---
 
-### 任务 6：增加本地化格式化与 RTL 安全保护
+### Tareas 6：Agregue formato localizado y RTL Proteccion de seguridad
 
-**文件：**
-- 修改：`styles.css`
-- 创建：`src/i18n/localeFormat.ts`
-- 修改：`src/ui/NotemdSidebarView.ts`
-- 测试：`src/tests/sidebarDomButtonClicks.test.ts`
+**Documentacion：**
+- Modificar：`styles.css`
+- crear：`src/i18n/localeFormat.ts`
+- Modificar：`src/ui/NotemdSidebarView.ts`
+- Pruebas：`src/tests/sidebarDomButtonClicks.test.ts`
 
-- [ ] **步骤 1：增加 RTL 与文本方向安全规则**
-引入最小必要规则，避免破坏现有 panel 布局。
+- [ ] **Pasos 1：aumentar RTL Reglas de seguridad con direccion de texto.**
+Introducir normas minimas necesarias para evitar danar las existentes. panel Diseno。
 
-- [ ] **步骤 2：为格式化 helper 增加测试**
-新增日期/时间格式 fallback 基础测试。
+- [ ] **Pasos 2：Para formatear helper Agregar pruebas**
+Agregar fecha/Formato de hora fallback Pruebas basicas。
 
-- [ ] **步骤 3：验证侧边栏布局测试**
-执行：
+- [ ] **Pasos 3：Verificar las pruebas de diseno de la barra lateral**
+Ejecucion：
 ```bash
 npm test -- --runInBand src/tests/sidebarDomButtonClicks.test.ts
 ```
-预期：PASS（尤其是 docked footer / log 区域可见性相关断言）。
+Anticipacion：PASS（Especialmente docked footer / log Afirmaciones relacionadas con la visibilidad del area）。
 
 ---
 
-### 任务 7：构建用于前后对比的回归脚手架
+### Tareas 7：Construya un andamiaje de regresion para comparaciones de antes y despues.
 
-**文件：**
-- 创建：`scripts/regression/language-support-baseline.sh`
-- 创建：`scripts/regression/language-support-compare.sh`
-- 修改：`package.json`
-- 创建：`docs/superpowers/baselines/README.md`
-- 测试：`src/tests/llmUtilsProviderSupport.test.ts`
+**Documentacion：**
+- crear：`scripts/regression/language-support-baseline.sh`
+- crear：`scripts/regression/language-support-compare.sh`
+- Modificar：`package.json`
+- crear：`docs/superpowers/baselines/README.md`
+- Pruebas：`src/tests/llmUtilsProviderSupport.test.ts`
 
-- [ ] **步骤 1：脚本化基线采集命令**
-把关键命令统一封装，确保团队可重复执行。
+- [ ] **Pasos 1：Comando de recopilacion de lineas base con script**
+把关键命令统一封装,Asegurate团队可重复Ejecucion。
 
-- [ ] **步骤 2：脚本化对比门禁**
-自动检查 PASS/FAIL 统计和关键错误关键字（`TS6059`, `ERR_CONNECTION_CLOSED`, `socket hang up` 仅允许在 mock 日志中出现）。
+- [ ] **Pasos 2：Control de acceso de comparacion con script**
+Comprobacion automatica PASS/FAIL Estadisticas y palabras clave de errores criticos（`TS6059`, `ERR_CONNECTION_CLOSED`, `socket hang up` Solo permitido en mock Aparece en el registro.）。
 
-- [ ] **步骤 3：在本地验证脚本**
-执行：
+- [ ] **Pasos 3：Verificar el script localmente**
+Ejecucion：
 ```bash
 npm run test -- --runInBand src/tests/llmUtilsProviderSupport.test.ts
 bash scripts/regression/language-support-baseline.sh
 bash scripts/regression/language-support-compare.sh
 ```
-预期：compare script 返回 0 才允许继续。
+Anticipacion：compare script Regreso 0 Antes de que se le permita continuar。
 
 ---
 
-### 任务 8：同步文档与发布流程
+### Tareas 8：Sincronizar documentos y proceso de publicacion.
 
-**文件：**
-- 修改：`README.md`
-- 修改：`README_zh.md`
-- 修改：`docs/superpowers/plans/2026-04-09-language-support-first-principles-multiphase.en.md`
-- 修改：`docs/superpowers/plans/2026-04-09-language-support-first-principles-multiphase.zh-CN.md`
+**Documentacion：**
+- Modificar：`README.md`
+- Modificar：`README_zh.md`
+- Modificar：`docs/superpowers/plans/2026-04-09-language-support-first-principles-multiphase.en.md`
+- Modificar：`docs/superpowers/plans/2026-04-09-language-support-first-principles-multiphase.zh-CN.md`
 
-- [ ] **步骤 1：记录语言支持架构**
-包含 `UI Locale` 与 `Task Output Language` 的定义与使用方式。
+- [ ] **Pasos 1：Arquitectura de soporte de lenguaje de documentos**
+Contiene `UI Locale` Con `Task Output Language` Definicion y uso。
 
-- [ ] **步骤 2：记录回归工作流**
-明确每个阶段必须保存 before/after logs。
+- [ ] **Pasos 2：Flujo de trabajo de regresion de documentos**
+Deja claro que cada etapa hay que salvarla before/after logs。
 
-- [ ] **步骤 3：同步发布说明要求**
-确保发布说明继续保持中英双语独立段落要求。
+- [ ] **Pasos 3：Requisitos de instrucciones de liberacion sincronica**
+Asegurate发布说明继续保持中英双语独立段落要求。
 
 ---
 
-### 任务 9：最终验证门禁（禁止半途交付）
+### Tareas 9：Verificacion final del control de acceso (esta prohibida la entrega a mitad de camino)）
 
-**文件：**
-- 验证：`src/`、`styles.css`、`README.md`、`README_zh.md`、`scripts/regression/`、`docs/superpowers/` 中的已修改文件
+**Documentacion：**
+- Verificacion：`src/`、`styles.css`、`README.md`、`README_zh.md`、`scripts/regression/`、`docs/superpowers/` Archivos modificados en
 
-- [ ] **步骤 1：恢复克隆 `ref/` 目录后的构建稳定性**
-若保留 `ref/notebook-navigator` 在仓库中，需在 `tsconfig.json` 排除 `ref/**`，确保构建不受参考仓库影响。
+- [ ] **Pasos 1：Reanudar clonacion `ref/` Genere estabilidad detras de los directorios**
+Si esta reservado `ref/notebook-navigator` En el almacen, es necesario `tsconfig.json` Exclusiones `ref/**`，Asegurese de que la compilacion no se vea afectada por el repositorio de referencia.。
 
-- [ ] **步骤 2：运行构建**
-执行：
+- [ ] **Pasos 2：Ejecute la compilacion**
+Ejecucion：
 ```bash
 npm run build
 ```
-预期：PASS。
+Anticipacion：PASS。
 
-- [ ] **步骤 3：运行定向回归矩阵**
-执行：
+- [ ] **Pasos 3：Ejecucion de matrices de regresion direccional**
+Ejecucion：
 ```bash
 npm test -- --runInBand src/tests/workflowButtons.test.ts src/tests/sidebarDomButtonClicks.test.ts src/tests/llmUtilsProviderSupport.test.ts src/tests/providerDiagnostics.test.ts src/tests/languagePolicy.test.ts src/tests/i18nFallback.test.ts
 ```
-预期：PASS。
+Anticipacion：PASS。
 
-- [ ] **步骤 4：运行完整测试**
-执行：
+- [ ] **Pasos 4：Ejecute la prueba completa**
+Ejecucion：
 ```bash
 npm test -- --runInBand
 ```
-预期：PASS（若存在已知 open-handle warning，需记录并确保未恶化）。
+Anticipacion：PASS（Si hay un conocido open-handle warning，Necesidad de registrar y asegurar que no se haya deteriorado）。
 
-- [ ] **步骤 5：执行 Obsidian CLI 健康检查**
-执行：
+- [ ] **Pasos 5：Ejecucion Obsidian CLI Chequeo de salud**
+Ejecucion：
 ```bash
 obsidian help
 obsidian-cli help
 ```
-预期：命令可执行。
+Expectativa: el comando es ejecutable。
 
-- [ ] **步骤 6：执行 `diff` 质量检查**
-执行：
+- [ ] **Pasos 6：Ejecucion `diff` Inspeccion de calidad**
+Ejecucion：
 ```bash
 git diff --check
 ```
-预期：PASS。
+Anticipacion：PASS。
 
-- [ ] **步骤 7：按阶段提交**
-每个阶段独立提交，禁止跨阶段混杂提交。
+- [ ] **Pasos 7：Enviar por etapa**
+每个阶段独立Enviar，禁止跨阶段混杂Enviar。
 
-- [ ] **步骤 8：发布交接**
-版本发布前必须附带：测试摘要、before/after 对比结论、风险余项。
+- [ ] **Pasos 8：Entrega de liberacion**
+Antes de que se publique la version, debe ir acompanada de: resumen de la prueba、before/after Conclusion de la comparacion y riesgo restante。
 
 ---
 
-## 面向工程师的执行说明
+## Instrucciones de implementacion para ingenieros.
 
-- 参考实现：`/home/jacob/obsidian-NotEMD/ref/notebook-navigator/src/i18n/index.ts`。
-- 但 Notemd 不做全量照抄；只迁移“可维护的最小核心”（map + fallback + centralized strings + tests）。
-- 每个阶段都要先跑“阶段前”测试并保存日志，任何“先改再补日志”的流程视为不合规。
+- Implementacion de referencia：`/home/jacob/obsidian-NotEMD/ref/notebook-navigator/src/i18n/index.ts`。
+- Pero Notemd No copiar todo; migrar solo el “nucleo minimo mantenible””（map + fallback + centralized strings + tests）。
+- Cada etapa debe ejecutar primero una prueba "previa a la etapa" y guardar los registros. Cualquier proceso de "cambiar primero y luego agregar registros" se considera no conforme.。

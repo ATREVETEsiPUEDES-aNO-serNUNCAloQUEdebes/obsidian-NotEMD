@@ -3,193 +3,193 @@ date: 2026-05-07
 topic: cli-next-phase-planning
 ---
 
-# CLI 下一阶段规划
+# CLI Planificacion de la siguiente etapa
 
-> 更新（2026-05-07，更晚一些）：本规划文档给出的推荐方向已经在当前 contract 深度上落地。`diagram.generate` 仍保持为宿主无关 generation core，而其下的 command-completion 层现在已经通过类型化 `followThrough` 结果结构显式化。下一波工作应转向 packaging / semantic-verification 收敛，只有后续某个分支真的证明自己足够宿主无关时，才再考虑更大的导出边界。
+> Actualizacion（2026-05-07，Mas adelante): Las direcciones recomendadas dadas en este documento de planificacion ya estan en la version actual. contract Aterrizar en profundidad。`diagram.generate` Sigue siendo irrelevante como anfitrion generation core，Y debajo de el command-completion La capa ahora esta escrita. `followThrough` Estructura de resultados explicita. La proxima ola de trabajo deberia pasar a packaging / semantic-verification Convergencia. ¿Solo cuando una sucursal posterior realmente demuestre que es suficientemente independiente del anfitrion, se considerara un limite de exportacion mas amplio?。
 
-## 问题框架
+## Encuadre del problema
 
-5 月 4-5 日这一组 brainstorm 文档其实已经把大方向定下来了：
+5 meses 4-5 Grupo de dia brainstorm De hecho, el documento ha marcado la direccion general.：
 
-- Notemd 应先抽取宿主无关 operation，再谈更强的 CLI / 公共表面承诺。
-- 写入型 note-processing proof set 已经落地。
-- 第一轮 diagram/provider wrapper 抽离也已经落地。
+- Notemd Primero se debe extraer el host. operation，Hablemos de algo mas fuerte CLI / Compromiso publico ostensible。
+- Tipo de escritura note-processing proof set Ya aterrizo。
+- Primera ronda diagram/provider wrapper Tambien se ha conseguido el desapego。
 
-因此，CLI 的下一阶段不再是“继续加命令”，也不再是“继续做大范围 registry onboarding”。当前剩余的问题更窄：
+Por lo tanto，CLI La siguiente etapa ya no es "seguir agregando pedidos", ni "seguir haciendo pedidos a gran escala". registry onboarding”。Los problemas restantes actuales son mas limitados.：
 
-- `diagram.generate`、`diagram.preview` 与 `provider.connection.test` 都已经是具备 typed contract 的 registry-backed seam。
-- `runDiagramGenerateOperation()` 已经是宿主无关的 generation core。
-- 当前剩余的混合语义主要位于 `src/operations/diagramCommandExecution.ts` 与 `src/operations/diagramCommandHostAdapter.ts` 中，负责把生成结果继续保存、重开、预览、自动修复并提示给用户。
-- 实际出货的命令依然如实地沿用 `src/workflowButtons.ts` 中的 `requires-active-file`、`write-file` 或 `interactive-ui` 语义。
+- `diagram.generate`、`diagram.preview` con `provider.connection.test` Todo ya esta disponible typed contract de registry-backed seam。
+- `runDiagramGenerateOperation()` Ya es independiente del host generation core。
+- La semantica mixta restante se encuentra principalmente en `src/operations/diagramCommandExecution.ts` con `src/operations/diagramCommandHostAdapter.ts` Responsable de guardar, reabrir, obtener una vista previa, reparar automaticamente y mostrar los resultados generados al usuario.。
+- Las ordenes de envio reales todavia se siguen fielmente. `src/workflowButtons.ts` en `requires-active-file`、`write-file` o `interactive-ui` Semantica。
 
-所以，当前规划的核心曾经是做一次分层澄清：把 core-generation contract 与 host follow-through contract 明确拆开，同时避免重开已经完成的 write-heavy 家族，也避免过早膨胀 top-level operation ID。这一决策现在已经实现，本文其余内容仍可作为当前实现形态的设计依据。
+Por lo tanto, el nucleo del plan actual era hacer una aclaracion por niveles: core-generation contract con host follow-through contract Desembalar claramente y evitar reabrir ya completado write-heavy Familia, evita tambien la expansion prematura top-level operation ID。Esta decision ya se ha implementado y el resto de este articulo aun se puede utilizar como base de diseno para el formulario de implementacion actual.。
 
-## 代码事实快照
+## Resumen de hechos del codigo
 
-### `diagram.generate` 已经具备真实的核心边界
+### `diagram.generate` Ya tenemos limites fundamentales reales
 
-`src/operations/diagramGenerateOperation.ts` 接收显式 markdown 输入和运行时依赖，然后返回 `DiagramGenerationResult`。它本身并不会保存文件、打开预览或弹 notice。这是仓库里最强的一条证据，说明项目已经拥有“宿主无关的 diagram generation seam”。
+`src/operations/diagramGenerateOperation.ts` Recibir explicito markdown Ingrese y ejecute las dependencias, luego regrese `DiagramGenerationResult`。No guarda archivos, no abre vistas previas ni archivos emergentes. notice。Esta es la evidencia mas solida en el almacen, que indica que el proyecto ya tiene "independientes del host". diagram generation seam”。
 
-### 剩余副作用都发生在 generation 之后
+### Los efectos secundarios restantes ocurren en generation Despues
 
-`src/operations/diagramCommandExecution.ts` 先运行 generation core，然后再进入 `src/operations/diagramCommandHostAdapter.ts`。
+`src/operations/diagramCommandExecution.ts` Corre primero generation core，Entonces entra `src/operations/diagramCommandHostAdapter.ts`。
 
-这一层 host adapter 目前承接的，正是有意义的 follow-through：
+Este nivel host adapter Lo que estamos emprendiendo actualmente es significativo. follow-through：
 
-- 保存 Mermaid 输出
-- 保存 artifact 输出
-- 视情况自动修复已保存 Mermaid
-- 重开保存后的文件
-- 打开预览
-- 发出用户可见提示
+- Guardar Mermaid Salida
+- Guardar artifact Salida
+- Reparar automaticamente los archivos guardados segun corresponda Mermaid
+- Vuelva a abrir el archivo guardado.
+- Abrir vista previa
+- Emitir mensajes visibles para el usuario
 
-这些都是真实的宿主/文件/UI 语义，不应该再和纯 generation core 混在同一层抽象里。
+Estos son verdaderos anfitriones/Documentos/UI La semantica ya no debe confundirse con la pura. generation core Mezclar en el mismo nivel de abstraccion.。
 
-### registry 已经体现了这种分层，但还不够显式
+### registry Esta estratificacion ya esta reflejada, pero no es lo suficientemente explicita.
 
-`src/operations/registry.ts` 当前把 `diagram.generate` 导出为 `safe` / `read-only`，同时又保留了来自 `src/workflowButtons.ts` 的真实命令语义：
+`src/operations/registry.ts` Actualmente `diagram.generate` Exportar como `safe` / `read-only`，Al mismo tiempo, conserva la `src/workflowButtons.ts` La verdadera semantica de mando de：
 
 - `notemd-generate-diagram` -> `requires-active-file` / `write-file`
 - `notemd-summarize-as-mermaid` -> `requires-active-file` / `write-file`
 - `notemd-preview-diagram` -> `interactive-ui` / `preview-ui`
 
-这在方向上是对的，而后续实现现在也已经把“这里描述的是 core operation，不是出货命令本身”说得更清楚：导出的 `diagram.generate` 结果之下新增了类型化 `followThrough` 结构，但 command binding 本身保持不变。
+Esto es direccionalmente correcto y las implementaciones posteriores ahora han cambiado "lo que se describe aqui es core operation，No es el comando de envio en si” para que quede mas claro: exportado `diagram.generate` Se agrego escritura en los resultados. `followThrough` Estructura, pero command binding en si permanece sin cambios。
 
-### `provider.connection.test` 是本地最成熟的参考模式
+### `provider.connection.test` Es el modelo de referencia local mas maduro
 
-`src/operations/providerConnectionTestCommandHostAdapter.ts` 已经把下面两层分开：
+`src/operations/providerConnectionTestCommandHostAdapter.ts` Las dos capas inferiores han sido separadas.：
 
-- 类型化的测试核心路径
-- 额外增加 busy/reporter 行为的交互式 wrapper
+- Ruta principal de prueba escrita
+- Adiciones adicionales busy/reporter Interaccion conductual wrapper
 
-这正是剩余 diagram/provider command-core 分层应继续借鉴的模式。
+Este es el resto diagram/provider command-core Modelos de los que la estratificacion deberia seguir aprendiendo。
 
-## 与既有 brainstorm 文档的关系
+## Con existente brainstorm Relacion entre documentos
 
-| 既有文档 | 它已经确认的结论 | 本文新增澄清 |
+| Documentacion existente | CONCLUSIONES QUE HA CONFIRMADO | Nuevas aclaraciones anadidas a este articulo. |
 |---|---|---|
-| `docs/brainstorms/2026-05-04-obsidian-cli-extensibility-and-notemd-capability-extraction.md` | 要先抽 operation，再谈更强 CLI 形态 | 进一步明确：现在剩余工作主要是 contract layering，而不是新一轮 operation 家族抽取 |
-| `docs/brainstorms/2026-05-05-cli-mainline-progress-sync-and-next-phase-requirements.md` | 下一阶段应转向更深层 diagram/provider command-core 工作 | 进一步明确：优先做 typed internal completion/follow-through contract，而不是马上新增 top-level operation ID |
-| `docs/brainstorms/2026-05-05-cli-write-heavy-contract-tightening-requirements.md` | write-heavy proof set 已完成，不再是主瓶颈 | 再次确认：此时重开这些家族只会制造 churn，不会产生真正进展 |
+| `docs/brainstorms/2026-05-04-obsidian-cli-extensibility-and-notemd-capability-extraction.md` | Primero tienes que fumar operation，Hablemos mejor de ello CLI Formulario | Mayor aclaracion: el trabajo restante es principalmente contract layering，En lugar de una nueva ronda operation Extraccion familiar |
+| `docs/brainstorms/2026-05-05-cli-mainline-progress-sync-and-next-phase-requirements.md` | La siguiente etapa deberia ser mas profunda diagram/provider command-core trabajo | Aclarar mas: priorizar typed internal completion/follow-through contract，En lugar de agregarlo inmediatamente top-level operation ID |
+| `docs/brainstorms/2026-05-05-cli-write-heavy-contract-tightening-requirements.md` | write-heavy proof set Completado, ya no es el principal cuello de botella. | Confirme nuevamente: Reabrir estas familias en este momento solo creara churn，No se lograran avances reales |
 
-## 考虑过的方案
+## Opciones consideradas
 
-### 方案 1：立即新增更多 top-level diagram operations
+### Planificar 1：Agrega mas ahora top-level diagram operations
 
-比如新增 `diagram.save-mermaid`、`diagram.save-artifact`、`diagram.preview-artifact`。
+Por ejemplo, agregue nuevo `diagram.save-mermaid`、`diagram.save-artifact`、`diagram.preview-artifact`。
 
-- 优点：表面上看起来很显式
-- 缺点：会把宿主文件/UI follow-through 过早包装成“已经宿主无关的工程边界”
-- 风险：在代码尚未证明这些路径真能脱离命令上下文时，先把公共契约面做大
+- Ventajas: Parece explicito en la superficie
+- Desventaja: el archivo host sera/UI follow-through Empaquetado prematuro en "limites de proyecto independientes del anfitrion"”
+- Riesgo: antes de que el codigo demuestre que estas rutas realmente se pueden separar del contexto de comando, primero expanda el area de contrato publico.
 
-### 方案 2：维持当前混合 wrapper 形态，不再细化
+### Planificar 2：Mantener la combinacion actual wrapper Forma, no mas refinamiento
 
-- 优点：短期成本最低
-- 缺点：core 与 command follow-through 的边界仍然模糊
-- 风险：后续维护者继续把更多 wrapper 语义塞进导出的 operation contract
+- Ventajas: coste mas bajo a corto plazo
+- Desventajas：core con command follow-through Los limites de
+- Riesgo: los mantenedores posteriores seguiran anadiendo mas wrapper Relleno semantico en exportado operation contract
 
-### 方案 3：保持 top-level operation surface 稳定，同时把内部 completion/follow-through 层类型化
+### Planificar 3：mantener top-level operation surface Estable manteniendo el interior completion/follow-through Escritura de capas
 
-- 优点：既保留当前正确的顶层 seam，又能把剩余模糊处说清楚
-- 缺点：需要更谨慎地设计内部 contract
-- 风险：如果约束不够强，host-side completion helper 仍可能偷偷演变成第二套隐式 API
+- Ventajas: Mantenga el nivel superior correcto actual seam，Capaz de aclarar las ambiguedades restantes.
+- Desventajas: Requiere un diseno interior mas cuidado contract
+- Riesgo: si las limitaciones no son lo suficientemente fuertes，host-side completion helper Todavia es posible evolucionar secretamente hacia un segundo conjunto de implicitos. API
 
-## 推荐方向
+## Direcciones recomendadas
 
-选择方案 3。
+Elige un plan 3。
 
-CLI 的下一阶段应保持 `diagram.generate`、`diagram.preview` 与 `provider.connection.test` 这组 top-level frame 稳定，然后把 diagram completion/follow-through 层在这组 frame 之下显式类型化。
+CLI La siguiente etapa de debe mantenerse `diagram.generate`、`diagram.preview` con `provider.connection.test` Este grupo top-level frame Estabilizar y luego poner diagram completion/follow-through Capas en este grupo. frame Escritura explicita a continuacion。
 
-这一步现在已经落地。
+Este paso ya se ha implementado.。
 
-落到工程上，就是：
+Caer en el proyecto, es decir.：
 
-1. 继续把宿主无关 generation core 与 save/open/preview follow-through 分离
-2. 优先引入内部 typed execution/result structure，而不是先发明新的 top-level operation ID
-3. 以 `provider.connection.test` 作为 core-vs-interactive layering 的参考样板
-4. 把更广的 CLI/public-surface 扩张、packaging isolation 与 maintainer semantic verification 留到后续波次
+1. Continuar sin tener nada que ver con el anfitrion. generation core con save/open/preview follow-through Separacion
+2. Priorizar la introduccion en el ambito interno. typed execution/result structure，En lugar de inventar otros nuevos primero top-level operation ID
+3. a `provider.connection.test` como core-vs-interactive layering Plantilla de referencia
+4. Pon un mas ancho CLI/public-surface Expansion、packaging isolation con maintainer semantic verification Guardar para oleadas posteriores
 
-## 具体落地方案
+## Plan de implementacion especifico
 
-### 阶段 1：把当前分层先写清楚
+### Etapa 1：Primero escriba claramente la capa actual
 
-1. 保持 `diagram.generate` 继续表示宿主无关的 `sourceMarkdown -> DiagramGenerationResult` 契约。
-2. 复核当前已导出的结果字段（`operationInput`、`generation`、`outputPath`、`previewOpened`），明确哪些属于 core result，哪些其实属于 follow-through 层。
-3. 在文档与元数据中明确：即便 operation-level metadata 仍是 `safe` / `read-only`，command binding 也必须继续保留实际出货命令的触发语义。
+1. mantener `diagram.generate` Continue indicando independiente del host `sourceMarkdown -> DiagramGenerationResult` Contrato。
+2. Revise los campos de resultados exportados actualmente.（`operationInput`、`generation`、`outputPath`、`previewOpened`），Identifica cuales pertenecen a core result，¿Cuales pertenecen realmente a follow-through Capas。
+3. Dejelo claro en documentos y metadatos: incluso si operation-level metadata Todavia `safe` / `read-only`，command binding Tambien se debe conservar la semantica de activacion del comando de envio real.。
 
-### 阶段 2：在 core 之下把 follow-through 层类型化
+### Etapa 2：en core Debajo Del Mango follow-through Escritura de capas
 
-1. 围绕以下行为引入更清晰的内部 execution/result structure：
-   - Mermaid 保存收尾
-   - artifact 保存收尾
+1. Introducir una claridad interna mas clara en torno a execution/result structure：
+   - Mermaid Ahorre para los toques finales
+   - artifact Ahorre para los toques finales
    - preview follow-through
-   - reopen / auto-fix / notice 等副作用
-2. 优先把这些能力落成“内部类型化执行边界”。
-3. 只有当某个分支已经证明自己是宿主无关且可脱离命令上下文独立调用时，才提升为新的 top-level operation。
+   - reopen / auto-fix / notice Espere los efectos secundarios
+2. Priorizar la implementacion de estas capacidades en "limites de ejecucion internos tipificados"”。
+3. Solo cuando una rama haya demostrado ser independiente del host y pueda llamarse independientemente del contexto del comando, sera promovida a una nueva. top-level operation。
 
-实现更新：
-- `diagram.generate` 现在会返回 `followThrough.kind`、`followThrough.outputPath`、`followThrough.previewOpened`、`followThrough.autoFixAttempted` 与 `followThrough.artifactTarget`
-- 为了兼容现有调用方，顶层 `outputPath` 与 `previewOpened` 目前仍继续导出
+Implementar actualizaciones：
+- `diagram.generate` Ahora regresara `followThrough.kind`、`followThrough.outputPath`、`followThrough.previewOpened`、`followThrough.autoFixAttempted` con `followThrough.artifactTarget`
+- Para ser compatible con las personas que llaman existentes, el nivel superior `outputPath` con `previewOpened` La exportacion continua
 
-### 阶段 3：用元数据和测试把边界锁住
+### Etapa 3：Bloquee los limites con metadatos y pruebas
 
-1. 保持 `src/operations/registry.ts`、`src/operations/capabilityManifest.ts` 与 `src/cliContracts.ts` 明确描述各自所属层级。
-2. 补充或收紧测试，防止 operation-core metadata 静默漂移回 command-trigger 语义。
-3. 重新校验维护者文档，确保它们不再把 CLI 下一阶段误写成“命令数量增长”。
+1. mantener `src/operations/registry.ts`、`src/operations/capabilityManifest.ts` con `src/cliContracts.ts` Describir claramente los niveles a los que pertenecen.。
+2. Complementar o reforzar las pruebas para evitar operation-core metadata Retroceder silenciosamente command-trigger Semantica。
+3. Vuelva a verificar los documentos del mantenedor para asegurarse de que ya no esten disponibles. CLI La siguiente etapa se escribe erroneamente como "el numero de comandos crece".”。
 
-### 阶段 4：再进入下一波工作
+### Etapa 4：Pasar a la siguiente ola de trabajo
 
-1. packaging / 重型运行时隔离
-2. maintainer-local semantic verification 硬化
-3. selection/export 与 workflow/settings contract 增强
-4. 更广的 CLI/public-surface 决策
+1. packaging / Aislamiento intenso del tiempo de ejecucion
+2. maintainer-local semantic verification Endurecimiento
+3. selection/export con workflow/settings contract Mejora
+4. mas amplio CLI/public-surface Toma de decisiones
 
-这一阶段现在已经成为当前的实际下一波方向。
+Esta etapa ahora se ha convertido en la direccion actual de la proxima ola.。
 
-## 需求
+## Demanda
 
-- R1. 下一批实现必须保持当前阶段顺序：先做 diagram/provider contract layering，再做 packaging/semantic-verification，最后才是更广的 CLI/public-surface 声明。
-- R2. `diagram.generate` 必须继续表示宿主无关 generation，而不是活动文件命令执行本身。
-- R3. Mermaid 保存、artifact 保存、preview 打开、已保存文件重开、auto-fix 与 notice 语义，必须被视作独立的 completion/follow-through 层。
-- R4. 下一批实现必须把这一 follow-through 层显式类型化。只有当某个分支真正变成宿主无关、且可脱离命令上下文独立调用时，才有理由升级为新的 top-level operation ID。
-- R5. registry / capability manifest / contract 元数据必须明确各自描述的是哪一层：core operation 还是 command binding。
-- R6. 添加测试锁定这一分层，防止后续再次漂移。
-- R7. 除非更深层 diagram/provider 重构真的带来必须的对齐调整，否则不要重开已经落地的 write-heavy proof set。
-- R8. 本阶段不新增新的 `obsidian-cli` 子命令。
+- R1. El siguiente lote de implementaciones debe mantener el orden de la etapa actual: hagalo primero diagram/provider contract layering，Hazlo de nuevo packaging/semantic-verification，Finalmente esta el mas amplio. CLI/public-surface Declaracion。
+- R2. `diagram.generate` Debe continuar expresando irrelevancia del anfitrion. generation，En lugar de ejecutar el comando de archivo activo。
+- R3. Mermaid Guardar、artifact Guardar、preview Abrir y volver a abrir archivos guardados、auto-fix con notice La semantica debe considerarse independiente. completion/follow-through Capas。
+- R4. El proximo lote de implementaciones debe incorporar esto follow-through Las capas se escriben explicitamente. Solo cuando una rama realmente se vuelve independiente del host y se puede llamar independientemente del contexto del comando, hay alguna razon para actualizar a la nueva. top-level operation ID。
+- R5. registry / capability manifest / contract Los metadatos deben dejar claro que capa describe cada uno.：core operation Todavia command binding。
+- R6. Agregue una prueba para bloquear esta capa y evitar que se desvie nuevamente。
+- R7. A menos que sea mas profundo diagram/provider La refactorizacion realmente genera ajustes de alineacion necesarios; de lo contrario, no vuelva a abrir lo que ya se ha implementado. write-heavy proof set。
+- R8. No se agregaran nuevos en esta etapa. `obsidian-cli` Subcomandos。
 
-## 成功标准
+## Criterios de exito
 
-- 维护者能够解释清楚：为什么 `diagram.generate` 可以保持 `safe` / `read-only`，而真实出货的 diagram commands 仍然必须是 `requires-active-file` / `write-file`。
-- 下一份实现 PRD 现在可以从已落地的 `followThrough` 契约出发，再判断它是否已经足够，还是未来真的需要更大的导出契约。
-- 仓库文档不再把 CLI 下一阶段写成“命令数量增长”。
+- Los mantenedores pueden explicar por que `diagram.generate` Se puede mantener `safe` / `read-only`，Y el envio real diagram commands Todavia debe ser `requires-active-file` / `write-file`。
+- Proxima implementacion PRD Ahora puedes empezar desde lo ya aterrizado. `followThrough` Comience con el contrato y luego determine si es suficiente o si realmente se necesita un contrato derivado mas grande en el futuro.。
+- Los documentos del almacen ya no CLI La siguiente etapa esta escrita como "El numero de comandos crece”。
 
-## 范围边界
+## Limites del alcance
 
-- 本次规划不新增 `obsidian-cli` 子命令。
-- 本次规划不重开 write-heavy note-processing contract batch。
-- 本次规划不实现 packaging isolation。
-- 本次规划不把 interactive preview/file-save 流程提升为 `safe`。
+- No habra nuevas incorporaciones en este plan. `obsidian-cli` Subcomandos。
+- Este plan no se reabrira write-heavy note-processing contract batch。
+- Este plan no se realizara packaging isolation。
+- Este plan no incluye interactive preview/file-save El proceso se mejora para `safe`。
 
-## 关键决策
+## Decisiones clave
 
-- 目前先保持 top-level operation frame 稳定。
-- 优先引入 typed internal completion/follow-through structure，而不是新增 top-level operation ID。这一偏好现在已经反映在落地实现中。
-- 用 `provider.connection.test` 作为“typed core 与 interactive wrapper 并存”的本地参考模式。
+- Guardalo por ahora top-level operation frame estable。
+- Priorizar la introduccion typed internal completion/follow-through structure，En lugar de agregar nuevos top-level operation ID。Esta preferencia se refleja ahora en la implementacion。
+- uso `provider.connection.test` como“typed core con interactive wrapper Modo de referencia local de "convivencia"。
 
-## 依赖 / 假设
+## Dependencia / Suposiciones
 
-- 当前事实基于 `src/operations/diagramGenerateOperation.ts`、`src/operations/diagramCommandExecution.ts`、`src/operations/diagramCommandHostAdapter.ts`、`src/operations/providerConnectionTestCommandHostAdapter.ts`、`src/operations/registry.ts`、`src/cliContracts.ts` 与 `src/workflowButtons.ts` 的核对。
-- 5 月 4-5 日的 brainstorm 文档仍然有效，应被视作沿袭脉络，而不是要被覆盖掉的旧历史。
-- capability matrix 仍是维护者面对 automation-level truth 时的控制面，应与这份规划保持一致。
+- Los hechos actuales se basan en `src/operations/diagramGenerateOperation.ts`、`src/operations/diagramCommandExecution.ts`、`src/operations/diagramCommandHostAdapter.ts`、`src/operations/providerConnectionTestCommandHostAdapter.ts`、`src/operations/registry.ts`、`src/cliContracts.ts` con `src/workflowButtons.ts` Verificacion de。
+- 5 meses 4-5 japones brainstorm Los documentos siguen siendo validos y deben verse como linaje, no como historia antigua que debe sobrescribirse.。
+- capability matrix Todavia enfrentandonos a los defensores automation-level truth La superficie de control actual debe ser consistente con este plan.。
 
-## 未决问题
+## Cuestiones abiertas
 
-### 延后到实现规划
+### Posponer hasta que se realice la planificacion.
 
-- `diagram.generate` 结果顶层是否还应长期继续保留 `outputPath`、`previewOpened` 这样的兼容字段，还是未来应只保留更明确的 `followThrough` 结构？
-- 哪些 diagram completion 分支最值得先提升为更强的内部 typed execution contract？
-- 在这轮 layering correction 已落地后，selection/export/workflow contract 增强 与 packaging/maintainer verification，哪一个才是下一步更高杠杆的跟进项？
+- `diagram.generate` ¿Deberia conservarse la capa superior de resultados a largo plazo? `outputPath`、`previewOpened` ¿Deberian conservarse estos campos de compatibilidad solo en el futuro? `followThrough` Estructura？
+- ¿Cual diagram completion Lo que mas vale la pena es promover las sucursales a las internas mas fuertes primero. typed execution contract？
+- En esta ronda layering correction Despues del aterrizaje，selection/export/workflow contract Mejora y packaging/maintainer verification，¿Cual es el siguiente elemento de seguimiento con mayor apalancamiento?？
 
-## 下一步
+## Siguiente paso
 
--> 将本文件与任务目录中的 research 纪要作为历史依据，然后从“剩余的 packaging / semantic-verification 收敛缺口”启动下一份实现 PRD。semantic-verification 这一侧现在已经有了已检入的 helper（`npm run verify:diagram-semantics`），所以下一步更高杠杆的跟进应进一步收窄到 packaging 边界证明，以及任何仍然存在的 contract-promotion 决策，除非后续又发现了新的宿主无关边界，才需要重开更深层的 diagram contract 工作。
+-> Combine este archivo con el del directorio de tareas. research Las actas sirven como base historica, y luego del “resto packaging / semantic-verification Brecha de Convergencia” inicia la proxima implementacion PRD。semantic-verification Este lado ahora se ha registrado helper（`npm run verify:diagram-semantics`），Por lo tanto, el proximo seguimiento con mayor apalancamiento deberia limitarse aun mas a packaging Pruebas de limites y cualquier resto contract-promotion Decision: a menos que posteriormente se descubra un nuevo limite independiente del host, es necesario reabrir capas mas profundas. diagram contract trabajo。

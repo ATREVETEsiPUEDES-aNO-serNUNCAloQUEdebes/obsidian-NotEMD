@@ -5,7 +5,7 @@
 
 # Notemd-plugin for Obsidian
 
-[English](./README.md) | [简体中文](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [繁體中文](./README_zh_Hant.md) | [日本語](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
+[English](./README.md) | [Chino simplificado](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [Chino tradicional](./README_zh_Hant.md) | [japones](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
 
 Les dokumentasjon på flere språk: [Språksenter](./docs/i18n/README.md)
 
@@ -377,7 +377,7 @@ Du finner plugininnstillingene via:
   - **Av**: Lar generert Mermaid-utdata være urørt med mindre du kjører `Batch Mermaid Fix` manuelt eller legger det til i en tilpasset arbeidsflyt.
 - **Output Language**: Velg ønsket utdata-språk for oppgavene "Generate from Title" og "Batch Generate from Title".
   - **English (standard)**: Prompts behandles og utdata leveres på engelsk.
-  - **Andre språk**: LLM-en instrueres til å gjøre resonneringen på engelsk, men levere den endelige dokumentasjonen på språket du velger, for eksempel Español, Français, 简体中文, 繁體中文, العربية eller हिन्दी.
+  - **Andre språk**: LLM-en instrueres til å gjøre resonneringen på engelsk, men levere den endelige dokumentasjonen på språket du velger, for eksempel Español, Français, Chino simplificado, Chino tradicional, العربية eller हिन्दी.
 - **Change Prompt Word**:
   - **Change Prompt Word**: Lar deg endre prompt-ordet for en bestemt oppgave.
   - **Custom Prompt Word**: Skriv inn ditt tilpassede prompt-ord for oppgaven.

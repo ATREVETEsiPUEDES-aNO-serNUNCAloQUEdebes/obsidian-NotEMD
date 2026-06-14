@@ -133,7 +133,7 @@ const LABELS_BY_LOCALE: Record<string, HtmlRendererLabels> = {
         series: '系列',
         sourceLanguage: '入力言語',
         outputLanguage: '出力言語',
-        noStructuralNodes: 'この図では構造ノードが生成されませんでした。'
+        noStructuralNodes: 'この図では構造ノードが生 成されませんでした。'
     },
     ko: {
         structure: '구조',
@@ -267,7 +267,7 @@ const LABELS_BY_LOCALE: Record<string, HtmlRendererLabels> = {
     },
     'zh-cn': {
         structure: '结构',
-        relationships: '关系',
+        relationships: '关 系',
         callouts: '提示',
         evidence: '依据',
         data: '数据',
@@ -276,7 +276,7 @@ const LABELS_BY_LOCALE: Record<string, HtmlRendererLabels> = {
         series: '系列',
         sourceLanguage: '源语言',
         outputLanguage: '输出语言',
-        noStructuralNodes: '此图形未生成结构节点。'
+        noStructuralNodes: '此图形未生 成结构节点。'
     },
     'zh-tw': {
         structure: '結構',

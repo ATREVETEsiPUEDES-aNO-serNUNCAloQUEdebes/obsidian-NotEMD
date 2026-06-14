@@ -188,7 +188,7 @@ PRD requirement status on current `main`:
 | R3 no regression when retrieval disabled | Landed | Guarded by optional settings and integration tests |
 | R4 settings-driven / conservative defaults | Landed | Current settings path is user-visible and opt-in, with default file/folder source paths plus task-scoped overrides |
 | R5 comparison research against candidate OSS | Landed | Recorded under `.trellis/tasks/05-19-local-kb-retrieval-chapter-split-stage-b2cd/research/` |
-| R6 add `章节拆分` action | Landed | Command/sidebar wiring exists on current main |
+| R6 add `Division de capitulos` action | Landed | Command/sidebar wiring exists on current main |
 | R7 heading-based split + TOC artifact | Landed | `src/chapterSplit.ts` plus tests |
 | R8 no regression to packaging / semantic truth | Landed | Build/audit still prove `main.js`-only shipping |
 | R9 tests/docs/progress artifacts compare current code to prior plans | Landed, and now deeper | This document, the matrix updates, and `verify:local-kb-fixtures` together cover narrative progress alignment plus a bounded offline retrieval-quality regression check |

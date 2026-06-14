@@ -5,7 +5,7 @@
 
 # Obsidian için Notemd Eklentisi
 
-[English](./README.md) | [简体中文](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [繁體中文](./README_zh_Hant.md) | [日本語](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
+[English](./README.md) | [Chino simplificado](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [Chino tradicional](./README_zh_Hant.md) | [japones](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
 
 Daha fazla dilde belgeler için: [Dil Merkezi](./docs/i18n/README.md)
 
@@ -377,7 +377,7 @@ Eklenti ayarlarına erişim:
   - **Devre Dışı**: `Batch Mermaid Fix` elle çalıştırılana veya özel bir iş akışına eklenene kadar üretilen Mermaid çıktısını olduğu gibi bırakır.
 - **Output Language**: "Generate from Title" ve "Batch Generate from Title" görevleri için istenen çıktı dilini seçin.
   - **English (Varsayılan)**: İstemler İngilizce işlenir ve çıktı İngilizce üretilir.
-  - **Diğer Diller**: LLM'den akıl yürütmeyi İngilizce yapması, ancak son dokümantasyonu seçtiğiniz dilde, örneğin Español, Français, 简体中文, 繁體中文, العربية veya हिन्दी olarak üretmesi istenir.
+  - **Diğer Diller**: LLM'den akıl yürütmeyi İngilizce yapması, ancak son dokümantasyonu seçtiğiniz dilde, örneğin Español, Français, Chino simplificado, Chino tradicional, العربية veya हिन्दी olarak üretmesi istenir.
 - **Change Prompt Word**:
   - **Change Prompt Word**: Belirli bir görev için prompt sözcüğünü değiştirmenize olanak tanır.
   - **Custom Prompt Word**: İlgili görev için kendi prompt sözcüğünüzü girin.

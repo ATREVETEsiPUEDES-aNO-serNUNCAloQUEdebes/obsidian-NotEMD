@@ -1,150 +1,150 @@
-# Notemd Note-Processing Registry Hardening 实施计划
+# Notemd Note-Processing Registry Hardening Plan de implementacion
 
-> **给代理执行者：** 必须使用 `superpowers:subagent-driven-development`（推荐）或 `superpowers:executing-plans` 逐任务执行本计划。步骤继续使用复选框 `- [ ]` 语法跟踪。
+> **Al agente albacea：** Debe usar `superpowers:subagent-driven-development`（Recomendado) o `superpowers:executing-plans` Ejecute este plan tarea por tarea. Pasos para seguir usando casillas de verificacion `- [ ]` Seguimiento gramatical。
 
-**目标：** 将已落地的 note-processing host adapter 推进到 registry/capability/contract 层，并继续收紧 translation/extraction utility 的宿主副作用边界。
+**Metas：** Pon lo que ha aterrizado note-processing host adapter Avance a registry/capability/contract Capa y continua apretando. translation/extraction utility Limites de los efectos secundarios del huesped。
 
-**架构：** 保持四层分离：trigger、host adapter、operation、contract。本计划不再重复做 `src/main.ts` 包装搬运，而是先把已抽出的 note-processing 流程纳入 operation registry，再继续把 `ProgressModal`、`Notice`、vault 写入等宿主副作用从 utility core 中显式化。
+**Arquitectura：** Manten las cuatro capas separadas.：trigger、host adapter、operation、contract。Este plan no se volvera a repetir `src/main.ts` Para embalaje y transporte, primero saque el note-processing Inclusion de procesos operation registry，Continuar `ProgressModal`、`Notice`、vault Escritura y otros efectos secundarios del huesped utility core Hazlo explicito。
 
-**技术栈：** TypeScript、Obsidian Plugin API、Jest、Markdown 文档、官方 `obsidian` CLI、capability manifest / invocation contract
-
----
-
-## 进度对齐更新（2026-05-08）
-
-这份计划现在主要是历史记录。核心 hardening 切片已经在 `main` 上落地。
-
-状态快照：
-
-- 任务 1（note-processing registry onboarding）：已落地。相关 operation ID 与 binding 已进入 `src/operations/registry.ts`，并由 `src/tests/operationsRegistry.test.ts`、`src/tests/cliCapabilityManifest.test.ts`、`src/tests/cliContracts.test.ts` 锁定。
-- 任务 3（`src/main.ts` 剩余 host-adapter 抽离顺序）：针对原计划指定家族已基本落地。duplicate cleanup、Mermaid batch fix 与 formula-fix 流程现在通过 `src/operations/utilityCommandHostAdapter.ts` 路由。
-- 任务 2（utility side-effect tightening）：已部分超出原范围并落地。family-local result object 与 host-owned notice 的覆盖范围已经比原计划基线更广。
-
-真实剩余缺口：
-
-1. 不应再把 wrapper 抽离作为主线主题重开，优先保持已落地 host-adapter 边界稳定。
-2. 持续保持 packaging/semantic-verification 收敛与当前单入口 packaging 真值一致。
-3. workflow/settings 与 selection/export 的 contract 提升，应在 packaging 边界稳定约束下推进。
+**Pila de tecnologia：** TypeScript、Obsidian Plugin API、Jest、Markdown Documentos oficiales `obsidian` CLI、capability manifest / invocation contract
 
 ---
 
-## 当前基线
+## Actualizacion de alineacion de progreso（2026-05-08）
 
-- `src/operations/noteProcessingCommandHostAdapter.ts` 已承接 process / generate / research / translate / extract 系列 wrapper。
-- `src/main.ts` 中翻译与抽取 wrapper 已瘦身为 delegator。
-- `src/fileUtils.ts` 与 `src/extractOriginalText.ts` 已接受窄 runtime context，而不是具体 `NotemdPlugin` 类。
-- 草案编写时的缺口描述：剩余问题已从 wrapper 抽离转向 registry onboarding 与 utility side-effect 收口。该缺口目前已大部分关闭；见上方 2026-05-08 对齐更新。
+Este plan es ahora principalmente un record historico. nucleo hardening La rebanada ya esta adentro `main` Arriba y abajo。
 
-### 任务 1：Note-Processing Operation Registry Onboarding
+Instantanea de estado：
 
-**文件：**
-- 修改：`src/operations/registry.ts`
-- 修改：`src/operations/capabilityManifest.ts`
-- 修改：`src/cliContracts.ts`
-- 修改：`src/workflowButtons.ts`
-- 测试：`src/tests/operationsRegistry.test.ts`
-- 测试：按需要补充 CLI contract / capability-manifest 相关测试
+- Tareas 1（note-processing registry onboarding）：Ha aterrizado. Relacionado operation ID Con binding Entro `src/operations/registry.ts`，Y por `src/tests/operationsRegistry.test.ts`、`src/tests/cliCapabilityManifest.test.ts`、`src/tests/cliContracts.test.ts` Bloqueo。
+- Tareas 3（`src/main.ts` Restante host-adapter Orden de extraccion): Las familias designadas en el plan original basicamente se han implementado。duplicate cleanup、Mermaid batch fix Con formula-fix El proceso ahora pasa. `src/operations/utilityCommandHostAdapter.ts` Enrutamiento。
+- Tareas 2（utility side-effect tightening）：Supero parcialmente el rango original y aterrizo.。family-local result object Con host-owned notice La cobertura ya es mas amplia que la base de referencia planificada originalmente。
 
-- [ ] **步骤 1：先写失败测试，定义 note-processing operation 元数据**
-明确 `translate-current-file`、`batch-translate-folder`、`extract-concepts-current`、`extract-concepts-folder`、`extract-original-text`、`extract-concepts-and-generate-titles` 的 `automationLevel`、`requiredContext`、`sideEffectClass` 与 command binding。
+Brecha real restante：
 
-- [ ] **步骤 2：运行聚焦测试确认 registry 缺口存在**
-执行：`npx jest --runInBand --config /tmp/notemd-worktree-jest.cjs src/tests/operationsRegistry.test.ts`
-预期：因缺少 note-processing operation definitions 而 FAIL。
+1. Ya no deberia wrapper Se reabrira el tema del Destacamento y se dara prioridad a mantenerlo implementado. host-adapter Estabilidad fronteriza。
+2. Sigue asi packaging/semantic-verification Convergencia y entrada unica actual packaging Valor de verdad consistente。
+3. workflow/settings Con selection/export de contract La promocion debe estar en packaging Avance bajo limitaciones de estabilidad fronteriza。
 
-- [ ] **步骤 3：以最小 schema 落地 registry**
-先建最小输入/结果 schema。对 active-file 依赖命令优先标记 `requires-active-file`，不要提前宣告为 `safe`。
+---
 
-- [ ] **步骤 4：更新 capability manifest / invocation contract 导出**
-保证新增 operation 只暴露真实可解释的 bindings；legacy alias 保留兼容，但默认不进入 capability manifest。
+## Linea de base actual
 
-- [ ] **步骤 5：重跑聚焦测试**
-执行：`npx jest --runInBand --config /tmp/notemd-worktree-jest.cjs src/tests/operationsRegistry.test.ts`
-预期：PASS。
+- `src/operations/noteProcessingCommandHostAdapter.ts` Aceptado process / generate / research / translate / extract Serie wrapper。
+- `src/main.ts` Traduccion y extraccion de chino. wrapper Ha adelgazado hasta delegator。
+- `src/fileUtils.ts` Con `src/extractOriginalText.ts` Aceptado estrecho runtime context，En lugar de ser especifico `NotemdPlugin` clase。
+- Descripcion de las lagunas en la preparacion del borrador: las cuestiones restantes se han eliminado del wrapper Direccion extraible registry onboarding Con utility side-effect Cierra la boca. La brecha ya esta practicamente cerrada; ver arriba 2026-05-08 Actualizaciones de alineacion。
 
-### 任务 2：Translation And Extraction Utility Side-Effect Tightening
+### Tareas 1：Note-Processing Operation Registry Onboarding
 
-**文件：**
-- 修改：`src/translate.ts`
-- 修改：`src/fileUtils.ts`
-- 修改：`src/extractOriginalText.ts`
-- 修改：`src/operations/noteProcessingCommandHostAdapter.ts`
-- 测试：`src/tests/noteProcessingCommandHostAdapter.test.ts`
-- 测试：如签名变化则补 `src/translate.ts` / `src/extractOriginalText.ts` 聚焦测试
+**Documentacion：**
+- Modificacion：`src/operations/registry.ts`
+- Modificacion：`src/operations/capabilityManifest.ts`
+- Modificacion：`src/cliContracts.ts`
+- Modificacion：`src/workflowButtons.ts`
+- Pruebas：`src/tests/operationsRegistry.test.ts`
+- Prueba: reponer segun sea necesario CLI contract / capability-manifest Pruebas relacionadas
 
-- [ ] **步骤 1：先写失败测试，锁定无 UI 路径**
-为 batch translation 的 reporter 注入、notice shaping 或结果对象边界补测试，避免继续把 `ProgressModal` 当成唯一执行器。
+- [ ] **Pasos 1：Escriba primero la prueba fallida y definala. note-processing operation Metadatos**
+Sea claro `translate-current-file`、`batch-translate-folder`、`extract-concepts-current`、`extract-concepts-folder`、`extract-original-text`、`extract-concepts-and-generate-titles` de `automationLevel`、`requiredContext`、`sideEffectClass` Con command binding。
 
-- [ ] **步骤 2：运行聚焦测试确认当前 utility 耦合**
-执行：`npx jest --runInBand --config /tmp/notemd-worktree-jest.cjs src/tests/noteProcessingCommandHostAdapter.test.ts`
-预期：因新增的 host-effect 边界断言而 FAIL。
+- [ ] **Pasos 2：Ejecute la prueba de enfoque para confirmar. registry Existe una brecha**
+Ejecucion：`npx jest --runInBand --config /tmp/notemd-worktree-jest.cjs src/tests/operationsRegistry.test.ts`
+Expectativa: por falta de note-processing operation definitions y FAIL。
 
-- [ ] **步骤 3：实现最小 utility 收口**
-把 reporter/notice/file-write 影响拆成更显式的 host choice 或结果对象；不要一次性把 utility 全部重写成 service 层。
+- [ ] **Pasos 3：Con minimo schema Aterrizaje registry**
+Cree primero la entrada minima/Resultados schema。Derecha active-file Marcado de prioridad del comando de dependencia `requires-active-file`，No te anuncie con antelacion `safe`。
 
-- [ ] **步骤 4：回填组合路径回归**
-确保 `extract-concepts-and-generate-titles` 继续复用同一 busy-state 语义，且 batch generation 强制走配置中的概念目录。
+- [ ] **Pasos 4：Actualizacion capability manifest / invocation contract Exportar**
+Nuevas incorporaciones garantizadas operation Exponer solo lo que es verdadero y explicable bindings；legacy alias Sigue siendo compatible, pero no entres por defecto capability manifest。
 
-- [ ] **步骤 5：重跑聚焦测试**
-执行：`npx jest --runInBand --config /tmp/notemd-worktree-jest.cjs src/tests/noteProcessingCommandHostAdapter.test.ts src/tests/noteProcessingCommands.test.ts`
-预期：PASS。
+- [ ] **Pasos 5：Vuelva a ejecutar la prueba de enfoque**
+Ejecucion：`npx jest --runInBand --config /tmp/notemd-worktree-jest.cjs src/tests/operationsRegistry.test.ts`
+Expectativas：PASS。
 
-### 任务 3：Remaining `src/main.ts` Host-Adapter Extraction
+### Tareas 2：Translation And Extraction Utility Side-Effect Tightening
 
-**文件：**
-- 修改：`src/main.ts`
-- 修改：`src/operations/`（按需新建或扩展 host-adapter 模块）
-- 测试：补充 command-surface delegation 聚焦测试
+**Documentacion：**
+- Modificacion：`src/translate.ts`
+- Modificacion：`src/fileUtils.ts`
+- Modificacion：`src/extractOriginalText.ts`
+- Modificacion：`src/operations/noteProcessingCommandHostAdapter.ts`
+- Pruebas：`src/tests/noteProcessingCommandHostAdapter.test.ts`
+- Prueba: Si la firma cambia, inventa `src/translate.ts` / `src/extractOriginalText.ts` Pruebas enfocadas
 
-- [ ] **步骤 1：选择下一批高价值命令**
-优先顺序固定为 duplicate cleanup -> batch Mermaid fix -> formula fix。不要同时开多条跨文件大改。
+- [ ] **Pasos 1：Escriba primero la prueba fallida, sin bloqueo UI Camino**
+para batch translation de reporter Inyectar、notice shaping O realice pruebas suplementarias de limites en el objeto resultante para evitar continuar `ProgressModal` Como unico albacea。
 
-- [ ] **步骤 2：先写 delegator 测试**
-为选定命令补“只调用 host adapter，不直接执行 utility”的 command-surface 测试。
+- [ ] **Pasos 2：Ejecute la prueba de enfoque para confirmar la corriente. utility Acoplamiento**
+Ejecucion：`npx jest --runInBand --config /tmp/notemd-worktree-jest.cjs src/tests/noteProcessingCommandHostAdapter.test.ts`
+Expectativa: Debido a la nueva host-effect Afirmaciones de limites FAIL。
 
-- [ ] **步骤 3：提取最小 host adapter**
-沿用现有 pattern：busy guard、reporter lifecycle、notice/error-log 编排留在 host adapter；utility core 保持可复用。
+- [ ] **Pasos 3：Lograr el minimo utility De cerca**
+poner reporter/notice/file-write Divida el impacto en mas explicitos. host choice O el objeto resultado; no lo pongas todo de una vez utility Reescribe todo como service capas。
 
-- [ ] **步骤 4：逐个回归**
-每抽完一类命令，就重跑对应聚焦测试，不要等所有命令抽完后一次性找回归。
+- [ ] **Pasos 4：Regresion de ruta de combinacion de relleno**
+Asegurate `extract-concepts-and-generate-titles` Continuar reutilizando lo mismo busy-state Semantica y batch generation Fuerce la toma del directorio de conceptos en la configuracion.。
 
-### 任务 4：Mainline Sync And Doc Alignment
+- [ ] **Pasos 5：Vuelva a ejecutar la prueba de enfoque**
+Ejecucion：`npx jest --runInBand --config /tmp/notemd-worktree-jest.cjs src/tests/noteProcessingCommandHostAdapter.test.ts src/tests/noteProcessingCommands.test.ts`
+Expectativas：PASS。
 
-**文件：**
-- 修改：`docs/architecture.md`
-- 修改：`docs/architecture.zh-CN.md`
-- 修改：`docs/brainstorms/2026-05-02-progress-audit-and-next-direction.md`
-- 修改：`docs/brainstorms/2026-05-02-progress-audit-and-next-direction.zh-CN.md`
-- 修改：`docs/brainstorms/2026-05-05-cli-mainline-progress-sync-and-next-phase-requirements.md`
-- 修改：`docs/brainstorms/2026-05-05-cli-mainline-progress-sync-and-next-phase-requirements.zh-CN.md`
+### Tareas 3：Remaining `src/main.ts` Host-Adapter Extraction
 
-- [ ] **步骤 1：逐段对齐文档**
-明确哪些承诺已由代码兑现，哪些缺口已转移，哪些旧说法必须删除。
+**Documentacion：**
+- Modificacion：`src/main.ts`
+- Modificacion：`src/operations/`（Cree o amplie segun sea necesario host-adapter Modulos）
+- Pruebas: suplementarias command-surface delegation Pruebas enfocadas
 
-- [ ] **步骤 2：写清后续方向**
-历史草案方向：短期 registry onboarding；中期 utility side-effect 收口与剩余 host-adapter 抽离；长期再谈 richer CLI transport。
+- [ ] **Pasos 1：Seleccione su proximo lote de comandos de alto valor**
+El orden de prioridad se fija como duplicate cleanup -> batch Mermaid fix -> formula fix。No realices multiples cambios entre archivos al mismo tiempo。
 
-- [ ] **步骤 3：保持双语同步**
-每次修改 EN/ZH 同步完成，避免只更新单语版本。
+- [ ] **Pasos 2：Escribe primero delegator Pruebas**
+Agregue "solo llamada" para el comando seleccionado host adapter，No ejecutado directamente utility”de command-surface Pruebas。
 
-## 短中长期推进顺序
+- [ ] **Pasos 3：Extrae el minimo host adapter**
+Usar existente pattern：busy guard、reporter lifecycle、notice/error-log Queda la coreografia host adapter；utility core Mantengalo reutilizable。
 
-**短期（本批次后立即执行）**
-- 维持已落地 note-processing + utility registry 语义稳定
-- 在持续重构中保持 result-shape 与 host-effect 边界不回退
-- 持续保持 clean-worktree mainline 同步纪律
+- [ ] **Pasos 4：Regresar uno por uno**
+Despues de extraer cada tipo de comando, vuelva a ejecutar la prueba de enfoque correspondiente. No espere a que se extraigan todos los comandos y recuperelos todos a la vez.。
 
-**中期（2-6 周）**
-- packaging / semantic-verification convergence 硬化
-- 基于 packaging 边界推进 workflow/settings contract 收敛
-- 维护者 helper、文档与 release 检查口径一致性强化
+### Tareas 4：Mainline Sync And Doc Alignment
 
-**长期（6 周以上）**
-- richer CLI transport 评估（file bridge / local IPC / REST）
-- 更细粒度的 operation versioning
-- write-heavy automation policy 与 rollback semantics
+**Documentacion：**
+- Modificacion：`docs/architecture.md`
+- Modificacion：`docs/architecture.zh-CN.md`
+- Modificacion：`docs/brainstorms/2026-05-02-progress-audit-and-next-direction.md`
+- Modificacion：`docs/brainstorms/2026-05-02-progress-audit-and-next-direction.zh-CN.md`
+- Modificacion：`docs/brainstorms/2026-05-05-cli-mainline-progress-sync-and-next-phase-requirements.md`
+- Modificacion：`docs/brainstorms/2026-05-05-cli-mainline-progress-sync-and-next-phase-requirements.zh-CN.md`
 
-## 验证
+- [ ] **Pasos 1：Alinear documentos parrafo por parrafo**
+Deje en claro que promesas se han cumplido mediante el codigo, que lagunas se han solucionado y que afirmaciones antiguas deben eliminarse.。
+
+- [ ] **Pasos 2：Escriba la direccion de seguimiento.**
+Direccion del Draft Historico: Corto Plazo registry onboarding；A medio plazo utility side-effect Cierre y resto host-adapter Alejate; hablar de nuevo a largo plazo richer CLI transport。
+
+- [ ] **Pasos 3：Mantengase bilingue sincronizado**
+Cada modificacion EN/ZH Se completa la sincronizacion para evitar actualizar solo la version monolingue.。
+
+## Secuencia de avance a corto, mediano y largo plazo
+
+**Corto plazo (implementado inmediatamente despues de este lote)）**
+- Mantener la implementacion note-processing + utility registry Estabilidad semantica
+- Mantenerse en refactorizacion continua result-shape Con host-effect Los limites no retroceden
+- Sigue asi clean-worktree mainline Disciplina sincronica
+
+**A medio plazo（2-6 Semana）**
+- packaging / semantic-verification convergence Endurecimiento
+- Basado en packaging Superacion de limites workflow/settings contract Convergencia
+- mantenedor helper、Documentacion y release Mejorar la coherencia del calibre de inspeccion.
+
+**Largo plazo（6 Mas de 16 semanas）**
+- richer CLI transport Evaluacion（file bridge / local IPC / REST）
+- Mas granular operation versioning
+- write-heavy automation policy Con rollback semantics
+
+## Verificacion
 
 - [ ] `npm run build`
 - [ ] `npx jest --runInBand --config /tmp/notemd-worktree-jest.cjs`
@@ -153,13 +153,13 @@
 - [ ] `git diff --check`
 - [ ] `git status --short` returns clean before final push
 
-## 风险与控制
+## Riesgos y controles
 
-- **风险：** 把 active-file 依赖错误标记为 `safe`。
-  **控制：** 先标真实 `requiredContext`，再谈 CLI 暴露。
+- **Riesgos：** poner active-file Errores de dependencia marcados como `safe`。
+  **controlar：** Marque la verdad primero `requiredContext`，Habla de nuevo CLI expuesto。
 
-- **风险：** utility side-effect 收口时破坏现有 Notice / modal 体验。
-  **控制：** host adapter 持续持有 UI 整形职责，utility 只收敛边界，不直接删行为。
+- **Riesgos：** utility side-effect Destruir la situacion existente al cerrar Notice / modal Experiencia。
+  **controlar：** host adapter Continue sosteniendo UI Responsabilidades de la cirugia plastica，utility Solo converja limites, no elimine comportamientos directamente。
 
-- **风险：** 再次只做 wrapper 搬运，registry 仍然空缺。
-  **控制：** 本计划把 registry onboarding 排在第一任务。
+- **Riesgos：** Hazlo de nuevo wrapper Transporte，registry Aun vacante。
+  **controlar：** Este plan registry onboarding Priorizar tareas。

@@ -1,25 +1,25 @@
-# 回归基线
+# Regreso a la linea de base
 
-此目录保存高风险改动前后的可复现证据。
+Este directorio almacena evidencia reproducible antes y despues de cambios de alto riesgo.。
 
-## 标准工作流
+## Flujo de trabajo estandar
 
-1. 采集基线：
+1. Recopilar la linea de base：
 ```bash
 npm run regression:language-baseline
 ```
 
-2. 实施改动。
+2. Implementar cambios。
 
-3. 与最新基线对比：
+3. Comparacion con la ultima linea de base：
 ```bash
 npm run regression:language-compare
 ```
 
-4. 如果 compare 失败，必须先修复回归，再允许合并。
+4. Si compare Fallo, la regresion debe corregirse antes de permitir la fusion.。
 
-## 约定
+## Acuerdo
 
-- 使用按日期命名的目录：`YYYY-MM-DD-<topic>`。
-- 在有必要时，同时保留命令输出和退出码。
-- 不要覆盖历史基线日志；新增文件或创建新的日期目录。
+- Utilice directorios con nombres de fechas：`YYYY-MM-DD-<topic>`。
+- Cuando sea necesario, conserve tanto la salida del comando como los codigos de salida.。
+- No sobrescriba los registros historicos de referencia; agregar nuevos archivos o crear nuevos directorios de fechas。

@@ -33,7 +33,7 @@ describe('README i18n alignment', () => {
 
     test.each(i18nReadmes)('%s has sponsor line', (filename) => {
         const content = fs.readFileSync(path.join(repoRoot, filename), 'utf8');
-        expect(content).toMatch(/Give a Star on GitHub|给 GitHub 加星|給 GitHub 加星|ko-fi\.com\/jacobinwwey/);
+        expect(content).toMatch(/Give a Star on GitHub|dar GitHub Agrega estrellas|dar GitHub Agrega estrellas|ko-fi\.com\/jacobinwwey/);
     });
 
     test.each(i18nReadmes)('%s has ko-fi link', (filename) => {

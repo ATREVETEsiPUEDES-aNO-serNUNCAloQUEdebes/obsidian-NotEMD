@@ -5,42 +5,42 @@ topic: provider-settings-simplification-and-model-discovery-plan
 canonical: true
 ---
 
-# Provider Settings Simplification 与 Model Discovery 方案
+# Provider Settings Simplification con Model Discovery Planificar
 
-## 1. 为什么现在必须开这条线
+## 1. ¿Por que es necesaria esta linea ahora?
 
-当前仓库已经具备较宽的 provider runtime 覆盖，但 settings control plane 并没有跟着这部分增长一起收敛。
+El almacen actual ya cuenta con una amplia provider runtime Cubierto, pero settings control plane No convergio con este crecimiento.。
 
-这已经不是“体验还能凑合”的问题，而是实质性的架构问题：
+Ya no se trata de una cuestion de “la experiencia simplemente esta bien”, sino de un problema arquitectonico sustancial.：
 
-1. 当前 provider runtime 宽度已经不再适合继续容忍字段级硬编码 UI 逻辑；
-2. 用户已经明确要求 provider settings 做 core-vs-advanced 切分；
-3. 用户也明确要求模型发现，但前提是它必须保持 lightweight、backward-compatible 且在能力边界上诚实。
+1. actual provider runtime El ancho ya no es adecuado para seguir tolerando la codificacion a nivel de campo UI Logica；
+2. El usuario ha solicitado claramente provider settings hacer core-vs-advanced Segmentacion；
+3. Los usuarios tambien requieren explicitamente el descubrimiento del modelo, pero solo si permanece lightweight、backward-compatible Sea honesto dentro de los limites de sus capacidades.。
 
-本文用于把这条线的具体实现方案落盘。
+Este articulo sirve para poner en el mercado el plan de implantacion especifico de esta linea.。
 
-## 2. 当前代码真值
+## 2. Valor de verdad del codigo actual
 
-### 2.1 Settings 渲染仍是硬编码
+### 2.1 Settings El renderizado todavia esta codificado
 
-`src/ui/NotemdSettingTab.ts` 当前仍通过直接分支来决定 provider 字段渲染：
+`src/ui/NotemdSettingTab.ts` Actualmente todavia determinado por sucursales directas. provider Representacion de campo：
 
-1. API key 按 `apiKeyMode` 决定是否显示；
-2. `baseUrl`、`model`、`temperature` 直接渲染；
-3. `maxOutputTokens` 只有在 developer mode 开启或已有持久化 override 时才渲染；
-4. `topP` / `reasoningEffort` 仅对 OpenAI-compatible provider 渲染；
-5. `thinkingEnabled` 仅对 `DeepSeek` 渲染；
-6. `apiVersion` 仅对 `Azure OpenAI` 渲染。
+1. API key Presione `apiKeyMode` Decide si mostrar；
+2. `baseUrl`、`model`、`temperature` Representacion directa；
+3. `maxOutputTokens` Solo si developer mode La persistencia esta habilitada o ya existe. override Renderizar solo cuando；
+4. `topP` / `reasoningEffort` Solo para OpenAI-compatible provider Representacion；
+5. `thinkingEnabled` Solo para `DeepSeek` Representacion；
+6. `apiVersion` Solo para `Azure OpenAI` Representacion。
 
-这在运行上没问题，但在结构上很弱：
+Esto esta bien desde el punto de vista operativo, pero estructuralmente debil.：
 
-1. 没有可复用的字段 taxonomy；
-2. 没有共享的 advanced disclosure 模型；
-3. 每新增或调整一个 provider，settings 文件都会继续膨胀，而不是 provider schema 增长。
+1. No hay campos reutilizables taxonomy；
+2. Nada compartido advanced disclosure modelo；
+3. Cada vez que se agrega o ajusta uno nuevo provider，settings Los archivos seguiran expandiendose en lugar de provider schema Crecimiento。
 
-### 2.2 Provider metadata 目前偏 runtime，不偏 UI
+### 2.2 Provider metadata Actualmente parcial runtime，Imparcialidad UI
 
-`src/llmProviders.ts` 当前暴露的是：
+`src/llmProviders.ts` Lo que actualmente se expone es：
 
 1. provider name；
 2. category；
@@ -50,400 +50,400 @@ canonical: true
 6. description/setup hint；
 7. default config。
 
-它当前还没有暴露：
+Actualmente no esta expuesto：
 
-1. 字段可见性分组；
-2. core / contextual / advanced / developer-only 分类；
-3. model discovery capability 元数据；
-4. provider-specific 的 discovery endpoint family 或 fallback 顺序；
-5. 对刻意保持 manual-first 的预设，允许附带可选 disable reason。
+1. Agrupacion de visibilidad de campo.；
+2. core / contextual / advanced / developer-only Clasificacion；
+3. model discovery capability Metadatos；
+4. provider-specific de discovery endpoint family o fallback Secuencia；
+5. Sea intencional al mantener manual-first El valor predeterminado permite opcional disable reason。
 
-### 2.3 Config 形态兼容性好，但过于扁平，无法驱动更强的 UI
+### 2.3 Config Buena compatibilidad morfologica, pero demasiado plana para conducir con mas fuerza. UI
 
-`src/types.ts` 中的 `LLMProviderConfig` 仍是扁平结构：
+`src/types.ts` en `LLMProviderConfig` Sigue siendo una estructura plana：
 
 1. `apiKey`
 2. `baseUrl`
 3. `model`
 4. `temperature`
-5. 可选 `topP`
-6. 可选 `reasoningEffort`
-7. 可选 `thinkingEnabled`
-8. 可选 `maxOutputTokens`
-9. 可选 `localOnly`
-10. 可选 `apiVersion`
+5. Opcional `topP`
+6. Opcional `reasoningEffort`
+7. Opcional `thinkingEnabled`
+8. Opcional `maxOutputTokens`
+9. Opcional `localOnly`
+10. Opcional `apiVersion`
 
-这对以下目标是有利的：
+Esto es beneficioso para los siguientes objetivos.：
 
-1. `data.json` 向后兼容；
-2. import/export 稳定；
-3. 保持 `model` 作为唯一持久化 source-of-truth 字符串。
+1. `data.json` Compatibilidad con versiones anteriores；
+2. import/export Estable；
+3. mantener `model` Como unica persistencia source-of-truth cuerda。
 
-但它对以下目标是不利的：
+Pero es perjudicial para los siguientes objetivos：
 
-1. 推导 advanced auto-expand 逻辑；
-2. 在不新增元数据层的前提下表达 provider-specific 字段分组。
+1. Derivacion advanced auto-expand Logica；
+2. Express sin agregar una nueva capa de metadatos provider-specific Agrupacion de campos。
 
-### 2.4 Model discovery 的基础已不再只是局部 helper
+### 2.4 Model discovery La base de helper
 
-`src/llmUtils.ts` 已有一些可复用基础：
+`src/llmUtils.ts` Ya existen algunas bases reutilizables：
 
 1. OpenAI-compatible base-URL normalization；
 2. `apiTestMode=models-then-chat`；
-3. connection test 中的 `GET /models` 探测。
+3. connection test en `GET /models` Deteccion。
 
-这意味着 runtime 已经知道一些必要语义，模型发现并不是从零开始。
+Esto significa runtime Ya conozco algunas semanticas necesarias y el descubrimiento de modelos no comienza desde cero.。
 
-但仍需要持续显式维护的真值是：
+Pero un valor de verdad que todavia requiere un mantenimiento explicito y continuo es：
 
-1. discovery 行为必须继续与 runtime/provider-family 语义对齐；
-2. 瞬时 discovery hint 必须继续与持久化 provider state 分离；
-3. discovered-model token autofill 的真实语义必须在 UI 与文档层保持诚实；
-4. 不能回退到 provider-name-only 的 ad hoc 分支。
+1. discovery El comportamiento debe continuar con runtime/provider-family Alineacion semantica；
+2. Instantaneo discovery hint Debe continuar y persistir provider state Separacion；
+3. discovered-model token autofill La verdadera semantica de debe estar en UI Sea honesto con la capa de documentacion；
+4. No puedo volver a provider-name-only de ad hoc sucursal。
 
-## 3. 相对当前仓库的需求状态
+## 3. Estado de la demanda en relacion con el almacen actual.
 
-| Requirement | 当前状态 | 结论 |
+| Requirement | Estado actual | Conclusion |
 |---|---|---|
-| 默认仅显示 required/default-visible 字段 | 已落地 | 当前 main 已通过共享字段分组元数据渲染 provider settings，并默认展示 core controls |
-| 保持 `model` 在默认可见面 | 当前已满足 | 重构时必须保留 |
-| 次级调优项收入 advanced settings | 已落地 | 次级调优项现已收入显式 advanced disclosure |
-| 持久化 advanced 值存在时自动展开 | 已落地 | 当前实现会根据持久化 provider override 派生展开状态 |
-| selective reuse Cherry Studio | 已以有界形态落地 | 已落地实现复用了 discovery 策略思路，但没有照搬持久化 provider-model catalog |
-| 模型发现不能阻断手动配置 | 已落地 | discovery 是 additive/transient 的，手动 `model` 输入仍是持久化真值 |
+| Solo se muestra de forma predeterminada required/default-visible Campos | Ya implementado | actual main Representacion de metadatos agrupados por campos compartidos. provider settings，Y mostrar por defecto core controls |
+| mantener `model` Visible por defecto | Actualmente satisfecho | Debe conservarse al refactorizar |
+| Ingresos por partidas secundarias de optimizacion advanced settings | Ya implementado | Los elementos de ajuste secundarios ahora se incluyen explicitamente advanced disclosure |
+| Persistencia advanced Expandir automaticamente cuando exista valor | Ya implementado | La implementacion actual se basara en la perseverancia. provider override Derivar estado expandido |
+| selective reuse Cherry Studio | Ha aterrizado de forma acotada | Implementado y reutilizado discovery Ideas estrategicas, pero no copiaron la perseverancia. provider-model catalog |
+| El descubrimiento de modelos no puede bloquear la configuracion manual | Ya implementado | discovery Si additive/transient de, manual `model` La entrada sigue siendo un valor verdadero persistente. |
 
-## 3.5 已落地实现检查点
+## 3.5 Implementacion de puntos de control
 
-截至 2026-05-27 收口，隔离 `feat/provider-settings-model-discovery` 通道中的实现已经完成验证并合回 current main。
+A partir de 2026-05-27 Cerrar, aislar `feat/provider-settings-model-discovery` Se ha verificado y fusionado la implementacion en el canal. current main。
 
-当前 main 上现已存在的内容：
+actual main Contenido que ya existe en：
 
-1. `src/llmProviders.ts` 已加入一版 provider-field taxonomy metadata（`core`、`contextual`、`advanced`、`developer`）与按 provider 的 model-discovery metadata。
-2. 新增了一个瞬时 `src/providerModelDiscovery.ts`，有界覆盖：
-   - 一批已验证的 OpenAI-compatible `GET /models` 预设
-   - OpenRouter 有界的 chat + embedding catalog 聚合
-   - Together 专用的 `/models` 数组响应
+1. `src/llmProviders.ts` Ya agregado a la version 1 provider-field taxonomy metadata（`core`、`contextual`、`advanced`、`developer`）Y presiona provider de model-discovery metadata。
+2. Se agrego un nuevo instante. `src/providerModelDiscovery.ts`，Cobertura limitada：
+   - Un lote de verificados. OpenAI-compatible `GET /models` Predeterminado
+   - OpenRouter Limitado chat + embedding catalog Agregacion
+   - Together Dedicado `/models` Respuesta de matriz
    - Anthropic `GET /models`
    - Ollama tag listing
    - Google model listing
-3. `src/ui/NotemdSettingTab.ts` 中已有一版 metadata-driven provider panel 重构尝试，包含：
-   - 默认/core 字段渲染
-   - contextual 字段渲染
+3. `src/ui/NotemdSettingTab.ts` Ya existe una version en metadata-driven provider panel Intentos de refactorizacion, incluidos：
+   - Predeterminado/core Representacion de campo
+   - contextual Representacion de campo
    - advanced disclosure
-   - 基于持久化 advanced 值的派生 auto-expand
-   - 可选的 fetch-models UI wiring
-4. 对应 locale keys、README/update surface 与聚焦测试也已经补入。
-5. 当前 main 还继续补齐了这条 lane 的有界 provider 宽度收口：
-   - 对旧持久化 provider 名称做 canonical alias 归一化，例如 `Xiaomi` -> `Xiaomi MiMo`
-   - 补入并对齐共享 runtime 的额外 OpenAI-compatible 预设（`LiteLLM`、`Nebius`、`Cerebras`、`Hugging Face`、`Vercel AI Gateway`、`AIHubMix`、`GitHub Models`、`PPIO`、`New API`、`OVMS`）
-   - 对 Vercel AI Gateway 走有界的 `/v1/models` + `v3/ai/config` 双源合并，对 xAI 单独走 `/v1/language-models` 并有界回退到 `/v1/models`，对 Huawei Cloud MaaS 单独走 `v2/models` registry endpoint，对 Together 单独走数组式 `/models` 响应，将 LiteLLM 显式归入 proxy-family 的 `/models` + `/model/info` 有界合并，对 PPIO 单独走 chat + embedding + reranker 三路有界合并，并让 OVMS 优先走本地 `/v3/models`、必要时再回退到 `/v1/config`，而不是假装它们和 generic `/models` 完全等价
-   - 对 OpenRouter 单独走有界的 chat + embedding catalog 聚合，而不是假装它只是另一个 generic `/models` 网关
-   - 对 Azure OpenAI 等 manual-first 预设补入 provider-specific discovery disable reason，使设置页在 Fetch model list 不可用时能解释原因，而不是只显示统一的“不支持”
-   - 在设置页中加入 model-aware token guidance，使当前模型的已知最大输出 Token 上限能在 `Model`、provider override 与全局 `Max tokens` 旁被明确展示
-   - 对 gateway/provider-prefixed model ID 增加有界 token-cap 推断，使 `openai/gpt-4o`、`anthropic/claude-sonnet-4.5` 这类已抓取模型在 owner 足够明确时也能驱动 `Max tokens` / chunk-size 指引，而不会反过来假装所有 custom gateway 上的 bare model 名称都能被无上下文归因
-   - 扩宽 OpenAI-compatible payload 解析，兼容 `list` / `items`、object-shaped proxy catalog、嵌套的 gateway `specification.modelId` 与 endpoint-type-aware listing metadata
-   - 继续增强共享 fetch-model-list 的真实返回体容忍度，补齐 provider-mapped 的 `provider_models` 对象目录、更宽的 `nextPageUrl` / `next_page_url` 分页信号、保持 provider 语义正确的 `after_id` 续页处理，以及 `supportedOutputModalities`、嵌套 `supportedGenerationMethods`、limit objects 等更丰富的 generation/modality 元数据解析
-   - discovered-model 的 token guidance 现在还会继续吸收真实 hosted registry 中的 token-cap 字段，例如 `top_provider.max_completion_tokens`、`per_request_limits` 与 `limits.max_output_tokens`，从而让 `Fetch model list -> Use` 在静态 provider token registry 还不认识该模型时，依然能自动填入 provider-scoped 的输出 Token 覆盖上限
-   - 对瞬时 discovered-model metadata 保留显示标签、owner/provider hint 与 max-output-token 提示，并引入 capability / modality / status 感知过滤，尽量避免更宽模型目录把不可用、仅音频或仅图像模型混入文本生成建议；当上游返回体缺少主标识时，只把 alias 用作后备 identifier，而不会把所有 alias 都展开成独立选项
-   - AIHubMix 的 discovery 现在优先走官方 `?type=llm` 目录，而不是先拉完整混合多模态模型表再完全依赖本地过滤
-   - 让 runtime 与 discovery 共享同一套 OpenAI-compatible endpoint 归一化（包括 `/responses` 这类端点形态），容忍用户粘贴带 query/hash 的 endpoint root，并让 generic host 自动升级也能识别 OVMS 风格的本地 `/v3` 端点，而不是把所有本地 host 都折叠进 LiteLLM proxy bucket
-   - family-specific 的 discovery 归一化现在也能容忍用户直接粘贴官方 discovery endpoint 而不是 provider root，例如 OpenRouter 的 `/models` 或 `/embeddings/models`，以及 Vercel AI Gateway 的 `/v3/ai/config` 或 `/v1/ai/models`，从而让 fetch-model-list 仍能回到正确的 bounded registry 流程
-   - generic/custom gateway 现在还可以在已抓取 registry row 明确给出 `owned_by`、`publisher`、`provider` 这类 owner/provider hint 时，对 bare model ID 有界复用上游 token-cap metadata；但任意 bare-model 猜测仍刻意保持为非目标
+   - Basado en la perseverancia advanced Derivacion de valor auto-expand
+   - Opcional fetch-models UI wiring
+4. Correspondencia locale keys、README/update surface Tambien se han agregado pruebas con enfoque.。
+5. actual main Tambien segui completando este articulo. lane acotado provider Cierre ancho：
+   - Persistencia de lo viejo provider Nombre Hacer canonical alias Normalizacion, p.e. `Xiaomi` -> `Xiaomi MiMo`
+   - Parchear y alinear acciones runtime adicional OpenAI-compatible Predeterminado（`LiteLLM`、`Nebius`、`Cerebras`、`Hugging Face`、`Vercel AI Gateway`、`AIHubMix`、`GitHub Models`、`PPIO`、`New API`、`OVMS`）
+   - si Vercel AI Gateway Camine dentro de los limites `/v1/models` + `v3/ai/config` Fusion de fuente dual, derecha xAI Camina solo `/v1/language-models` Y un recurso limitado a `/v1/models`，si Huawei Cloud MaaS Camina solo `v2/models` registry endpoint，si Together Realizar formula matricial solo `/models` Responder a LiteLLM Subsuncion explicita proxy-family de `/models` + `/model/info` Fusion acotada, derecha PPIO Camina solo chat + embedding + reranker Fusion acotada de tres vias y dejar OVMS Vaya primero a lo local `/v3/models`、Regresar si es necesario `/v1/config`，En lugar de fingir que lo son generic `/models` Completamente equivalente
+   - si OpenRouter Caminar solo tiene limites. chat + embedding catalog Agrega en lugar de fingir que es uno mas generic `/models` Puerta de enlace
+   - si Azure OpenAI Espera manual-first Llenado predeterminado provider-specific discovery disable reason，Hacer la pagina de configuracion en Fetch model list Cuando no este disponible, se puede explicar el motivo en lugar de simplemente mostrar un uniforme "No admitido"”
+   - Agregar pagina de configuracion model-aware token guidance，Conozca la salida maxima del modelo actual. Token El limite superior puede ser `Model`、provider override Con el panorama general `Max tokens` Mostrarse claramente
+   - si gateway/provider-prefixed model ID Agregar acotado token-cap Inferir, hacer `openai/gpt-4o`、`anthropic/claude-sonnet-4.5` Este tipo de modelo capturado es owner Tambien se puede conducir cuando este lo suficientemente claro `Max tokens` / chunk-size Guia sin pretender serlo todo custom gateway en bare model Los nombres se pueden atribuir sin contexto.
+   - Ampliar OpenAI-compatible payload Analisis, compatibilidad `list` / `items`、object-shaped proxy catalog、anidado gateway `specification.modelId` con endpoint-type-aware listing metadata
+   - Continuar mejorando el intercambio fetch-model-list Se complementa la verdadera tolerancia del cuerpo al retorno. provider-mapped de `provider_models` Directorio de objetos, mas amplio. `nextPageUrl` / `next_page_url` Senal de busqueda, mantener presionado provider Semanticamente correcto `after_id` Procesamiento de continuacion de pagina, y `supportedOutputModalities`、Anidacion `supportedGenerationMethods`、limit objects Esperando mas abundante generation/modality Analisis de metadatos
+   - discovered-model de token guidance Seguire absorbiendo la verdad ahora. hosted registry en token-cap Campos, p.e. `top_provider.max_completion_tokens`、`per_request_limits` con `limits.max_output_tokens`，Para que `Fetch model list -> Use` En estatico provider token registry Incluso si aun no conoces el modelo, aun puedes completarlo automaticamente. provider-scoped La salida de Token Limite de cobertura
+   - Para instantaneo discovered-model metadata Mantenga las etiquetas de visualizacion、owner/provider hint con max-output-token Consejos e introduccion capability / modality / status Filtrado de percepcion: trate de evitar mezclar modelos no disponibles, de solo audio o solo de imagen en sugerencias de generacion de texto en directorios de modelos mas amplios; cuando el cuerpo de retorno aguas arriba carece del identificador principal, solo mezcle alias Uselo como respaldo identifier，En lugar de tomarlo todo alias Expandir todo a opciones independientes.
+   - AIHubMix de discovery Ahora dale prioridad al sitio web oficial. `?type=llm` Directorio, en lugar de extraer primero la tabla completa del modelo multimodal mixto y luego depender completamente del filtrado local
+   - deja runtime con discovery Comparte el mismo conjunto OpenAI-compatible endpoint Normalizacion (incluyendo `/responses` Este tipo de formulario de punto final) permite a los usuarios pegar el query/hash de endpoint root，Y deja generic host Tambien se puede reconocer la actualizacion automatica. OVMS Estilo local `/v3` Puntos finales en lugar de poner todos los locales host Dobla todo LiteLLM proxy bucket
+   - family-specific de discovery La normalizacion ahora tambien permite a los usuarios pegar directamente archivos oficiales. discovery endpoint en lugar de provider root，Por ejemplo OpenRouter de `/models` o `/embeddings/models`，y Vercel AI Gateway de `/v3/ai/config` o `/v1/ai/models`，Para que fetch-model-list Aun puedo volver a lo correcto bounded registry Proceso
+   - generic/custom gateway Ahora tambien puedes gatear registry row Dejalo claro `owned_by`、`publisher`、`provider` Este tipo owner/provider hint Cuando, cierto bare model ID Reutilizacion limitada en sentido ascendente token-cap metadata；Pero cualquier bare-model La especulacion sigue siendo intencionadamente un objetivo no objetivo.
 
-仍然刻意不做的内容：
+Cosas que todavia no haces deliberadamente：
 
-1. 持久化远程 provider model catalog；
+1. Remoto persistente provider model catalog；
 2. model CRUD / health-check management UI；
-3. 对首批之外 provider 的泛化 discovery 覆盖宣称。
-4. 假装所有 OpenAI-compatible gateway 都共享完全相同的 `/models` 语义。
+3. Para aquellos que no sean el primer lote provider Generalizacion de discovery Reclamo de cobertura。
+4. Finge todo OpenAI-compatible gateway Todos comparten exactamente lo mismo `/models` Semantica。
 
-### 3.6 当前 discovered-model token 语义
+### 3.6 actual discovered-model token Semantica
 
-这部分最容易在后续会话中被写错，必须显式落盘。
+Es muy probable que esta parte se escriba incorrectamente en sesiones posteriores y debe colocarse explicitamente.。
 
-current main 的真实行为是：
+current main El verdadero comportamiento de：
 
-1. `Fetch model list -> Use` **不会**直接同步全局 `Max tokens` 或 `Chunk word count`。
-2. 当 `autoApplyDiscoveredModelMaxOutputTokens` 开启时，应用 discovered model 会尝试解析 provider/model 级别的 max-output-token ceiling，并把结果写入该 provider 的 `maxOutputTokens` override。
-3. 当前解析优先级是有界的：
+1. `Fetch model list -> Use` **No**Sincronizar directamente global `Max tokens` o `Chunk word count`。
+2. cuando `autoApplyDiscoveredModelMaxOutputTokens` Cuando este encendido, aplique discovered model Intentara analizar provider/model nivel max-output-token ceiling，Y escribe el resultado en el provider de `maxOutputTokens` override。
+3. La prioridad de analisis actual esta limitada.：
    - curated/static known-model metadata
    - bounded host/owner-aware lookup
    - transient discovered-row max-output-token metadata
    - conservative fallback
-4. 如果没有足够可信的 ceiling，插件当前会优先保留已有的有效 provider override；只有在当前没有可用值时，才会把保守 fallback（`DEFAULT_SETTINGS.maxTokens`，目前是 `8192`）写入 provider override，并明确提示用户手动复核。
-5. 这个 fallback 不能被描述成“真实发现到的模型上限”，它只是 safety rail，不是模型真值。
-6. 手动 typed model edit 仍然走独立的全局 model-aware token guidance 通道（`globalModelAwareMaxTokensTracking`），前提是全局 `Max tokens` 仍处在 auto-managed baseline 上。
+4. Si no hay suficiente credibilidad ceiling，Actualmente, el complemento dara prioridad a conservar los archivos validos existentes. provider override；El valor conservador solo se utilizara si no hay ningun valor disponible actualmente. fallback（`DEFAULT_SETTINGS.maxTokens`，Actualmente `8192`）escribir provider override，Y solicitar claramente a los usuarios que revisen manualmente。
+5. Esto fallback No puede describirse como "el limite superior del modelo que realmente se encuentra", es simplemente safety rail，No es el verdadero valor del modelo.。
+6. Manual typed model edit Seguir adoptando un enfoque global independiente model-aware token guidance Canal（`globalModelAwareMaxTokensTracking`），La premisa es la situacion general. `Max tokens` todavia en auto-managed baseline en。
 
-为什么这个区分重要：
+¿Por que es importante esta distincion?：
 
-1. 它保住了用户自己维护的全局输出上限；
-2. 它让 discovered-model apply 保持 additive，而不是静默重写跨 provider 的全局策略；
-3. 它避免了“因为远端 registry 元数据弱/缺失，就把已有 provider override 清空”的坏行为。
+1. Mantiene el limite superior de salida global mantenido por el usuario.；
+2. Hace discovered-model apply mantener additive，En lugar de reescribir silenciosamente provider Estrategia global；
+3. Evita “porque el mando registry Metadatos debiles/Si falta algo, toma lo que tienes provider override Mal comportamiento “vacio”。
 
-## 4. Cherry Studio 对照结论
+## 4. Cherry Studio Conclusiones comparativas
 
-参考仓库：`/home/jacob/ref/cherry-studio`
+Repositorio de referencia：`/home/jacob/ref/cherry-studio`
 
-Cherry Studio 值得复用的点：
+Cherry Studio Puntos que vale la pena reutilizar：
 
-1. strategy-registry 模型获取方式；
-2. 按 endpoint family 分离 parser；
+1. strategy-registry Como obtener el modelo；
+2. Presione endpoint family Separacion parser；
 3. graceful fallback；
-4. 面向 endpoint normalization 的真实回归覆盖。
+4. Orientado endpoint normalization Cobertura de regresion verdadera de。
 
-不适合 Notemd 的点：
+No apto Notemd punto：
 
-1. 持久化 `provider.models[]` 生命周期；
-2. 更重的 provider-domain state；
-3. 把 model CRUD / catalog management 做成一等产品子系统。
+1. Persistencia `provider.models[]` ciclo de vida；
+2. Mas pesado provider-domain state；
+3. poner model CRUD / catalog management Cree un subsistema de productos de primera clase.。
 
-结论：
+Conclusion：
 
-1. 应复用 discovery 的策略模式；
-2. 不应复用持久化 catalog 架构。
+1. Debe reutilizarse discovery Modelo de estrategia；
+2. La persistencia no debe reutilizarse catalog Arquitectura。
 
-## 5. 目标架构
+## 5. Arquitectura de destino
 
-### 5.1 字段 taxonomy
+### 5.1 Campos taxonomy
 
-为 provider 字段增加共享 metadata，使每个字段都能归入：
+para provider Agregar uso compartido de campos metadata，Habilitar cada campo para clasificar：
 
 1. `core`
 2. `contextual`
 3. `advanced`
 4. `developer`
 
-建议语义：
+Semantica de sugerencias.：
 
-1. `apiKey`、`baseUrl`、`model` 属于 `core`；
-2. `apiVersion` 对 Azure 这类 provider 也应属于 `core`；
-3. `temperature`、`topP`、`reasoningEffort`、`thinkingEnabled` 属于 `advanced`；
-4. `maxOutputTokens` 属于 `developer`，但一旦已有持久化 override 仍应可见。
+1. `apiKey`、`baseUrl`、`model` pertenecer a `core`；
+2. `apiVersion` si Azure Este tipo provider Tambien debe pertenecer a `core`；
+3. `temperature`、`topP`、`reasoningEffort`、`thinkingEnabled` pertenecer a `advanced`；
+4. `maxOutputTokens` pertenecer a `developer`，Pero una vez que hay perseverancia override Aun deberia ser visible。
 
 ### 5.2 Discovery capability metadata
 
-给 `LLMProviderDefinition` 增加按 provider 的 discovery metadata：
+dar `LLMProviderDefinition` Agregar boton provider de discovery metadata：
 
-1. 是否支持 discovery；
+1. Ya sea para apoyar discovery；
 2. discovery family：
    - `openai-compatible`
    - `ollama`
    - `google`
-3. 可选的 provider-specific 说明或禁用原因。
+3. Opcional provider-specific Explique o deshabilite los motivos.。
 
-### 5.3 保持持久化结构简洁
+### 5.3 Mantenga simples las estructuras de persistencia
 
-不要引入第二棵 provider-state tree。
+No introduzcas un segundo arbol provider-state tree。
 
-应保持以下不变量：
+Deben mantenerse las siguientes invariantes：
 
-1. `LLMProviderConfig.model` 仍是持久化真值；
-2. discovery 结果只作为瞬时建议；
-3. import/export 格式不变。
+1. `LLMProviderConfig.model` Sigue siendo un valor de verdad persistente；
+2. discovery Los resultados son solo sugerencias temporales.；
+3. import/export El formato permanece sin cambios.。
 
-## 6. 实施计划
+## 6. Plan de implementacion
 
 ### Phase 1：metadata uplift
 
-涉及文件：
+Documentos involucrados：
 
 1. `src/llmProviders.ts`
-2. 若需要，也可在 `src/types.ts` 增加辅助类型
+2. Si es necesario, tambien puedes `src/types.ts` Agregar tipo auxiliar
 
-产物：
+Productos：
 
-1. 字段 taxonomy metadata；
+1. Campos taxonomy metadata；
 2. discovery capability metadata；
-3. 用于判断某个 provider 是否已有持久化 advanced 值的 helper。
+3. Se utiliza para juzgar a un determinado provider ¿Hay perseverancia? advanced digno helper。
 
-风险：
+Riesgos：
 
-1. 把过多 UI 行为硬塞进 runtime registry。
+1. Pon demasiado UI El comportamiento esta calzado con calzador runtime registry。
 
-缓解：
+Mitigacion：
 
-1. metadata 保持 declarative 与 field-scoped；
-2. 不把渲染逻辑搬进 provider registry。
+1. metadata mantener declarative con field-scoped；
+2. No muevas la logica de renderizado a provider registry。
 
-当前检查点：
+Punto de control actual：
 
-1. 已落地到 current main；
-2. 当前 metadata 形态仍保持 declarative、field-scoped。
-3. backward compatibility 现在还覆盖了 legacy provider name 的 canonicalization，包括 settings load 与 provider-profile import/export。
+1. Ha aterrizado en current main；
+2. actual metadata La forma permanece declarative、field-scoped。
+3. backward compatibility Ahora tambien cubierto legacy provider name de canonicalization，Incluye settings load con provider-profile import/export。
 
-### Phase 2：settings renderer 重构
+### Phase 2：settings renderer Refactorizacion
 
-涉及文件：
+Documentos involucrados：
 
 1. `src/ui/NotemdSettingTab.ts`
 
-产物：
+Productos：
 
-1. core-only 默认面；
-2. 显式 advanced disclosure；
-3. 当已有持久化 advanced 值时自动展开；
-4. 保持手动 `model` 编辑仍是默认控制路径。
+1. core-only Cara predeterminada；
+2. Explicito advanced disclosure；
+3. Cuando la persistencia esta disponible advanced Expandir automaticamente cuando el valor es；
+4. Mantenlo manual `model` La edicion sigue siendo la ruta de control predeterminada。
 
-风险：
+Riesgos：
 
-1. 对已有持久化 provider config 造成 backward-compatibility 回归。
+1. Persistencia de lo existente provider config causa backward-compatibility Regreso。
 
-缓解：
+Mitigacion：
 
-1. advanced 展开逻辑从当前配置实时推导；
-2. 保留现有字段值与保存语义。
+1. advanced La logica de expansion se deduce en tiempo real de la configuracion actual；
+2. Preservar los valores de campo existentes y guardar la semantica。
 
-当前检查点：
+Punto de control actual：
 
-1. 已落地到 current main；
-2. default/core、contextual 与 advanced 分区现已通过共享 metadata 接线；
-3. 对应 CSS/layout 支撑与样式测试也已进入发货面。
-4. provider settings 现在还会展示 model-aware token guidance，并在 `model`、全局 `Max tokens`、chunk-size 提交后立即刷新。
+1. Ha aterrizado en current main；
+2. default/core、contextual con advanced La particion ahora esta compartida. metadata Cableado；
+3. Correspondencia CSS/layout El soporte y las pruebas de estilo tambien han entrado en el proceso de envio.。
+4. provider settings Tambien se mostrara ahora model-aware token guidance，y en `model`、Panorama general `Max tokens`、chunk-size Actualizar inmediatamente despues del envio.。
 
 ### Phase 3：lightweight discovery service
 
-建议新增文件：
+Se recomienda agregar nuevos documentos.：
 
 1. `src/providerModelDiscovery.ts`
 
-产物：
+Productos：
 
-1. 瞬时模型发现服务；
-2. 当前有界验证批次支持：
-   - 一批已验证的 OpenAI-compatible `GET /models` 预设
-   - OpenRouter 有界 chat + embedding registry 聚合
+1. Servicio de descubrimiento instantaneo de modelos.；
+2. Compatibilidad actual con lotes de verificacion limitada：
+   - Un lote de verificados. OpenAI-compatible `GET /models` Predeterminado
+   - OpenRouter Limitado chat + embedding registry Agregacion
    - LiteLLM proxy-family `/models` + `/model/info`
    - Together `/models`
    - Anthropic `GET /models`
    - Ollama `GET /api/tags`
    - Google Gemini `GET v1beta/models`
    - Huawei Cloud MaaS `v2/models`
-   - Vercel AI Gateway 有界 `/v1/models` + `v3/ai/config`
+   - Vercel AI Gateway Limitado `/v1/models` + `v3/ai/config`
    - AIHubMix hosted registry
    - GitHub Models `catalog/models` + `/v1/models`
-   - PPIO 有界 chat + embedding + reranker 聚合
-   - OVMS `/v3/models`，并有界回退 `/v1/config`
+   - PPIO Limitado chat + embedding + reranker Agregacion
+   - OVMS `/v3/models`，Y reversion limitada `/v1/config`
    - xAI `/v1/language-models`
-3. 共享的错误归一化与 graceful empty-result fallback。
-4. 对 Google `nextPageToken`、Anthropic `has_more` / `last_id` 这类分页 registry 做有界多页遍历。
+3. Normalizacion de errores compartidos vs. graceful empty-result fallback。
+4. si Google `nextPageToken`、Anthropic `has_more` / `last_id` Este tipo de paginacion registry Realice un recorrido delimitado de varias paginas。
 
-风险：
+Riesgos：
 
-1. 让用户误以为 discovery 对所有 provider 都是权威结果。
+1. Dejar que los usuarios crean erroneamente que discovery A todos provider Todos son resultados autorizados.。
 
-缓解：
+Mitigacion：
 
-1. 首批只支持 endpoint 语义足够稳定的 family；
-2. 始终保留手动 model 输入；
-3. 永不持久化远程 catalog。
+1. El primer lote solo admite endpoint La semantica es lo suficientemente estable. family；
+2. Mantenlo siempre manual model Entrada；
+3. Nunca persista en el control remoto catalog。
 
-当前检查点：
+Punto de control actual：
 
-1. 已按当前有界 family 批次落地到 current main，除最初的 OpenAI-compatible/Ollama/Google 基线外，现在还包括 Anthropic、LM Studio、OpenRouter、LiteLLM proxy-family、Together、Huawei Cloud MaaS、Vercel AI Gateway、AIHubMix、GitHub Models、PPIO、OVMS 与 xAI；
-2. 它仍保持手动 `model` 输入为持久化 source of truth；
-3. 不支持的 provider 仍然降级回手动输入，而不是引入重型 catalog 子系统。
-4. gateway 的有界分流现在已经显式化：Vercel AI Gateway 现在会有界合并 `/v1/models` 与 `v3/ai/config`；OpenRouter 现在会有界合并 chat 与 embedding catalog；LiteLLM 显式走 proxy-family 的 `/models` + `/model/info` 有界合并；Huawei Cloud MaaS 走专用 `v2/models` registry endpoint；PPIO 走有界的 chat + embedding + reranker 三路合并；`OVMS` 优先走当前本地 `/v3/models`，必要时才回退到 `/v1/config`；`New API` 复用共享的 bounded OpenAI-compatible `/models` 路径；Hugging Face 则并入这条共享路径，不再保持 manual-first。
-5. Google 与 Anthropic 在 provider 返回分页模型目录时，也会执行有界多页遍历，避免 fetch-model-list 静默停在第一页。
-6. 共享 parser 的加固现在还覆盖了更宽的 wrapped catalog shape，例如 `provider_models`、`providerModels`、`publisherModels`、`registry`、`registries` 与 `services`，以及对 `models/<id>`、`publishers/<owner>/models/<id>` 的保守 resource-name normalization。
+1. Presionado y actualmente acotado family Llega el lote current main，Excepto el inicial OpenAI-compatible/Ollama/Google Ademas de la linea de base, ahora tambien incluye Anthropic、LM Studio、OpenRouter、LiteLLM proxy-family、Together、Huawei Cloud MaaS、Vercel AI Gateway、AIHubMix、GitHub Models、PPIO、OVMS con xAI；
+2. Sigue siendo manual `model` Entrada para la persistencia source of truth；
+3. No compatible provider Aun asi, volver a escribir manualmente en lugar de introducir textos pesados. catalog Subsistema。
+4. gateway La divergencia acotada de ahora es explicita：Vercel AI Gateway Ahora habra fusion de limites. `/v1/models` con `v3/ai/config`；OpenRouter Ahora habra fusion de limites. chat con embedding catalog；LiteLLM Ve explicitamente proxy-family de `/models` + `/model/info` Fusion limitada；Huawei Cloud MaaS Camina exclusivamente `v2/models` registry endpoint；PPIO Camine dentro de los limites chat + embedding + reranker Fusion de tres vias；`OVMS` Priorizar el area local actual `/v3/models`，Retrocede cuando sea necesario `/v1/config`；`New API` Reutilizar compartido bounded OpenAI-compatible `/models` Camino；Hugging Face Luego unete a este camino compartido y ya no lo mantengas. manual-first。
+5. Google con Anthropic en provider Al regresar al directorio del modelo de paginacion, tambien se realizara un recorrido delimitado de varias paginas para evitar fetch-model-list Detente en silencio en la primera pagina.。
+6. compartir parser El refuerzo ahora tambien cubre una zona mas amplia. wrapped catalog shape，Por ejemplo `provider_models`、`providerModels`、`publisherModels`、`registry`、`registries` con `services`，Y a `models/<id>`、`publishers/<owner>/models/<id>` conservador resource-name normalization。
 
-### Phase 4：UI 接入
+### Phase 4：UI Acceso
 
-产物：
+Productos：
 
-1. 在 `model` 字段附近提供轻量 “fetch models” 或 suggestion surface；
-2. discovery 与保存流程之间不能形成阻塞依赖；
-3. 一旦 discovery 失败，当前手动工作流必须完整可用。
+1. en `model` Proporcione peso ligero cerca de los campos “fetch models” o suggestion surface；
+2. discovery No debe haber ninguna dependencia de bloqueo en el proceso de guardar.；
+3. Una vez discovery Si falla, el flujo de trabajo manual actual debe estar completamente disponible。
 
-当前检查点：
+Punto de control actual：
 
-1. fetch-models UI wiring 与瞬时 suggestion state 已进入 current main；
-2. 新 provider-panel surface 的 styling 支撑已经落地；
-3. README / update surface 现在也已描述同样的有界行为。
-4. “应用成功提示”与 discovered-models collapse-state/persistence 行为现在也有聚焦行为测试覆盖。
-5. gateway/provider-prefixed 的已发现模型现在也会进入有界 token-cap guidance，只在 owner 能被安全推断时才复用 ceiling；generic `OpenAI Compatible` 对 bare model 名称仍然保持保守，不做无上下文猜测。
-5. discovery 结果现在还会有界地优先保留适合生成任务的模型，避免 embedding / reranker / speech / classifier 这类明显不适合当前设置页选择器的条目挤占列表，也能覆盖 object-shaped proxy catalog 与 endpoint-type-aware listing 这类更宽的返回形态。
-6. 共享的 OpenAI-compatible provider family 现在还会显式保持 discovery/runtime 兼容头一致，避免某些依赖 `X-Api-Key` 或 provider-specific compatibility header 的端点在 fetch-model-list 上出现假失败。
-7. 通用 `OpenAI Compatible` 预设在 base URL 指向 OpenAI、DashScope/Qwen、Xiaomi MiMo、Fireworks、Hugging Face 这类已知可信官方 host 时，现在也会让 bare model ID 复用官方 provider 的 token-cap 元数据，而不再要求这些场景必须写成 provider-prefixed gateway model ID。
-8. 全局 model-aware token guidance 不再只是“数值刚好相等”的启发式：当前主线现已持久化显式 `globalModelAwareMaxTokensTracking` 标记，使手动改模型、runtime request token ceiling、以及 reset/reload 行为在用户未接管全局值时共享同一条 auto-managed baseline 真值链路。
-9. `Fetch model list -> Use` 现在拥有独立的 provider-scoped persistence lane：`discoveredModelMaxOutputTokensTracking`，因此 discovered-model autofill 不再伪装成全局 max-token 管理。
-10. 共享的 discovery/runtime header owner 现在也通过同一条 endpoint-family seam 显式收敛，因此 fetch-model-list 不会再轻易与 runtime 在依赖 compatibility header 的 provider 上发生语义漂移。
-11. registry 返回的瞬时 owner/provider hint 现在也会进入 generic/custom gateway 的有界 bare-model token guidance，因此像 `gpt-4.1` + `owned_by: "openai"` 这样的 discovered row，也能在不强迫用户把持久化 model 改成 provider-prefixed ID 的前提下，安全驱动 provider output-token autofill 与 settings hint。
+1. fetch-models UI wiring Con instantaneo suggestion state Entro current main；
+2. nuevo provider-panel surface de styling El apoyo esta en su lugar.；
+3. README / update surface Ahora se ha descrito el mismo comportamiento limitado.。
+4. “Mensaje de exito de la aplicacion” y discovered-models collapse-state/persistence Los comportamientos ahora tambien estan cubiertos por pruebas de comportamiento enfocadas.。
+5. gateway/provider-prefixed Los modelos descubiertos de ahora tambien quedaran acotados token-cap guidance，Solo en owner Reutilizar solo cuando se pueda inferir de forma segura ceiling；generic `OpenAI Compatible` si bare model Los nombres siguen siendo conservadores y no es necesario adivinar sin contexto.。
+5. discovery Los resultados ahora daran prioridad a retener modelos adecuados para la tarea de generacion de manera limitada para evitar embedding / reranker / speech / classifier Este tipo de lista de entradas que obviamente no es adecuada para el selector de pagina de configuracion actual tambien se puede sobrescribir. object-shaped proxy catalog con endpoint-type-aware listing Este tipo de patron de retorno mas amplio。
+6. compartido OpenAI-compatible provider family Ahora tambien se mantiene explicitamente discovery/runtime Mantenga coherente el encabezado de compatibilidad y evite ciertas dependencias. `X-Api-Key` o provider-specific compatibility header El punto final esta en fetch-model-list Se produce una falla falsa en。
+7. universales `OpenAI Compatible` Predeterminado en base URL Senalando OpenAI、DashScope/Qwen、Xiaomi MiMo、Fireworks、Hugging Face Este tipo de funcionario conocido y confiable host Cuando, ahora tambien deja bare model ID Reutilizar oficial provider de token-cap Metadatos, en lugar de requerir que se escriban estas escenas provider-prefixed gateway model ID。
+8. Panorama general model-aware token guidance Ya no es solo una heuristica de "los valores son exactamente iguales": la linea principal actual ahora persiste explicitamente `globalModelAwareMaxTokensTracking` Marcar para habilitar la modificacion manual del modelo.、runtime request token ceiling、y reset/reload Los comportamientos comparten el mismo elemento cuando el usuario no se hace cargo del valor global auto-managed baseline Enlace de la verdad。
+9. `Fetch model list -> Use` Ahora tienes independiente provider-scoped persistence lane：`discoveredModelMaxOutputTokensTracking`，Por lo tanto discovered-model autofill No mas pretender ser el panorama general max-token Gestion。
+10. compartido discovery/runtime header owner Ahora pasa lo mismo endpoint-family seam Convergencia explicita, por lo que fetch-model-list Nunca volvere a estar contigo facilmente runtime En dependencia compatibility header de provider La deriva semantica ocurre en。
+11. registry El momento del regreso owner/provider hint Tambien entrara ahora generic/custom gateway acotado bare-model token guidance，Asi como `gpt-4.1` + `owned_by: "openai"` Me gusta esto discovered row，Tambien se puede persistir sin obligar a los usuarios a model Cambiar a provider-prefixed ID Bajo la premisa de la conduccion segura provider output-token autofill con settings hint。
 
-### Phase 5：测试与文档
+### Phase 5：Pruebas y documentacion
 
-必须补齐的测试覆盖：
+Cobertura de prueba que se debe completar.：
 
-1. provider metadata 回归覆盖；
-2. core/advanced 分组的 UI rendering 覆盖；
-3. 基于持久化 advanced 值的 auto-expand 覆盖；
-4. 已支持 endpoint family 的 discovery success/fallback 覆盖。
-5. 对 wrapped provider/publisher catalog 与 resource-name normalization 的 registry-shape 覆盖。
+1. provider metadata Cobertura de regresion；
+2. core/advanced agrupados UI rendering Cobertura；
+3. Basado en la perseverancia advanced digno auto-expand Cobertura；
+4. Apoyado endpoint family de discovery success/fallback Cobertura。
+5. si wrapped provider/publisher catalog con resource-name normalization de registry-shape Cobertura。
 
-必须同步的文档：
+Documentos que deben sincronizarse：
 
 1. `README.md`
 2. `README_zh.md`
-3. 本文
-4. 如果实现状态变化，则同步更新 canonical matrix/audit 文档
+3. Este articulo
+4. Si el estado cambia, actualice sincronicamente canonical matrix/audit Documentacion
 
-当前检查点：
+Punto de control actual：
 
-1. 聚焦的 i18n/test 更新已经落地到 current main；
-2. canonical 文档现在把这条线描述为 current-main 已落地真值，而不是隔离实现进展；
-3. 验证证据现已包含 targeted provider-settings/model-discovery tests 与完整仓库门禁。
-4. 当前 settings surface 还额外写清了全局 `Max tokens` 与 provider-specific output-token override 的关系，以降低“两处 max tokens”造成的理解成本。
-5. 当前文档现在应被视为 current-main 真值维护文档，而不是 pre-landing 的实现草案。
-6. 当前 host-side 验证证据仍然是不对称的：
-   - 已验证通过本机 Obsidian 的 plugin reload/state inspection；
-   - 已用 focused Jest coverage 锁住 discovered-model apply feedback、provider override 写入、以及 fallback/manual-review 分支；
-   - 但当前 host 的 Obsidian CLI/runtime surface 仍未暴露一个干净的可脚本化桌面点击入口，无法把 `Fetch model list -> Use` 的设置页真实点击链路完全自动化。
+1. enfocado i18n/test La actualizacion ha sido implementada. current main；
+2. canonical La documentacion ahora describe esta linea como current-main Implementar la verdad en lugar de aislar el progreso；
+3. Ahora se incluyen pruebas de verificacion. targeted provider-settings/model-discovery tests Con control completo de acceso al almacen.。
+4. actual settings surface Tambien se indica claramente la situacion general. `Max tokens` con provider-specific output-token override relacion para reducir los “dos max tokens”El costo de la comprension causado。
+5. El documento actual deberia considerarse ahora como current-main La verdad mantiene la documentacion, no pre-landing Proyecto de implementacion de。
+6. actual host-side Las pruebas de verificacion siguen siendo asimetricas：
+   - Verificado por esta maquina Obsidian de plugin reload/state inspection；
+   - Usado focused Jest coverage Bloquear discovered-model apply feedback、provider override escribir, y fallback/manual-review sucursal；
+   - Pero actualmente host de Obsidian CLI/runtime surface Aun no se ha expuesto una entrada de clic de escritorio limpia y programable, no se puede `Fetch model list -> Use` El enlace de clic real de la pagina de configuracion esta completamente automatizado.。
 
-## 6.5 这条 lane 的下一步 bounded direction
+## 6.5 Este articulo lane Siguiente paso bounded direction
 
-下一步不该先继续扩 provider 宽度，而该先把 resolution stack 稳定下来。
+El siguiente paso no deberia ser seguir expandiendose provider Ancho, pero conviene ponerlo primero resolution stack Estabilizar。
 
-优先切片：
+Prioriza el corte：
 
-1. 引入显式 layered “output ceiling resolver” contract：
-   - authoritative provider-native metadata（若存在）
+1. Introducir explicito layered “output ceiling resolver” contract：
+   - authoritative provider-native metadata（Si existe）
    - curated static registry
    - bounded host/owner-aware inference
    - transient discovery metadata
    - conservative fallback
-2. 在 docs/tests/UI 中更清楚地区分三件事：
+2. en docs/tests/UI En 24 se distinguen mas claramente tres cosas.：
    - discovered model output ceiling
-   - 当前实际写入的 provider override
-   - 用户自己掌控的 global response cap
-3. 保持 fallback 行为 fail-closed：
-   - unresolved discovery 不能清空或降级已有的有效 provider override
-   - fallback 值必须继续显式标注为 fallback/manual-review 值
+   - Actualmente escrito provider override
+   - Controlado por los propios usuarios global response cap
+3. mantener fallback Comportamiento fail-closed：
+   - unresolved discovery No se pueden borrar o degradar los validos existentes provider override
+   - fallback Los valores deben seguir anotandose explicitamente como fallback/manual-review Valor
 
-## 7. 显式非目标
+## 7. No objetivos explicitos
 
-首批不要做这些事：
+No hagas estas cosas la primera vez：
 
-1. 持久化 provider model catalog；
-2. 增加 model CRUD management；
-3. 整体照搬 Cherry Studio 的 provider domain；
-4. 对所有 provider 宣称完整模型发现覆盖；
-5. 在隔离实现通道验证前，直接把半成品落到 main worktree。
-6. 把 generic `OpenAI Compatible` 的 token owner 推断扩写到 trusted host、显式 provider prefix 或其他有界可证场景之外。
+1. Persistencia provider model catalog；
+2. aumentar model CRUD management；
+3. Copia todo Cherry Studio de provider domain；
+4. A todos provider Reclame una cobertura completa de descubrimiento de modelos；
+5. Antes de implementar la verificacion del canal de forma aislada, deje caer el producto semiacabado directamente a main worktree。
+6. poner generic `OpenAI Compatible` de token owner Inferencia ampliada a trusted host、Explicito provider prefix O fuera de otros escenarios demostrables acotados。
 
-## 8. 执行规则
+## 8. Aplicacion de las normas
 
-执行应保持如下分工：
+La ejecucion debe mantener la siguiente division del trabajo.：
 
-1. `main` 只承载 docs/progress truth，并保持 clean；
-2. 当 control-plane 爆炸半径较大时，可以先在 isolated lane 中推进有界实现；
-3. 只有经过验证的、有界实现才合回主线。
+1. `main` Solo lleva docs/progress truth，y mantener clean；
+2. cuando control-plane Cuando el radio de explosion es grande, primero puedes isolated lane Promover una implementacion limitada en China；
+3. Solo las implementaciones verificadas y limitadas se devuelven a la linea principal.。
 
-这条线的验证证据：
+Evidencia de verificacion de esta linea.：
 
 1. targeted provider-settings/model-discovery tests；
-2. 完整的 `npm run build`；
-3. 完整的 `npm test -- --runInBand`；
+2. completo `npm run build`；
+3. completo `npm test -- --runInBand`；
 4. `npm run audit:i18n-ui`；
 5. `npm run audit:render-host`；
 6. `git diff --check`。
 
-这套流程既在开发期间保持了规划真值诚实，也避免把半验证的 control-plane 改动直接摊到当前 main 上。
+Este proceso no solo mantiene honesto el valor real del plan durante el desarrollo, sino que tambien evita la verificacion a medias. control-plane Los cambios se extienden directamente al presente. main en。

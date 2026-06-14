@@ -4,294 +4,294 @@ last_updated: 2026-06-06
 topic: packaging-semantic-convergence-progress-and-next-steps
 ---
 
-# Packaging / Semantic Convergence 进展深度对比与下一步落地方案
+# Packaging / Semantic Convergence Comparacion en profundidad del progreso y plan de implementacion del siguiente paso
 
-## 1. 范围与基线
+## 1. Alcance y linea de base
 
-在 2026-05-24 远端 `main` 被强制改写之后，这份文档新增了一个必须承担的职责：
+en 2026-05-24 remoto `main` Despues de ser reescrito a la fuerza, este documento agrego una nueva responsabilidad que debe asumirse：
 
-1. 描述 **当前 `origin/main` 真正发货的边界**；
-2. 防止先前晚于当前主线的分支进展被继续误写成“当前主线已落地”；
-3. 继续把 packaging / semantic-verification 轨道维持为当前最关键的架构主线。
+1. Descripcion **Actual `origin/main` Los limites del envio real**；
+2. Evite que el progreso de la rama posterior a la linea principal actual se escriba erroneamente como "la linea principal actual se ha implementado".”；
+3. Continuar con packaging / semantic-verification El mantenimiento de las vias es el hilo arquitectonico mas critico en la actualidad.。
 
-主要对比来源：
+Fuentes primarias de comparacion.：
 
 1. `.trellis/tasks/05-08-packaging-semantic-verification-convergence/prd.md`
 2. `docs/superpowers/plans/2026-05-03-mainline-stabilization-next-batch.*`
 3. `docs/superpowers/plans/2026-04-14-diagram-rendering-platform-roadmap.*`
 4. `docs/brainstorms/2026-05-02-progress-audit-and-next-direction.*`
-5. 当前 `origin/main` 上的真实代码
-6. 仅用于审计参考的本地备份分支 `backup/main-before-origin-force-20260524`
+5. Actual `origin/main` Codigo real activado
+6. Sucursal de respaldo local solo como referencia de auditoria `backup/main-before-origin-force-20260524`
 
-工作规则：
+Reglas de trabajo：
 
-- **当前发货真值** 只能来自重写后的 `origin/main`。
-- **备份分支真值** 只用于后续 reintegration 规划，不能再直接写成“当前主线已发货”。
+- **Valor de envio actual** Solo puede venir de reescrito `origin/main`。
+- **Valor de verdad de la rama de respaldo** Solo para uso de seguimiento reintegration La planificacion ya no se puede escribir directamente como “Se ha enviado la linea principal actual.”。
 
-## 2. 以当前 `origin/main` 为准的需求映射
+## 2. Toma la corriente `origin/main` Mapeo de requisitos basado en
 
-### PRD R1-R6 映射
+### PRD R1-R6 Mapeo
 
-| 需求 | 当前重写后 `main` 上的证据 | 状态 | 说明 |
+| Demanda | Despues de la reescritura actual `main` Evidencia sobre | Estado | Descripcion |
 |---|---|---|---|
-| R1 保持真实架构边界，不夸大隔离程度 | `esbuild.config.mjs`、`scripts/audit-render-host-bundle.js`、`docs/maintainer/release-workflow*.md`、`docs/maintainer/diagram-semantic-verification*.md` | 已满足 | 当前真值仍是单入口 `main.js` + 内联 `srcdoc`，不是已发货的独立运行时资产 |
-| R2 本轨道不重开 `diagram.generate` / `diagram.preview` / `provider.connection.test` 契约深度 | 当前语义改动仍限定在 helper/docs/tests，operation 表面保持独立 | 已满足 | packaging 轨道仍是契约与边界真值工作，不是 operation 语义重构 |
-| R3 维持可复用的 packaging-boundary 检查清单 | `scripts/diagram-semantic-verification.js` | 已满足 | helper 仍从真实构建配置与 release workflow 推导 packaging 真值 |
-| R4 保持 release / semantic 文档一致 | `docs/maintainer/diagram-semantic-verification*.md`、`docs/maintainer/release-workflow*.md` | 已满足 | 当前维护者文档对单入口 `srcdoc` 边界描述一致 |
-| R5 增加防漂移回归覆盖 | `src/tests/diagramSemanticVerificationScript.test.ts`、`src/tests/renderHostBundleAuditScript.test.ts`、`src/tests/iframeRenderHost.test.ts` | 已满足 | 当前回归测试仍锁定 helper 解析与 inline render-host 消费真值 |
-| R6 保持 host/CLI 结论诚实 | helper/docs 仍要求真实执行 `obsidian help` 与 `obsidian-cli help`，而不是推断成功 | 已满足 | 未在没有实测证据时扩大 desktop-session 结论 |
+| R1 Mantenga verdaderos limites arquitectonicos y no exagere el grado de aislamiento. | `esbuild.config.mjs`、`scripts/audit-render-host-bundle.js`、`docs/maintainer/release-workflow*.md`、`docs/maintainer/diagram-semantic-verification*.md` | Satisfecho | El valor verdadero actual sigue siendo una entrada unica. `main.js` + En linea `srcdoc`，No es un activo de tiempo de ejecucion independiente enviado |
+| R2 Esta pista no se reabrira `diagram.generate` / `diagram.preview` / `provider.connection.test` Profundidad del contrato | Los cambios semanticos actuales todavia se limitan a helper/docs/tests，operation Manten La Superficie Separada | Satisfecho | packaging Track sigue siendo un trabajo de verdad de contrato y limites, no operation Reconstruccion semantica |
+| R3 Mantenlo Reutilizable packaging-boundary Lista de verificacion | `scripts/diagram-semantic-verification.js` | Satisfecho | helper Imagen fija de la configuracion de compilacion real vs. release workflow Derivacion packaging Valor de verdad |
+| R4 mantener release / semantic Coherencia de la documentacion | `docs/maintainer/diagram-semantic-verification*.md`、`docs/maintainer/release-workflow*.md` | Satisfecho | Entrada del documento actual del mantenedor `srcdoc` Descripciones de limites consistentes |
+| R5 Agregue cobertura de regresion anti-deriva | `src/tests/diagramSemanticVerificationScript.test.ts`、`src/tests/renderHostBundleAuditScript.test.ts`、`src/tests/iframeRenderHost.test.ts` | Satisfecho | Las pruebas de regresion actuales todavia estan bloqueadas. helper Analisis y inline render-host Valor real del consumo |
+| R6 mantener host/CLI Conclusiones honestas | helper/docs Aun se requiere una verdadera implementacion `obsidian help` con `obsidian-cli help`，En lugar de inferir el exito | Satisfecho | No expandirse sin evidencia medida desktop-session Conclusion |
 
-### Acceptance Criteria 映射
+### Acceptance Criteria Mapeo
 
-| 验收项 | 证据 | 状态 |
+| Articulos de aceptacion | Evidencia | Estado |
 |---|---|---|
-| 模板包含显式 packaging-boundary 区块并描述当前真值 | `npm run verify:diagram-semantics` | 已满足 |
-| maintainer 文档与模板真值一致 | `docs/maintainer/*` 文案 | 已满足 |
-| 测试锁住 helper/docs/runtime-consumption 形态 | 定向 semantic + render-host 测试 | 已满足 |
-| 不引入 command/operation 语义漂移 | 当前 diff 范围 + operation 文件未被本轨道重开 | 已满足 |
+| La plantilla contiene informacion explicita packaging-boundary Bloquea y describe el valor de verdad actual. | `npm run verify:diagram-semantics` | Satisfecho |
+| maintainer Los valores de verdad del documento y la plantilla son consistentes. | `docs/maintainer/*` Redaccion publicitaria | Satisfecho |
+| Bloqueo de prueba helper/docs/runtime-consumption Formulario | Orientacion semantic + render-host Pruebas | Satisfecho |
+| No introducido command/operation Deriva semantica | Actual diff Alcance + operation El archivo no ha sido reabierto en esta pista. | Satisfecho |
 
-## 3. 2026-05-24 校正：当前主线到底在发什么
+## 3. 2026-05-24 Correccion: ¿Que esta pasando actualmente en la linea principal?
 
-### 3.1 当前代码真值
+### 3.1 Valor de verdad del codigo actual
 
-当前 `origin/main` 真正发货的是：
+Actual `origin/main` Lo que realmente se envia es：
 
-1. `esbuild.config.mjs` 中的单入口 `entryPoints: ["src/main.ts"]` 与 `outfile: "main.js"`；
-2. `IframeRenderHost` 生成的自包含 `htmlSrcdoc` 预览负载；
-3. `scripts/audit-render-host-bundle.js` 对构建后 `main.js` 中 inline render-host 标记的审计；
-4. maintainer 文档中明确写出的结论：`audit:render-host` 只能证明自包含的 `main.js + inline srcdoc` 契约。
+1. `esbuild.config.mjs` Entrada unica en `entryPoints: ["src/main.ts"]` con `outfile: "main.js"`；
+2. `IframeRenderHost` Generado autonomo `htmlSrcdoc` Vista previa de la carga util；
+3. `scripts/audit-render-host-bundle.js` Despues de construir `main.js` medio inline render-host Auditoria marcada；
+4. maintainer Conclusiones claramente expresadas en el documento.：`audit:render-host` Solo se puede probar la autocontencion `main.js + inline srcdoc` Contrato。
 
-### 3.2 哪些内容不能再被写成“当前主线已落地”
+### 3.2 ¿Que contenido ya no se puede escribir como "Se ha implementado la linea principal actual"?”
 
-以下内容现在必须被降级为 **备份分支证据**，而不是当前 `main` 真值：
+Lo siguiente ahora debe degradarse a **Copia de seguridad de la evidencia de la sucursal**，en lugar de actual `main` Valor de verdad：
 
-1. 已发货的 `main.js + render-host.mjs` 双资产运行时通道；
-2. 任何“当前主线已经进入 Stage-C dedicated runtime asset lane”的表述；
-3. 任何假定当前 release 资产或当前构建输出中包含 `render-host.mjs` 的进度文案。
+1. enviado `main.js + render-host.mjs` Canal de tiempo de ejecucion de doble activo；
+2. Cualquier "linea principal actual ha entrado Stage-C dedicated runtime asset lane”Expresion de；
+3. Cualquier suposicion de que la situacion actual release Contenido en activos o produccion de construccion actual `render-host.mjs` Redaccion publicitaria progresiva。
 
-### 3.3 为什么这次校正必须做
+### 3.3 ¿Por que es necesaria esta correccion?
 
-如果继续沿用先前更晚分支上的描述，文档会直接误导后续推进：
+Si continua utilizando la descripcion en la rama anterior y posterior, el documento enganara directamente el progreso posterior.：
 
-1. 维护者会误以为 packaging topology 已经比实际代码更成熟；
-2. 后续 reintegration 工作可能跳过本应重新验证的契约门禁；
-3. release 验证会逐步停止审视当前真正的单入口边界。
+1. Los mantenedores creeran erroneamente packaging topology Ya es mas maduro que el codigo real.；
+2. Seguimiento reintegration La obra puede saltarse puertas de escrituracion que conviene revalidar；
+3. release La verificacion dejara gradualmente de observar el verdadero limite actual de entrada unica.。
 
-## 4. 相对先前方案的深度对比
+## 4. Comparacion en profundidad con soluciones anteriores
 
-### 4.1 当前 `main` 上真正仍然成立的部分
+### 4.1 Actual `main` La parte anterior que realmente sigue siendo cierta
 
-1. semantic helper 仍然是有效的 anti-drift 控制面；
-2. packaging-boundary 文案仍然显式且边界真实；
-3. inline render-host 路径仍然被代码与测试锁定；
-4. 下一条架构关键路径仍然是 packaging/runtime topology，而不是再做泛化 UI 摇摆。
+1. semantic helper Sigue vigente anti-drift Superficie de control；
+2. packaging-boundary La copia sigue siendo explicita y los limites son verdaderos.；
+3. inline render-host Los caminos todavia estan bloqueados por codigo y pruebas.；
+4. El proximo camino critico arquitectonico permanece packaging/runtime topology，En lugar de generalizar UI Columpio。
 
-### 4.2 没有保留在当前 `main` 上的部分
+### 4.2 No retenido en la actualidad. `main` Parte arriba
 
-相较于本地备份分支：
+En comparacion con las sucursales de respaldo locales：
 
-1. 更晚的 dedicated runtime-asset 通道没有保留下来；
-2. 更晚的 unified follow-through 进度文档没有保留下来；
-3. 更晚的 maintainer-bridge help-truth 收口没有保留下来；
-4. 因此，更晚的 Stage-C 进展文案现在只能作为 reintegration 输入，不能继续充当当前主线证据。
+1. Mas tarde dedicated runtime-asset Canales no conservados.；
+2. Mas tarde unified follow-through Los documentos de progreso no se conservan.；
+3. Mas tarde maintainer-bridge help-truth Cierre no mantenido；
+4. Por lo tanto, mas tarde Stage-C La copia de progreso ahora solo funciona como reintegration Las aportaciones no pueden seguir sirviendo como prueba para la linea principal actual.。
 
-### 4.3 当前正确解释
+### 4.3 Interpretacion correcta actual
 
-对重写后的 `main`，应统一理解为：
+Despues de reescribir `main`，Debe entenderse como：
 
-1. 当前 live 轨道仍是 Stage-B packaging / semantic convergence；
-2. 当前 runtime 真值比后来的备份分支更窄；
-3. 未来任何拓宽都必须重新在当前主线上补齐代码、测试、审计与文档证明。
+1. Actual live Restos orbitales Stage-B packaging / semantic convergence；
+2. Actual runtime El valor real es mas limitado que la rama de respaldo posterior.；
+3. Cualquier expansion futura debera reponer el codigo, las pruebas, la auditoria y la documentacion en la linea principal actual.。
 
-## 5. 下一阶段具体落盘方案
+## 5. Plan de implementacion especifico para la siguiente etapa
 
-### Priority 0：先把“当前主线真值”重新对齐
+### Priority 0：Primero realinee el "valor verdadero de la linea principal actual"
 
-1. 保持本文件、maintainer 文档与新的统一推进矩阵都对齐到当前单入口 `srcdoc` 真值。
-2. 不要再把备份分支文案原样拿来当当前主线结论。
-3. 每次 packaging 文案变化，都同步检查 `change.md` 与所有当前进度文档。
+1. Conserva este documento、maintainer La documentacion y la nueva matriz de avance unificada estan alineadas con la entrada unica actual `srcdoc` Valor de verdad。
+2. No utilice la copia de la rama de respaldo como conclusion de la linea principal actual.。
+3. cada vez packaging Todos los cambios de redaccion se comprobaran simultaneamente. `change.md` Documentacion con todos los avances actuales.。
 
-### Priority 0.5：补齐 clean-state 守护
+### Priority 0.5：completo clean-state guardia
 
-1. 忽略本地 vault/runtime 生成物，避免每次本机 Obsidian 验证后都把仓库弄脏。
-2. 保持发布级验证收尾必须看到真正 clean 的 `git status --short --branch`。
+1. Ignorar locales vault/runtime Genera objetos para evitar la localizacion cada vez. Obsidian El almacen esta sucio despues de la verificacion.。
+2. Mantener cerca la validacion a nivel de version debe parecer real clean de `git status --short --branch`。
 
-### Priority 1：继续做有界 packaging 跟进
+### Priority 1：Sigue haciendo cosas con limites packaging Seguimiento
 
-1. 在当前 `main` 上继续维持 helper/parser/test/doc 的一致性。
-2. 只有当 build graph、release assets 与 runtime-consumption 路径同批变动时，才允许拓宽 packaging topology。
-3. 如果未来再次引入 `render-host.mjs`，必须把它当成“当前主线上的新实现切片”重新落地，而不是视为旧结论天然有效。
-4. 在当前单入口主线上，latent runtime helper 必须保持 fail-closed：除非 dedicated asset 被显式配置且同批真实发货，否则不要在 helper 代码里默认合成 `render-host.mjs` 运行时路径。
+1. En el presente `main` Continuar manteniendo helper/parser/test/doc Consistencia。
+2. Solo si build graph、release assets con runtime-consumption La expansion solo se permite cuando las rutas se cambian en el mismo lote. packaging topology。
+3. Si se vuelve a introducir en el futuro `render-host.mjs`，Debe volverse a implementar como una "nueva porcion de implementacion en la linea principal actual" en lugar de como la conclusion anterior es naturalmente valida.。
+4. En la linea principal actual de entrada unica，latent runtime helper Debe mantenerse fail-closed：A menos que dedicated asset Ser configurado explicitamente y enviado en el mismo lote; de lo contrario, no helper Sintesis predeterminada en el codigo. `render-host.mjs` Ruta de tiempo de ejecucion。
 
-### 2026-05-28 增量：helper 现已显式覆盖 fail-closed 的 latent runtime helper 真值
+### 2026-05-28 Incremento：helper Ahora explicitamente anulado fail-closed de latent runtime helper Valor de verdad
 
-这条当前主线上的 anti-drift 缺口现已在代码、测试与维护文档中补齐：
+En esta linea principal actual anti-drift Ahora se han completado las lagunas en el codigo, las pruebas y la documentacion de mantenimiento.：
 
-1. `src/rendering/preview/renderHostRuntimeClient.ts` 不再默认合成任何 standalone runtime URL/path；它只会返回显式配置的 module specifier，否则返回 `null`。
-2. `scripts/diagram-semantic-verification.js` 现在会直接读取 `src/rendering/preview/renderHostRuntimeClient.ts`，并在 packaging-boundary 检查清单中把这条 fail-closed 真值变成可执行检查项。
-3. `src/tests/diagramSemanticVerificationScript.test.ts` 现在同时回归锁定：
-   - 当前仓库真值（未显式配置时 `resolveBundledRenderHostRuntimeModuleSpecifier()` 返回 `null`）；
-   - helper 源文件无法读取时的 fallback 文案。
-4. 维护者 runbook 现已把这条新增真值源写清，确保 release/semantic verification 不再只停留在 build-output + audit 真值层面。
+1. `src/rendering/preview/renderHostRuntimeClient.ts` Ya no sintetizas nada por defecto standalone runtime URL/path；Solo volvera configurado explicitamente module specifier，De lo contrario regresa `null`。
+2. `scripts/diagram-semantic-verification.js` Ahora leera directamente `src/rendering/preview/renderHostRuntimeClient.ts`，y en packaging-boundary Pon esto en tu lista de verificacion fail-closed Los valores verdaderos se convierten en controles ejecutables.。
+3. `src/tests/diagramSemanticVerificationScript.test.ts` Ahora vuelve al encierro al mismo tiempo.：
+   - El valor real del almacen actual (cuando no esta configurado explicitamente `resolveBundledRenderHostRuntimeModuleSpecifier()` Regreso `null`）；
+   - helper Cuando el archivo fuente no se puede leer fallback Redaccion publicitaria。
+4. mantenedor runbook Esta nueva fuente de valor de verdad ahora se ha escrito claramente para garantizar release/semantic verification Ya no te limites a detenerte en build-output + audit Nivel de verdad。
 
-### 2026-06-06 增量：render-host packaging contract 现在有了单一代码真值源
+### 2026-06-06 Incremento：render-host packaging contract Ahora existe una unica fuente de verdad para el codigo.
 
-source/build/audit 边界上另一处 anti-drift 缺口现在也已经补齐：
+source/build/audit Otro lugar en la frontera anti-drift El vacio ya se ha llenado：
 
-1. `scripts/lib/packaging-contract.js` 现在定义了共享的 packaging contract 常量，覆盖：
-   - 当前主 bundle 输出文件；
-   - inline render-host 审计所要求的标记；
-   - 当前单入口 lane 上禁止出现的 standalone render-host 输出文件；
-   - 构建后 bundle 内禁止出现的 standalone render-host 引用正则。
-2. `esbuild.config.mjs` 现在会复用这份共享 contract，在构建前清理 stale 的 standalone render-host 输出。
-3. `scripts/audit-render-host-bundle.js` 现在也复用同一份共享 contract，不再自己维护第二套 render-host marker、standalone output filename 或 standalone reference regex 副本。
-4. `scripts/diagram-semantic-verification.js` 在无法直接读取 audit script 时，也会回退到同一份共享 contract 常量，而不再保留第三套彼此分离的默认副本。
-5. 定向回归测试现在已显式锁定这条 ownership 边界：
-   - `src/tests/renderHostBundleAuditScript.test.ts` 会验证 audit helper 确实复用了共享 contract 常量，包括 reference regex；
-   - `src/tests/diagramSemanticVerificationScript.test.ts` 会验证 helper 推导出的 audit facts 继续与这份共享 contract 对齐。
+1. `scripts/lib/packaging-contract.js` Ahora lo compartido packaging contract Constante, anulacion：
+   - Propietario actual bundle Archivo de salida；
+   - inline render-host Marcas requeridas para la auditoria；
+   - Entrada unica actual lane Prohibido aparecer en standalone render-host Archivo de salida；
+   - Despues de construir bundle Prohibido dentro de 0. standalone render-host Reglas de referencia。
+2. `esbuild.config.mjs` Esta accion ahora se reutilizara. contract，Limpiar antes de construir stale de standalone render-host Salida。
+3. `scripts/audit-render-host-bundle.js` Ahora tambien reutiliza la misma accion. contract，Ya no tendras que mantener el segundo juego tu mismo render-host marker、standalone output filename o standalone reference regex Copias。
+4. `scripts/diagram-semantic-verification.js` No puedo leer directamente audit script tambien volvera a caer en la misma proporcion contract Constantes en lugar de mantener un tercer conjunto de copias predeterminadas separadas。
+5. Las pruebas de regresion dirigida ahora bloquean explicitamente esto ownership Limites：
+   - `src/tests/renderHostBundleAuditScript.test.ts` Verificara audit helper De hecho, las acciones se reutilizan. contract Constantes, incluyendo reference regex；
+   - `src/tests/diagramSemanticVerificationScript.test.ts` Verificara helper Derivado audit facts Continuar compartiendo con esto. contract Alineacion。
 
-正确解释：
+Explicacion correcta：
 
-1. 当前发货 topology 没有变化；
-2. 真正重要的变化是 ownership discipline：未来如果再改 render-host packaging boundary，常量真值不再散落在三处手工副本里，而是只有一个 canonical source。
+1. Envio actual topology Sin cambios；
+2. Los cambios realmente importantes son ownership discipline：Si vuelve a cambiar en el futuro render-host packaging boundary，El valor de verdad constante ya no esta disperso en tres copias manuales, sino solo en una. canonical source。
 
-### 2026-06-06 后续增量：semantic packaging facts 现在会跟着真实 bundle-config owner 走
+### 2026-06-06 Incrementos posteriores：semantic packaging facts Ahora seguira la verdad. bundle-config owner ir
 
-这次 ownership 收口还顺带暴露并补齐了另一处真实 anti-drift 问题：
+Esta vez ownership El cierre tambien expone y completa otra verdad. anti-drift Pregunta：
 
-1. 当前 `esbuild.config.mjs` 已不再保留顶层字面量 `entryPoints` / `outfile`，而是把 build 真值委托给 `scripts/lib/esbuild-bundle-config.js`。
-2. `scripts/diagram-semantic-verification.js` 现在已经反映这条架构真值，而不再假定所有字面量只会存在于 `esbuild.config.mjs`。
-3. packaging facts 的推导现在采用两段式有界策略：
-   - 如果 `esbuild.config.mjs` 里仍有字面量 entry/output 字段，就直接解析；
-   - 如果顶层配置只是委托给共享 helper，就回退到 `scripts/lib/esbuild-bundle-config.js` 继续解析。
-4. `src/tests/diagramSemanticVerificationScript.test.ts` 现在同时回归锁定当前仓库形态与 helper-fallback 形态，避免 semantic verifier 再次落后于真实 build owner。
+1. Actual `esbuild.config.mjs` Los literales de nivel superior ya no se conservan `entryPoints` / `outfile`，En su lugar, pon build Valor de verdad delegado a `scripts/lib/esbuild-bundle-config.js`。
+2. `scripts/diagram-semantic-verification.js` Esta verdad arquitectonica ahora se refleja, en lugar de asumir que todos los literales solo existiran en `esbuild.config.mjs`。
+3. packaging facts La derivacion de now utiliza una estrategia acotada de dos etapas.：
+   - Si `esbuild.config.mjs` Todavia hay literales en entry/output Campo, simplemente analicelo directamente；
+   - Si la configuracion de nivel superior solo se delega a recursos compartidos helper，Simplemente vuelve a `scripts/lib/esbuild-bundle-config.js` Continuar analizando。
+4. `src/tests/diagramSemanticVerificationScript.test.ts` Ahora regrese a bloquear la forma actual del almacen y helper-fallback Formar, evitar semantic verifier Volver a quedarse atras de la realidad build owner。
 
-正确解释：
+Explicacion correcta：
 
-1. 这批工作依旧没有拓宽 packaging topology；
-2. 但它进一步收紧了 source/build/helper contract：semantic verifier 现在跟随真实 build owner，而不再依赖已经过时的文件形态假设。
+1. Este lote de trabajo aun no ha sido ampliado. packaging topology；
+2. Pero se apreto aun mas source/build/helper contract：semantic verifier Sigue la verdad ahora build owner，En lugar de confiar en suposiciones obsoletas sobre la morfologia de los archivos。
 
-### 2026-06-06 最终增量：release tag 与 release-notes 真值也已进入同一份 shared packaging contract
+### 2026-06-06 Incremento final：release tag con release-notes El valor verdadero tambien ha entrado en la misma copia. shared packaging contract
 
-当前 packaging/release 边界上的另一处 anti-drift 缺口现在也已补齐：
+Actual packaging/release Otro lugar en la frontera anti-drift El vacio ya se ha llenado：
 
-1. `scripts/lib/packaging-contract.js` 现在还负责承载：
-   - 数字版 release tag 的 regex source；
-   - 规范的 release-notes 目录与中英文文件后缀；
-   - 一个可按 tag 推导英文 / 简体中文 release-notes 路径的 helper。
-2. `scripts/release/publish-github-release.js` 现在会从同一份 shared packaging contract 派生：
+1. `scripts/lib/packaging-contract.js` Ahora tambien responsable de llevar：
+   - Edicion digital release tag de regex source；
+   - normativo release-notes Directorio y sufijos de archivos en chino e ingles.；
+   - Un clic tag Derivar ingles / Chino simplificado release-notes Camino helper。
+2. `scripts/release/publish-github-release.js` Ahora del mismo shared packaging contract Derivado：
    - `OBSIDIAN_RELEASE_TAG_PATTERN`；
-   - `<tag>.md` / `<tag>.zh-CN.md` 这两条 release notes 路径；
-   而不再各自手写一份本地副本。
-3. `scripts/diagram-semantic-verification.js` 现在也会使用同一份 shared release-tag pattern 与 release-notes path resolver，在 packaging-contract checklist 中输出 release 真值。
-4. 定向回归测试现在已锁定这条 contract：
-   - `src/tests/githubReleaseWorkflow.test.ts` 会验证 release helper 复用的是共享的 release-asset 与 release-tag contract；
-   - `src/tests/diagramSemanticVerificationScript.test.ts` 会验证 semantic helper 推导出的 release-contract facts 与 release-notes checklist 文案继续和这份 shared contract 对齐。
+   - `<tag>.md` / `<tag>.zh-CN.md` Estos dos elementos release notes Camino；
+   En lugar de que cada uno escriba a mano una copia local。
+3. `scripts/diagram-semantic-verification.js` Se utilizara el mismo ahora. shared release-tag pattern con release-notes path resolver，en packaging-contract checklist Produccion media release Valor de verdad。
+4. Las pruebas de regresion dirigida ahora bloquean esto contract：
+   - `src/tests/githubReleaseWorkflow.test.ts` Verificara release helper Lo que se reutiliza se comparte release-asset con release-tag contract；
+   - `src/tests/diagramSemanticVerificationScript.test.ts` Verificara semantic helper Derivado release-contract facts con release-notes checklist La copia continua con esto. shared contract Alineacion。
 
-正确解释：
+Explicacion correcta：
 
-1. 当前 release 行为没有变化；
-2. 但 ownership model 更紧了：release assets、release tag 规则与 release-notes 路径真值现在会一起演进，不再在 helper、测试和文档之间各自漂移。
+1. Actual release Ningun cambio de comportamiento；
+2. Pero ownership model Mas apretado：release assets、release tag Reglas y release-notes Los valores de la verdad del camino ahora evolucionan juntos, ya no helper、Deriva entre pruebas y documentacion.。
 
-### 2026-06-06 Workflow 增量：CI tag 校验现在也复用已检入 helper 路径
+### 2026-06-06 Workflow Incremento：CI tag La verificacion ahora tambien reutiliza lo registrado helper Camino
 
-当前 release-truth 上最后一处明显的重复定义现在也被移除了：
+Actual release-truth La ultima definicion duplicada obvia anterior ahora se ha eliminado.：
 
-1. `.github/workflows/release.yml` 不再把一段 YAML 内联 shell regex 当成唯一的 release-tag 权威校验入口。
-2. publish workflow 现在会先 checkout 仓库中的 workflow sources，再在 checkout release ref 之前执行 `node scripts/release/validate-release-tag.js "$TAG_NAME"`。
-3. 这个 wrapper 会继续委托 `scripts/release/publish-github-release.js` 里的 `validateReleaseTag(...)`，而后者本身已经从 `scripts/lib/packaging-contract.js` 派生 regex 真值。
-4. `src/tests/githubReleaseWorkflow.test.ts` 现在会同时锁定：
-   - workflow 已改为调用 checked-in 的 tag-validation helper；
-   - wrapper 自身对纯数字 tag 与 `v` 前缀 tag 的 pass/fail 行为。
+1. `.github/workflows/release.yml` Ya no poner un parrafo YAML En linea shell regex Se el unico release-tag Entrada de verificacion autorizada.。
+2. publish workflow Ahora lo hare checkout En el almacen workflow sources，Otra vez checkout release ref Antes de la ejecucion `node scripts/release/validate-release-tag.js "$TAG_NAME"`。
+3. Esto wrapper Seguira delegando `scripts/release/publish-github-release.js` dentro `validateReleaseTag(...)`，Este ultimo ha evolucionado a partir de `scripts/lib/packaging-contract.js` Derivado regex Valor de verdad。
+4. `src/tests/githubReleaseWorkflow.test.ts` Ahora bloquea ambos：
+   - workflow Se ha cambiado para llamar. checked-in de tag-validation helper；
+   - wrapper Uno mismo versus numeros puros tag con `v` Prefijo tag de pass/fail Comportamiento。
 
-正确解释：
+Explicacion correcta：
 
-1. 从维护者视角看，release 行为没有变化；
-2. 但关键变化在于：CI 现在消费的是同一个 repo-owned tag-validation entrypoint，而不再在 YAML 里 shadow 一段本地 regex。
+1. Desde la perspectiva del mantenedor，release Ningun cambio de comportamiento；
+2. Pero el cambio clave es que：CI Ahora consumiendo lo mismo repo-owned tag-validation entrypoint，Ya no YAML millas shadow Un area local regex。
 
-### 2026-06-06 Branch-Target 增量：workflow source 与 chronicle target 现在共享 release contract 真值
+### 2026-06-06 Branch-Target Incremento：workflow source con chronicle target Comparte ahora release contract Valor de verdad
 
-下一个 release/chronicle anti-drift 缺口现在也已补齐，而且没有改变发货拓扑：
+Siguiente release/chronicle anti-drift El vacio ahora se ha llenado y la topologia de envio no ha cambiado.：
 
-1. `scripts/lib/packaging-contract.js` 现在同时拥有：
+1. `scripts/lib/packaging-contract.js` Ahora tienes ambos：
    - `RELEASE_WORKFLOW_SOURCE_BRANCH`；
    - `RELEASE_CHRONICLE_REFRESH_TARGET_BRANCH`。
-2. `.github/workflows/release.yml` 现在通过显式 workflow env 名表达这两个分支角色：
+2. `.github/workflows/release.yml` Ahora por explicito workflow env Nombres que expresan estos dos roles ramificados.：
    - `NOTEMD_RELEASE_WORKFLOW_SOURCE_BRANCH`；
    - `NOTEMD_RELEASE_CHRONICLE_TARGET_BRANCH`。
-3. `scripts/release/commit-chronicle-refresh.js` 现在从 shared contract 派生默认 push 目标，并支持 `--target-branch` 供显式修复流程使用。
-4. `scripts/diagram-semantic-verification.js` 现在会按配置化分支契约验证 workflow-source checkout 与 chronicle refresh 链路，而不是在 helper 内部继续硬编码 `main` 检查。
-5. 回归覆盖现在锁定了这条边界：
-   - `src/tests/githubReleaseWorkflow.test.ts` 检查 workflow env contract 与 target-branch handoff；
-   - `src/tests/commitChronicleRefreshScript.test.ts` 检查 chronicle helper 的 shared 默认值与显式 override 解析；
-   - `src/tests/diagramSemanticVerificationScript.test.ts` 检查 semantic helper 的 configured-branch facts 与文档引用。
+3. `scripts/release/commit-chronicle-refresh.js` Ahora desde shared contract Incumplimiento derivado push Metas y apoyo `--target-branch` Para uso en procesos de reparacion explicitos。
+4. `scripts/diagram-semantic-verification.js` Ahora se verificara el contrato de sucursal segun la configuracion. workflow-source checkout con chronicle refresh Enlace, no en helper Continue codificando internamente `main` Inspeccion。
+5. La cobertura de devolucion ahora bloquea este limite.：
+   - `src/tests/githubReleaseWorkflow.test.ts` Inspeccion workflow env contract con target-branch handoff；
+   - `src/tests/commitChronicleRefreshScript.test.ts` Inspeccion chronicle helper de shared Predeterminado versus explicito override Analisis；
+   - `src/tests/diagramSemanticVerificationScript.test.ts` Inspeccion semantic helper de configured-branch facts Referencias a la documentacion.。
 
-正确解释：
+Explicacion correcta：
 
-1. 当前 release 行为仍然以 `main` 为目标；
-2. 真正变化的是 ownership：workflow-source 与 chronicle-target 分支真值现在会跟 release assets、tag 与 notes 真值一起演进；
-3. GitHub Actions 在首次 checkout 前仍需要 bootstrap env 值，因此 workflow 不可能在那一步直接 import 仓库 JS；防止 YAML-local 漂移的是仓库内 contract 与测试。
+1. Actual release El comportamiento todavia se basa en `main` Gol；
+2. Lo que realmente cambia es ownership：workflow-source con chronicle-target Ahora seguiran los valores de verdad de las ramas. release assets、tag con notes Los valores de verdad evolucionan juntos；
+3. GitHub Actions Por primera vez checkout Aun es necesario antes bootstrap env valor, por lo tanto workflow Es imposible directamente import almacen JS；para prevenir YAML-local Lo que esta a la deriva esta dentro del almacen. contract Y probando。
 
-### 2026-06-06 Trigger-Glob 增量：release workflow 的 tag trigger 现在也由 contract 支撑
+### 2026-06-06 Trigger-Glob Incremento：release workflow de tag trigger Ahora tambien por contract Apoyo
 
-上一轮 branch-target 收口之后，release workflow 里仍留着一个小但真实的重复定义：YAML trigger list 还在独自拥有 tag wildcard 字面量。
+Ronda anterior branch-target Despues de cerrar la boca，release workflow Queda una pequena pero cierta definicion de repeticion en：YAML trigger list Todavia lo poseo solo tag wildcard Literales。
 
-这次以有界方式补齐了这处缺口：
+Esta vez el hueco se lleno de forma acotada.：
 
-1. `scripts/lib/packaging-contract.js` 现在拥有：
+1. `scripts/lib/packaging-contract.js` Ahora tienes：
    - `RELEASE_WORKFLOW_TAG_TRIGGER_GLOB`；
    - `RELEASE_WORKFLOW_DISALLOWED_TAG_TRIGGER_GLOBS`。
-2. `.github/workflows/release.yml` 仍保留 `*.*.*` 字面量，因为 GitHub Actions 必须在 checkout 仓库 JavaScript 之前解析 event triggers。
-3. `scripts/diagram-semantic-verification.js` 现在从 shared contract 推导 workflow trigger facts，并能识别 `v*.*.*` / `V*.*.*` 这类被禁止的 trigger 漂移。
-4. 回归覆盖现在同时锁住两条路径：
-   - `src/tests/githubReleaseWorkflow.test.ts` 验证 workflow bootstrap 字面量与 shared contract 一致，且不包含被禁止的 trigger glob；
-   - `src/tests/diagramSemanticVerificationScript.test.ts` 验证 helper 输出、fallback facts 与 drift fixture 都继续对齐同一份 contract。
-5. 维护者文档现在明确区分 trigger-start 行为与 release 准入：
-   - wildcard 只决定 release workflow 是否启动；
-   - 已检入的 tag validator 仍是真正的纯数字 `x.x.x` 准入点。
+2. `.github/workflows/release.yml` permanecer `*.*.*` Literal, porque GitHub Actions Debe estar en checkout almacen JavaScript Analisis previo event triggers。
+3. `scripts/diagram-semantic-verification.js` Ahora desde shared contract Derivacion workflow trigger facts，Y poder identificar `v*.*.*` / `V*.*.*` Tales prohibidos trigger Deriva。
+4. La cobertura de devolucion ahora bloquea ambas rutas simultaneamente：
+   - `src/tests/githubReleaseWorkflow.test.ts` Verificacion workflow bootstrap Literal vs. shared contract Consistente y no contiene prohibidos. trigger glob；
+   - `src/tests/diagramSemanticVerificationScript.test.ts` Verificacion helper Salida、fallback facts con drift fixture Continue alineando la misma copia. contract。
+5. La documentacion del mantenedor ahora diferencia claramente trigger-start Comportamiento y release Admision：
+   - wildcard Solo decide release workflow Ya sea para comenzar；
+   - Registrado tag validator Numeros todavia realmente puros `x.x.x` Puntos de acceso。
 
-正确解释：
+Explicacion correcta：
 
-1. 当前 release 行为没有变化；
-2. 这次补齐的是 ownership 缺口，并没有假装 GitHub Actions YAML 能在 checkout 前动态 import 仓库 JavaScript；
-3. release workflow trigger、tag validation、release notes、release assets、workflow-source branch 与 chronicle-target branch 现在都处在同一条 repo-side anti-drift contract 下。
+1. Actual release Ningun cambio de comportamiento；
+2. Lo que se complementa esta vez es ownership Muesca, sin pretensiones GitHub Actions YAML Puede estar en checkout Noticias anteriores import almacen JavaScript；
+3. release workflow trigger、tag validation、release notes、release assets、workflow-source branch con chronicle-target branch Estamos todos en la misma situacion ahora repo-side anti-drift contract abajo。
 
-### 2026-06-06 Production-Build 增量：render-host build helper 继续保持 candidate-only
+### 2026-06-06 Production-Build Incremento：render-host build helper Sigue asi candidate-only
 
-下一处 source/build 歧义现在也已经通过代码、helper 输出与文档锁住：
+Siguiente lugar source/build La ambiguedad ahora tambien se transmite a traves del codigo.、helper Bloqueo de salida y documentos.：
 
-1. `src/tests/esbuildBundleConfig.test.ts` 现在证明 production `esbuild.config.mjs` 路径只消费 `createMainBundleBuildOptions()`，不消费 `createRenderHostBundleBuildOptions()`。
-2. 同一个测试还会验证 candidate render-host 输出文件继续列在 `RENDER_HOST_STANDALONE_OUTPUT_FILES` 中，并且不在 `REQUIRED_RELEASE_ASSET_FILES` 中。
-3. `scripts/diagram-semantic-verification.js` 现在会生成一条 packaging-boundary 检查项，要求 `createRenderHostBundleBuildOptions()` 保持 candidate-only；除非 standalone render-host release assets、audit logic 与 docs 同批前进，否则不能把它写成当前发货路径。
-4. maintainer semantic-verification 与 release-workflow 文档现在也明确写出这条 helper 分层，避免后续仅因为源码里存在候选 helper，就误判当前已经发货 standalone runtime。
+1. `src/tests/esbuildBundleConfig.test.ts` Ahora prueba production `esbuild.config.mjs` El camino solo consume `createMainBundleBuildOptions()`，No gastar `createRenderHostBundleBuildOptions()`。
+2. La misma prueba tambien verifica candidate render-host Los archivos de salida continuan apareciendo en `RENDER_HOST_STANDALONE_OUTPUT_FILES` en, y no en `REQUIRED_RELEASE_ASSET_FILES` medio。
+3. `scripts/diagram-semantic-verification.js` Ahora un packaging-boundary Verificar articulos, requisitos. `createRenderHostBundleBuildOptions()` mantener candidate-only；A menos que standalone render-host release assets、audit logic con docs Avanzar con el mismo lote, de lo contrario no se puede escribir como ruta de envio actual。
+4. maintainer semantic-verification con release-workflow El documento ahora establece claramente esto helper Capas para evitar problemas posteriores solo porque hay candidatos en el codigo fuente helper，Error de calculo de que ha sido enviado standalone runtime。
 
-正确解释：
+Explicacion correcta：
 
-1. 当前发货 topology 仍未改变：`main.js` + inline `srcdoc`；
-2. 这次真正收紧的是：source-only render-host build helper 的候选状态现在已经是可执行 contract，而不再只是路线图文案；
-3. 如果未来要提升 `render-host.mjs`，必须同批修改 production build、release assets、audit rules 与 docs。
+1. Envio actual topology Aun sin cambios：`main.js` + inline `srcdoc`；
+2. Lo que realmente apreto esta vez fue：source-only render-host build helper El estado candidato ahora es ejecutable contract，Ya no es solo una copia de la hoja de ruta；
+3. Si quieres mejorar en el futuro `render-host.mjs`，Debe modificarse en el mismo lote. production build、release assets、audit rules con docs。
 
-### Priority 2：把备份分支的 Stage-C 工作视为 reintegration 候选
+### Priority 2：Ramifica la copia de seguridad Stage-C Trabajo considerado como reintegration Candidato
 
-以下切片未来仍可能值得回灌，但都必须在当前 `main` 上重新证明：
+Es posible que valga la pena reutilizar los siguientes fragmentos en el futuro, pero deben estar actualizados. `main` Reprobar en：
 
-1. dedicated runtime asset 跟进；
-2. maintainer-bridge help-truth 收口；
-3. 任何依赖后续 packaging 通道的更广 CLI/public-surface 加固。
+1. dedicated runtime asset Seguimiento；
+2. maintainer-bridge help-truth De cerca；
+3. Cualquier dependencia posterior packaging Canales mas amplios CLI/public-surface Refuerzo。
 
-## 6. 风险与控制
+## 6. Riesgos y controles
 
-1. **风险：** 文档又回到更晚分支的措辞。
-   **控制：** 每条“已落地”的 packaging 结论都必须绑定当前 `esbuild.config.mjs`、当前 maintainer 文档与当前测试。
-2. **风险：** 后续 reintegration 误以为缺失代码仍在当前主线。
-   **控制：** 在每一份路线图/进度文档里持续区分“当前 `main` 真值”与“备份分支证据”。
-3. **风险：** 本地验证持续污染工作区，掩盖真实 diff。
-   **控制：** 持续忽略本地 vault/runtime 生成物，并在批次末尾验证 clean status。
+1. **Riesgos：** La documentacion vuelve a la redaccion de la rama posterior.。
+   **controlar：** Cada “implementado” packaging Las conclusiones deben estar ligadas a la actualidad. `esbuild.config.mjs`、Actual maintainer Documentacion y pruebas actuales。
+2. **Riesgos：** Seguimiento reintegration Creer erroneamente que el codigo que falta todavia esta en la linea principal actual。
+   **controlar：** En cada hoja de ruta/Continuar distinguiendo entre "actual `main` "Valor real" y "evidencia de la rama de respaldo"”。
+3. **Riesgos：** La verificacion local continua contaminando el espacio de trabajo y oscureciendo la verdad. diff。
+   **controlar：** Ignorar continuamente a los locales vault/runtime Generar producto y verificar al final del lote. clean status。
 
-## 7. 结论
+## 7. Conclusion
 
-当前被重写后的 `main` 仍然处于一个有效且可验证的 packaging / semantic-verification 状态，但它 **比后来的备份分支更窄**：
+Actualmente reescrito `main` Aun en estado valido y verificable. packaging / semantic-verification estado, pero **Ramas de respaldo mas estrechas que las posteriores**：
 
-1. live 发货边界仍是单入口 `main.js` + inline `srcdoc`；
-2. semantic/helper/doc 的 anti-drift 控制面仍然真实存在；
-3. 下一步最有意义的架构推进仍然是 packaging-boundary follow-through，只是这次必须在 force rewrite 之后更严格地区分当前主线真值。
+1. live La frontera de envio sigue siendo una entrada unica `main.js` + inline `srcdoc`；
+2. semantic/helper/doc de anti-drift El plano de control sigue siendo real.；
+3. El siguiente avance arquitectonico mas significativo sigue siendo packaging-boundary follow-through，Solo que esta vez debe ser force rewrite En el futuro se distinguira mas estrictamente el verdadero valor de la linea principal actual.。

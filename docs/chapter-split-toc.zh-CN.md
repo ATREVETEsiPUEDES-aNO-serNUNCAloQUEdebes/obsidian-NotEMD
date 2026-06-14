@@ -1,14 +1,14 @@
-# 章节拆分 + TOC 提取
+# Division del capitulo + TOC Extraccion
 
-![章节拆分 + TOC 效果图](./assets/chapter-split-toc-showcase.svg)
+![Division del capitulo + TOC Representaciones](./assets/chapter-split-toc-showcase.svg)
 
-当一篇笔记已经长到不适合继续在单文件里维护时，这个功能会在原文件旁生成章节文件、TOC 和一份 manifest。
+Cuando una nota es demasiado larga para mantenerla en un solo archivo, esta funcion generara un archivo de capitulo junto al archivo original.、TOC Y una racion manifest。
 
-它按标题结构拆分内容，保留章节之间的链接关系，也给重复执行留出了边界。你不需要手工复制标题，也不用自己维护目录文件。
+Divide el contenido segun la estructura del titulo, conserva la relacion de vinculo entre capitulos y tambien deja un limite para la ejecucion repetida. No es necesario copiar manualmente los titulos ni mantener los archivos de la tabla de contenidos usted mismo.。
 
-## 输出结构
+## Estructura de salida
 
-执行后会生成下面这组文件：
+Despues de la ejecucion, se generara el siguiente conjunto de archivos.：
 
 ```text
 Docs/Platform.md
@@ -19,7 +19,7 @@ Docs/Platform.md
    └─ .notemd-chapter-split.json
 ```
 
-## TOC 示例片段
+## TOC Fragmento de muestra
 
 ```md
 ---
@@ -38,26 +38,26 @@ chapterCount: 2
 - [[Docs/Platform_chapters/02-delivery|02. Delivery]]
 ```
 
-这里有几个实现上的关键点：
+Aqui hay varios puntos clave en la implementacion.：
 
-- TOC 带 front matter，能明确标识源文件、拆分层级和章节数量。
-- 子标题链接会写稳定 block ref，例如 `#^notemd-scope`，便于在 TOC 里直接深链。
-- 生成产物会记录到 `.notemd-chapter-split.json`，再次执行时可以识别旧文件并做清理。
+- TOC traer front matter，Capacidad para identificar claramente los archivos fuente, los niveles divididos y el numero de capitulos.。
+- Los enlaces de subtitulos se escribiran de forma estable. block ref，Por ejemplo `#^notemd-scope`，Comodidad en TOC Enlace profundo directo en。
+- El producto generado quedara registrado `.notemd-chapter-split.json`，Los archivos antiguos se pueden identificar y limpiar cuando se ejecutan nuevamente.。
 
-## 适合什么时候用
+## ¿Cuando es adecuado su uso?
 
-- 研究笔记已经很长，单文件内查找开始变慢。
-- 项目计划需要保留总览，同时把每一章拆成独立文件。
-- 你需要一份可引用的 TOC，而不是临时整理一次就丢掉。
+- Las notas de investigacion ya son muy largas y la busqueda dentro de un solo archivo comienza a ralentizarse.。
+- El plan del proyecto debe conservar una descripcion general y dividir cada capitulo en documentos independientes.。
+- Necesitas una cita TOC，En lugar de separarlo temporalmente una vez y luego tirarlo.。
 
-## 行为边界
+## Limites de comportamiento
 
-- 拆分层级可以选 `Auto`，也可以强制指定 `H1` 到 `H6`。
-- 如果你强制指定了某个层级，但源文档里没有这个层级，任务会直接报错，不会自动猜。
-- 再次执行时会清理陈旧产物；如果某个已生成文件被手工改过，系统不会直接覆盖。
+- Los niveles divididos son opcionales `Auto`，Tambien puedes especificar con fuerza `H1` llegar `H6`。
+- Si especifica con fuerza un determinado nivel, pero no existe dicho nivel en el documento fuente, la tarea informara directamente un error y no lo adivinara automaticamente.。
+- Los productos antiguos se limpiaran cuando se vuelvan a ejecutar; Si un archivo generado se ha modificado manualmente, el sistema no lo sobrescribira directamente.。
 
-## 入口与设置
+## Entrada y escenarios.
 
-- 命令 / sidebar 入口：`章节拆分`
-- 输出真值：`<basename>_chapters`、`<basename>_TOC.md`、`.notemd-chapter-split.json`
-- 设置项：`章节拆分 -> 拆分标题层级`
+- Orden / sidebar Entrada：`Division del capitulo`
+- Generar valor verdadero：`<basename>_chapters`、`<basename>_TOC.md`、`.notemd-chapter-split.json`
+- Configuracion de elementos：`Division del capitulo -> Dividir la jerarquia de titulos`

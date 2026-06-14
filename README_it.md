@@ -5,7 +5,7 @@
 
 # Plugin Notemd per Obsidian
 
-[English](./README.md) | [简体中文](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [繁體中文](./README_zh_Hant.md) | [日本語](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
+[English](./README.md) | [Chino simplificado](./README_zh.md) | [Español](./README_es.md) | [Français](./README_fr.md) | [Deutsch](./README_de.md) | [Italiano](./README_it.md) | [Português](./README_pt.md) | [Chino tradicional](./README_zh_Hant.md) | [japones](./README_ja.md) | [한국어](./README_ko.md) | [Русский](./README_ru.md) | [العربية](./README_ar.md) | [हिन्दी](./README_hi.md) | [বাংলা](./README_bn.md) | [Nederlands](./README_nl.md) | [Svenska](./README_sv.md) | [Suomi](./README_fi.md) | [Dansk](./README_da.md) | [Norsk](./README_no.md) | [Polski](./README_pl.md) | [Türkçe](./README_tr.md) | [עברית](./README_he.md) | [ไทย](./README_th.md) | [Ελληνικά](./README_el.md) | [Čeština](./README_cs.md) | [Magyar](./README_hu.md) | [Română](./README_ro.md) | [Українська](./README_uk.md) | [Tiếng Việt](./README_vi.md) | [Bahasa Indonesia](./README_id.md) | [Bahasa Melayu](./README_ms.md)
 
 Leggi la documentazione in altre lingue: [Centro lingue](./docs/i18n/README.md)
 
@@ -383,7 +383,7 @@ Accedi alle impostazioni del plugin tramite:
     *   **Disattivato**: Lascia l'output Mermaid generato inalterato a meno che non si esegua manualmente la `Correzione Mermaid Batch` o la si aggiunga a un workflow personalizzato.
 -   **Lingua di Output**: (Nuovo) Seleziona la lingua di output desiderata per le attività "Genera da titolo" e "Generazione batch da titoli".
     *   **Inglese (Predefinito)**: I prompt vengono elaborati e prodotti in inglese.
-    *   **Altre Lingue**: Istruisce l'LLM a eseguire il ragionamento in inglese ma a fornire la documentazione finale nella lingua scelta (es. Italiano, Español, Français, 简体中文, 繁體中文, العربية, हिन्दी, ecc.).
+    *   **Altre Lingue**: Istruisce l'LLM a eseguire il ragionamento in inglese ma a fornire la documentazione finale nella lingua scelta (es. Italiano, Español, Français, Chino simplificado, Chino tradicional, العربية, हिन्दी, ecc.).
 -   **Cambia Parola del Prompt**: (Nuovo)
     *   **Cambia Parola del Prompt**: Ti consente di cambiare la parola del prompt per un'attività specifica.
     *   **Parola del Prompt Personalizzata**: Inserisci la tua parola del prompt personalizzata per l'attività.
@@ -688,7 +688,7 @@ I contributi sono i benvenuti! Fai riferimento alla repository GitHub per le lin
 ## Documentazione per i Manutentori
 
 - [Workflow di Rilascio (Inglese)](./docs/maintainer/release-workflow.md)
-- [Workflow di Rilascio (简体中文)](./docs/maintainer/release-workflow.zh-CN.md)
+- [Workflow di Rilascio (Chino simplificado)](./docs/maintainer/release-workflow.zh-CN.md)
 
 ## Licenza
 
